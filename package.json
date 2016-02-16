@@ -1,0 +1,19 @@
+{
+  "name"       : "library",
+  "version"    : "0.1.0",
+  "description": "Just a tool for reading my eBooks",
+  "main"       : "server/index.js",
+  "scripts"    : {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url" : "git+https://github.com/hectorfhurtado/library.git"
+  },
+  "author" : "Hector Hurtado",
+  "license": "MIT",
+  "bugs"   : {
+    "url": "https://github.com/hectorfhurtado/library/issues"
+  },
+  "homepage": "https://github.com/hectorfhurtado/library#readme"
+}
