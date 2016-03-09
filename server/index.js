@@ -40,14 +40,14 @@ function servir( req, res )
 
         // Esto es para poder crear los ├¡conos a partir de archivos .svg
         fs.createReadStream( path.join( __dirname, req.url )).pipe( res )
+
     else if ( /\.pdf/.test( req.url ))
         fs.createReadStream( path.join( __dirname, PATH_PDF + decodeURI( req.url.replace( '/web', '' )))).pipe( res )
-    else if ( /\.fetch/.test( req.url )) {
 
-        List.list( path.join( __dirname, PATH_PDF ), function( lista ) {
-            res.end( JSON.stringify( lista ))
-        })
+    else if ( /\.fetch/.test( req.url )) {
+        List.list( path.join( __dirname, PATH_PDF )).then( lista => res.end( JSON.stringify( lista )))
     }
+
     else
         fs.createReadStream( path.join( __dirname, PATH_WEB + req.url )).pipe( res )
 }

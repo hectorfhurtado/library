@@ -1,36 +1,47 @@
 window.addEventListener( 'DOMContentLoaded', function() {
 
-    let $ul = document.getElementsByTagName( 'ul' )[ 0 ]
+    let $section = document.getElementsByTagName( 'section' )[ 0 ]
     let $iframe = document.getElementById( 'iframe' )
 
     fetch( 'lista.fetch' )
         .then( lista => lista.json() )
-        .then( function( librosArray )
+        .then( function( libros )
         {
+            const categorias = Object.keys( libros )
+
             let fragmento = document.createDocumentFragment()
 
-            librosArray.forEach( function( libro )
+            categorias.forEach( function( categoria )
             {
-                let $li = document.createElement( 'li' )
+                const $ul = document.createElement( 'ul' )
+                const $strong = document.createElement( 'strong' )
+                $strong.textContent = categoria
 
-                let $a = document.createElement( 'a' )
-                $a.href = libro
-                $a.textContent = libro
+                $ul.appendChild( $strong )
 
-                $li.appendChild( $a)
-                fragmento.appendChild( $li )
+                libros[ categoria ].forEach( function( libro )
+                {
+                    let $li = document.createElement( 'li' )
+
+                    let $a = document.createElement( 'a' )
+                    $a.href = ( categoria == 'Sin leer') ? libro : `${ categoria }/${ libro }`
+                    $a.textContent = libro
+
+                    $li.appendChild( $a)
+                    $ul.appendChild( $li )
+                })
+                fragmento.appendChild( $ul )
             })
 
-            $ul.appendChild( fragmento )
+            $section.appendChild( fragmento )
         })
         .catch( err => console.log( err ))
 
-    $ul.addEventListener( 'click', function( e )
+    $section.addEventListener( 'click', function( e )
     {
         e.preventDefault()
 
-        $iframe.src = `/web/viewer.html?file=${ e.target.textContent }`
-
+        $iframe.src = `/web/viewer.html?file=${ e.target.href }`
     })
 
 })
