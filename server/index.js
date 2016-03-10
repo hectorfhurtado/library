@@ -1,9 +1,12 @@
 const http = require( 'http' )
 const path = require( 'path' )
+const querystring = require( 'querystring' )
 const fs = require( 'fs' )
+
 const PATH_WEB = '../public'
 const PATH_PDF = '../ebooks'
 const List = require( '../lib/list' )
+const Book = require( '../lib/book' )
 
 const server = http.createServer( servir )
 
@@ -11,8 +14,10 @@ function servir( req, res )
 {
     'use strict'
 
+    let mitades = null
+
     if ( /\?/.test( req.url )) {
-        const mitades = req.url.split( '?' )
+        mitades = req.url.split( '?' )
         req.url = mitades[ 0 ]
     }
 
@@ -45,11 +50,59 @@ function servir( req, res )
         fs.createReadStream( path.join( __dirname, PATH_PDF + decodeURI( req.url.replace( '/web', '' )))).pipe( res )
 
     else if ( /\.fetch/.test( req.url )) {
-        List.list( path.join( __dirname, PATH_PDF )).then( lista => res.end( JSON.stringify( lista )))
+
+        if ( /lista\.fetch/.test( req.url ))
+            List.list( path.join( __dirname, PATH_PDF )).then( lista => res.end( JSON.stringify( lista )))
+
+        if ( /book\.fetch/.test( req.url ) && req.method == 'GET' )
+        {
+            if ( mitades.length > 1 )
+            {
+                const searchString = mitades[ 1 ].replace( 'info=/', '' )
+
+                if ( searchString ) {
+                    const qParts = searchString.split( '/' )
+
+                    let details = {}
+
+                    if ( qParts.length > 1 ) {
+                        details.categoria = qParts[ 0 ]
+                        details.nombre = qParts[ 1 ]
+                    }
+                    else
+                        details.nombre = qParts[ 0 ]
+
+                    Book.getInfo( details ).then( data => res.end( JSON.stringify( data )))
+                        .catch( console.log )
+
+                }
+            }
+            else
+            {
+                res.end( JSON.stringify( 0 ))
+            }
+        }
+
+        if ( /book\.fetch/.test( req.url ) && req.method == 'POST' )
+        {
+            req.setEncoding( 'utf8' )
+
+            req.on( 'data', function( chunk )
+            {
+                const bookInfo = JSON.parse( chunk )
+                Book.updateCurrentPage( bookInfo.book, bookInfo.current )
+            })
+
+            req.on( 'end', function()
+            {
+                res.writeHead(200, "OK", {'Content-Type': 'text/html'});
+                res.end();
+            })
+        }
     }
 
     else
         fs.createReadStream( path.join( __dirname, PATH_WEB + req.url )).pipe( res )
 }
 
-server.listen( 7010, 'localhost' )
+server.listen( 7010 )

@@ -2,6 +2,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
     let $section = document.getElementsByTagName( 'section' )[ 0 ]
     let $iframe = document.getElementById( 'iframe' )
+    let $closeButton = document.getElementById( 'CloseEbook' )
 
     fetch( 'lista.fetch' )
         .then( lista => lista.json() )
@@ -41,7 +42,45 @@ window.addEventListener( 'DOMContentLoaded', function() {
     {
         e.preventDefault()
 
-        $iframe.src = `/web/viewer.html?file=${ e.target.href }`
+        fetch( `book.fetch?info=${ e.target.pathname }` )
+            .then( data => data.json() )
+            .then( function( data )
+            {
+                if ( data )
+                {
+                    $iframe.src = `/web/viewer.html?file=${ e.target.href }#page=${ data.current }`
+
+                    sessionStorage.setItem('readingBook', JSON.stringify({
+                        name: e.target.textContent,
+                        data: data,
+                    }))
+                }
+                else
+                {
+                    $iframe.src = `/web/viewer.html?file=${ e.target.href }`
+                }
+            })
+
+        $closeButton.classList.remove( 'invisible' )
+        $section.classList.add( 'invisible' )
     })
 
+    $closeButton.addEventListener( 'click', function()
+    {
+        $iframe.src = ''
+
+        $closeButton.classList.add( 'invisible' )
+        $section.classList.remove( 'invisible' )
+
+        const bookInfo = JSON.parse( sessionStorage.getItem( 'readingBook' ))
+
+        if ( !bookInfo ) return
+
+        const pageNumber = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+
+        fetch( 'book.fetch', {
+            method: 'POST',
+            body: JSON.stringify({ current: pageNumber, book: bookInfo.name }),
+        })
+    })
 })

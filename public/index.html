@@ -4,6 +4,12 @@
 <title>Library</title>
 
 <style>
+    :root {
+        --color-de-fondo: rgb(63, 63, 63);
+        --color-de-letras: rgb(242, 242, 242);
+        --link-visitado: rgb(177, 177, 177);
+    }
+
     html, body, iframe {
         width: 100%;
         height: 100%;
@@ -13,6 +19,7 @@
 
     body {
         overflow: hidden;
+        background-color: var(--color-de-fondo);
     }
 
     ul {
@@ -24,21 +31,57 @@
     }
 
     section {
-        position: absolute;
-        top: 0;
-        left: 0;
         overflow-y: auto;
-        height: 50%;
-        width: 50%;
+        height: 90%;
         margin-left: 3rem;
         margin-top: 2rem;
         border: solid thin #908e8e;
-        background-color: rgba(250, 235, 215, 0.3);
+        background-color: var(--color-de-fondo);
+        color: var(--color-de-letras);
+    }
+
+    #CloseEbook {
+        border: medium solid var(--color-de-letras);
+        border-radius: 50%;
+        padding: 0px;
+        margin: 0px;
+        width: 4rem;
+        height: 4rem;
+        vertical-align: middle;
+        background-color: var(--color-de-fondo);
+        color: var(--color-de-letras);
+        font-size: 2rem;
+        top: 3rem;
+        left: 0.5rem;
+    }
+
+    #CloseEbook:hover {
+        cursor: pointer;
+    }
+
+    a {
+        color: var(--color-de-letras);
+    }
+
+    a:visited {
+        color: var(--link-visitado);
+    }
+
+    .absolute {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .invisible {
+        display: none;
     }
 </style>
 <iframe id="iframe" src="" ></iframe>
 
-<section>
+<section class="absolute">
 </section>
+
+<button id="CloseEbook" class="absolute invisible">X</button>
 
 <script src="index.js"></script>
