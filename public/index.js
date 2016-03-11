@@ -1,7 +1,7 @@
 window.addEventListener( 'DOMContentLoaded', function() {
 
-    let $section = document.getElementsByTagName( 'section' )[ 0 ]
-    let $iframe = document.getElementById( 'iframe' )
+    let $section     = document.getElementsByTagName( 'section' )[ 0 ]
+    let $iframe      = document.getElementById( 'iframe' )
     let $closeButton = document.getElementById( 'CloseEbook' )
 
     fetch( 'lista.fetch' )
@@ -14,8 +14,8 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
             categorias.forEach( function( categoria )
             {
-                const $ul = document.createElement( 'ul' )
-                const $strong = document.createElement( 'strong' )
+                const $ul           = document.createElement( 'ul' )
+                const $strong       = document.createElement( 'strong' )
                 $strong.textContent = categoria
 
                 $ul.appendChild( $strong )
@@ -48,11 +48,11 @@ window.addEventListener( 'DOMContentLoaded', function() {
             {
                 if ( data )
                 {
-                    $iframe.src = `/web/viewer.html?file=${ e.target.href }#page=${ data.current }`
+                    $iframe.src = `/web/viewer.html?file=${ e.target.href }#page=${ data.actual }`
 
                     sessionStorage.setItem('readingBook', JSON.stringify({
-                        name: e.target.textContent,
-                        data: data,
+                        nombre: e.target.textContent,
+                        data  : data,
                     }))
                 }
                 else
@@ -72,15 +72,15 @@ window.addEventListener( 'DOMContentLoaded', function() {
         $closeButton.classList.add( 'invisible' )
         $section.classList.remove( 'invisible' )
 
-        const bookInfo = JSON.parse( sessionStorage.getItem( 'readingBook' ))
+        const infoLibro = JSON.parse( sessionStorage.getItem( 'readingBook' ))
 
-        if ( !bookInfo ) return
+        if ( !infoLibro ) return
 
-        const pageNumber = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+        const numeroPagina = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
 
         fetch( 'book.fetch', {
             method: 'POST',
-            body: JSON.stringify({ current: pageNumber, book: bookInfo.name }),
+            body: JSON.stringify({ actual: numeroPagina, libro: infoLibro.name }),
         })
     })
 })
