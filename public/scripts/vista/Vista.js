@@ -58,7 +58,7 @@
                 {
                     if ( data )
                     {
-                        $iframe.src = `/web/viewer.html?file=${ nombrePdf }#page=${ data.actual }`
+                        $iframe.src = `/web/viewer.html?file=${ nombrePdf }#page=${ data.actual }&zoom=page-width`
 
                         sessionStorage.setItem( 'readingBook', JSON.stringify({
                             nombre: nombrePdf,
@@ -67,7 +67,7 @@
                     }
                     else
                     {
-                        $iframe.src = `/web/viewer.html?file=${ nombrePdf }`
+                        $iframe.src = `/web/viewer.html?file=${ nombrePdf }#zoom=page-width`
 
                         sessionStorage.setItem( 'readingBook', null )
                     }
