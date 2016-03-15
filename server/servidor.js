@@ -7,6 +7,11 @@ const PATH_WEB  = '../public'
 
 module.exports = {
 	
+    /**
+     * Dividimos el URL por si viene con algun query para que al revisarlo no nos moleste
+     * @param {object} req el requirimiento
+     * @param {object} res la respuesta del servidor
+     */
     sirve( req, res )
     {
         'use strict'
@@ -23,6 +28,11 @@ module.exports = {
         this.envia( req, res, mitades )
     },
     
+	/**
+	 * Adicionamos la cabecera segun el tipo de contenido
+	 * @param {object}   req
+	 * @param {object} res
+	 */
 	clasifica( req, res )
 	{
 		if      ( /\/$|\.html$/.test(   req.url ))  res.setHeader( 'Content-type', 'text/html' )
@@ -39,6 +49,13 @@ module.exports = {
 		else                                        return
 	},
     
+    /**
+     * Segun el tipo de archivo, creamos el stream para enviar los datos al browser.
+     * Tambien filtramos el tipo de requirimiento que recibimos para traer o actualizar los datos de los ebooks
+     * @param {object} req
+     * @param {object} res
+     * @param {Array}  mitades La lista de queries si lo tienen
+     */
     envia( req, res, mitades )
     {
         'use strict'
@@ -105,7 +122,7 @@ module.exports = {
                 req.on( 'data', function( chunk )
                 {
                     const infoLibro = JSON.parse( chunk )
-                    Libro.actuallizaPaginaActual( infoLibro.libro, infoLibro.actual )
+                    Libro.actualizaPaginaActual( infoLibro.libro, infoLibro.actual )
                 })
 
                 req.on( 'end', function()
