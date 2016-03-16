@@ -34,6 +34,8 @@ var Nando = {
 
 window.addEventListener( 'DOMContentLoaded', function() {
 
+    sessionStorage.setItem( 'readingBook', null )
+
     // Traemso la lista de ebooks y la mostramos
     Promise.all([
         Nando.Cargador.trae( 'Elementos' ),
@@ -89,12 +91,11 @@ window.addEventListener( 'DOMContentLoaded', function() {
                     switch ( e.target.id ) {
 
                         case 'CloseEbook':
-                            $iframe.src = ''
-
                             $aside.classList.add( 'invisible' )
                             $section.classList.remove( 'invisible' )
 
                             paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+                            $iframe.src  = ''
 
                             Vista.actualizaLecturaCon( paginaActual )
                             break;
