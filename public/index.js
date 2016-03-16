@@ -1,16 +1,14 @@
-var Nando =
-{
-    Cargador:
-    {
+var Nando = {
+
+    Cargador: {
         $HEAD  : document.querySelector( 'head' ),
         SCRIPTS: 'scripts/',
 
-        trae( modulo )
-        {
-            return new Promise( function( res )
-            {
-                if ( Nando[ modulo ])
-                {
+        trae( modulo ) {
+
+            return new Promise( function( res ) {
+
+                if ( Nando[ modulo ]) {
                     res( Nando[ modulo ])
                     return
                 }
@@ -22,8 +20,7 @@ var Nando =
 
                 script.addEventListener( 'load', alCargar.bind( this ));
 
-                function alCargar()
-                {
+                function alCargar() {
                     script.removeEventListener( 'load', alCargar );
                     Nando.Cargador.$HEAD.removeChild( script );
 
@@ -41,13 +38,13 @@ window.addEventListener( 'DOMContentLoaded', function() {
     Promise.all([
         Nando.Cargador.trae( 'Elementos' ),
         Nando.Cargador.trae( 'Vista' ),
-    ]).then( function([ Elementos, Vista ])
-    {
+    ]).then( function([ Elementos, Vista ]) {
+
         fetch( 'lista.fetch' )
             .then( lista => lista.json() )
             .then( libros => Vista.muestra( libros ))
-            .then( function( fragmento )
-            {
+            .then( function( fragmento ) {
+
                 return Elementos.dame( 'section' )
                     .then( $section => $section.appendChild( fragmento ))
             })
@@ -59,17 +56,16 @@ window.addEventListener( 'DOMContentLoaded', function() {
         Promise.all([
             Elementos.dame( 'section' ),
             Elementos.dame( 'aside' ),
-        ]).then( function([ $section, $aside ])
-        {
-            $section.addEventListener( 'click', function( e )
-            {
-                if ( e.target.pathname )
-                {
+        ]).then( function([ $section, $aside ]) {
+
+            $section.addEventListener( 'click', function( e ) {
+
+                if ( e.target.pathname ) {
                     e.preventDefault()
 
                     fetch( `book.fetch?info=${ e.target.pathname }` )
                         .then( data => data.json() )
-                        .then( data => Vista.cargaViewerCon( data, e.target.textContent ))
+                        .then( data => Vista.cargaViewerCon( data, e.target.pathname ))
 
                     $aside.classList.remove( 'invisible' )
                     $section.classList.add( 'invisible' )
@@ -83,16 +79,15 @@ window.addEventListener( 'DOMContentLoaded', function() {
             Elementos.dame( 'section' ),
             Elementos.damePorId( 'iframe' ),
             Elementos.dame( 'aside' ),
-        ]).then( function([ $section, $iframe, $aside ])
-        {
-            $aside.addEventListener( 'click', function( e )
-            {
-                if ( e.target.id )
-                {
+        ]).then( function([ $section, $iframe, $aside ]) {
+
+            $aside.addEventListener( 'click', function( e ) {
+
+                if ( e.target.id ) {
                     let paginaActual = null
 
-                    switch ( e.target.id )
-                    {
+                    switch ( e.target.id ) {
+
                         case 'CloseEbook':
                             $iframe.src = ''
 

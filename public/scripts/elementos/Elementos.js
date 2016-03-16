@@ -1,9 +1,9 @@
 /* global Nando */
 
-( function()
-{
-    Nando.Elementos =
-    {
+( function() {
+
+    Nando.Elementos = {
+
         elementos: {},
 
         /**
@@ -12,12 +12,11 @@
          * @param   {string}              selector Un selector de CSS
          * @returns {Promise<DOMElement>}
          */
-        dame( selector )
-        {
-            return new Promise( function( res )
-            {
-                if ( !this.elementos[ selector ])
-                {
+        dame( selector ) {
+
+            return new Promise( function( res ) {
+
+                if ( !this.elementos[ selector ]) {
                     this.elementos[ selector ] = document.querySelector( selector )
                 }
                 res( this.elementos[ selector ])
@@ -29,12 +28,11 @@
          * @param   {string}   id
          * @returns {promise<DOMElement>}
          */
-        damePorId( id )
-        {
-            return new Promise( function( res )
-            {
-                if ( !this.elementos[ id ])
-                {
+        damePorId( id ) {
+
+            return new Promise( function( res ) {
+
+                if ( !this.elementos[ id ]) {
                     this.elementos[ id ] = document.getElementById( id )
                 }
                 res( this.elementos[ id ])
