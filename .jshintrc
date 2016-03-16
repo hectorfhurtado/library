@@ -11,6 +11,7 @@
     "maxparams"	: 7,
     "maxdepth"	: 7,
 	"esnext"    : true,
+    "lastsemic" : false,
 
     "asi"		: true,
     "debug"		: true,

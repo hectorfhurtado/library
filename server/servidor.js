@@ -12,14 +12,12 @@ module.exports = {
      * @param {object} req el requirimiento
      * @param {object} res la respuesta del servidor
      */
-    sirve( req, res )
-    {
+    sirve( req, res ) {
         'use strict'
 
         let mitades = null
 
-        if ( /\?/.test( req.url ))
-        {
+        if ( /\?/.test( req.url )) {
             mitades = req.url.split( '?' )
             req.url = mitades[ 0 ]
         }
@@ -33,8 +31,8 @@ module.exports = {
 	 * @param {object}   req
 	 * @param {object} res
 	 */
-	clasifica( req, res )
-	{
+	clasifica( req, res ) {
+
 		if      ( /\/$|\.html$/.test(   req.url ))  res.setHeader( 'Content-type', 'text/html' )
 		else if ( /\.js$/.test(         req.url ))  res.setHeader( 'Content-type', 'application/javascript' )
 		else if ( /\.css$/.test(        req.url ))  res.setHeader( 'Content-type', 'text/css' )
@@ -56,36 +54,31 @@ module.exports = {
      * @param {object} res
      * @param {Array}  mitades La lista de queries si lo tienen
      */
-    envia( req, res, mitades )
-    {
+    envia( req, res, mitades ) {
         'use strict'
         
-        if ( /\/$|index\.html$/.test( req.url ))
-        {
+        if ( /\/$|index\.html$/.test( req.url )) {
             fs.createReadStream( path.join( __dirname, PATH_WEB + '/index.html' )).pipe( res )
         }    
-        else if ( /icono\.html$/.test( req.url ))
-        {
+        else if ( /icono\.html$/.test( req.url )) {
+
             // Esto es para poder crear los iconos a partir de archivos .svg
             fs.createReadStream( path.join( __dirname, req.url )).pipe( res )
         }
-        else if ( /\.pdf/.test( req.url ))
-        {
+        else if ( /\.pdf/.test( req.url )) {
             fs.createReadStream( path.join( __dirname, PATH_PDF + decodeURI( req.url.replace( '/web', '' )))).pipe( res )
         }
-        else if ( /\.fetch/.test( req.url ))
-        {
+        else if ( /\.fetch/.test( req.url )) {
+
             // Aqui pedimos la lista de libros en la biblioteca
-            if ( /lista\.fetch/.test( req.url ))
-            {
+            if ( /lista\.fetch/.test( req.url )) {
                 Lista.lista( path.join( __dirname, PATH_PDF )).then( lista => res.end( JSON.stringify( lista )))
             }
-            
+
             // Aqui pedimos informacion acerca de un libro en especifico
-            if ( /book\.fetch/.test( req.url ) && req.method == 'GET' )
-            {
-                if ( mitades.length > 1 )
-                {
+            if ( /^\/book\.fetch/.test( req.url ) && req.method == 'GET' ) {
+
+                if ( mitades.length > 1 ) {
                     const searchString = mitades[ 1 ].replace( 'info=/', '' )
 
                     if ( searchString ) {
@@ -97,8 +90,7 @@ module.exports = {
                             detalles.categoria = qParts[ 0 ]
                             detalles.nombre    = qParts[ 1 ]
                         }
-                        else
-                        {
+                        else {
                             detalles.nombre = qParts[ 0 ]
                         }
 
@@ -107,34 +99,51 @@ module.exports = {
                             .catch( console.log )
                     }
                 }
-                else
-                {
+                else {
                     res.end( JSON.stringify( 0 ))
                 }
             }
 
             // Aqui actualizamos la informacion del libro que estamos leyendo
-            if ( /book\.fetch/.test( req.url ) && req.method == 'POST' )
-            {
+            if ( /^\/book\.fetch/.test( req.url ) && req.method == 'POST' ) {
                 req.setEncoding( 'utf8' )
 
-                // TODO: Separar esta funcion para que tome mas datos, ahorita solo toma los utlimos que vengan
-                req.on( 'data', function( chunk )
-                {
+                req.on( 'data', function( chunk ) {
                     const infoLibro = JSON.parse( chunk )
                     Libro.actualizaPaginaActual( infoLibro.libro, infoLibro.actual )
                 })
 
-                req.on( 'end', function()
-                {
-                    res.writeHead( 200, 'OK', { 'Content-Type': 'text/html' })
-                    res.end()
+                this._enviaRecibido( req, res )
+            }
+
+            // Adicionamos un nuevo ebook a la lista de los que vamos leyendo
+            if ( /^\/nuevoebook\.fetch/.test( req.url ) && req.method == 'POST' ) {
+                req.setEncoding( 'utf8' )
+
+                req.on('data', function( chunk ) {
+                    const infoLibro = JSON.parse( chunk )
+                    Libro.adicionaALectura( infoLibro )
                 })
+
+                this._enviaRecibido( req, res )
             }
         }
-        else
-        {
+        else {
             fs.createReadStream( path.join( __dirname, PATH_WEB + req.url )).pipe( res )
         }
     },
+
+    /**
+     * Enviamos un acknowledge al browser para hacerle saber que recibimos el paquete
+     * @param {object} req
+     * @param {object} res
+     * @private
+     */
+    _enviaRecibido( req, res ) {
+
+        req.on( 'end', function() {
+            res.writeHead( 200, 'OK', { 'Content-Type': 'text/html' })
+            res.end()
+        })
+    }
 }

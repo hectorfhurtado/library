@@ -1,16 +1,14 @@
-var Nando =
-{
-    Cargador:
-    {
-        $HEAD: document.querySelector( 'head' ),
+var Nando = {
+
+    Cargador: {
+        $HEAD  : document.querySelector( 'head' ),
         SCRIPTS: 'scripts/',
 
-        trae( modulo )
-        {
-            return new Promise( function( res )
-            {
-                if ( Nando[ modulo ])
-                {
+        trae( modulo ) {
+
+            return new Promise( function( res ) {
+
+                if ( Nando[ modulo ]) {
                     res( Nando[ modulo ])
                     return
                 }
@@ -22,8 +20,7 @@ var Nando =
 
                 script.addEventListener( 'load', alCargar.bind( this ));
 
-                function alCargar()
-                {
+                function alCargar() {
                     script.removeEventListener( 'load', alCargar );
                     Nando.Cargador.$HEAD.removeChild( script );
 
@@ -41,16 +38,13 @@ window.addEventListener( 'DOMContentLoaded', function() {
     Promise.all([
         Nando.Cargador.trae( 'Elementos' ),
         Nando.Cargador.trae( 'Vista' ),
-    ]).then( function( modulos )
-    {
-        const Elementos = modulos[ 0 ]
-        const Vista     = modulos[ 1 ]
+    ]).then( function([ Elementos, Vista ]) {
 
         fetch( 'lista.fetch' )
             .then( lista => lista.json() )
             .then( libros => Vista.muestra( libros ))
-            .then( function( fragmento )
-            {
+            .then( function( fragmento ) {
+
                 return Elementos.dame( 'section' )
                     .then( $section => $section.appendChild( fragmento ))
             })
@@ -61,22 +55,21 @@ window.addEventListener( 'DOMContentLoaded', function() {
         // que a su vez lo pasa al visor de pdfs
         Promise.all([
             Elementos.dame( 'section' ),
-            Elementos.damePorId( 'CloseEbook' ),
-        ]).then( function( elementos )
-        {
-            const $section      = elementos[ 0 ]
-            const $closeButton  = elementos[ 1 ]
+            Elementos.dame( 'aside' ),
+        ]).then( function([ $section, $aside ]) {
 
-            $section.addEventListener( 'click', function( e )
-            {
-                e.preventDefault()
+            $section.addEventListener( 'click', function( e ) {
 
-                fetch( `book.fetch?info=${ e.target.pathname }` )
-                    .then( data => data.json() )
-                    .then( data => Vista.cargaViewerCon( data, e.target.textContent ))
+                if ( e.target.pathname ) {
+                    e.preventDefault()
 
-                $closeButton.classList.remove( 'invisible' )
-                $section.classList.add( 'invisible' )
+                    fetch( `book.fetch?info=${ e.target.pathname }` )
+                        .then( data => data.json() )
+                        .then( data => Vista.cargaViewerCon( data, e.target.pathname ))
+
+                    $aside.classList.remove( 'invisible' )
+                    $section.classList.add( 'invisible' )
+                }
             })
         })
 
@@ -85,23 +78,36 @@ window.addEventListener( 'DOMContentLoaded', function() {
         Promise.all([
             Elementos.dame( 'section' ),
             Elementos.damePorId( 'iframe' ),
-            Elementos.damePorId( 'CloseEbook' ),
-        ]).then( function( elementos )
-        {
-            const $section      = elementos[ 0 ]
-            const $iframe       = elementos[ 1 ]
-            const $closeButton  = elementos[ 2 ]
+            Elementos.dame( 'aside' ),
+        ]).then( function([ $section, $iframe, $aside ]) {
 
-            $closeButton.addEventListener( 'click', function()
-            {
-                $iframe.src = ''
+            $aside.addEventListener( 'click', function( e ) {
 
-                $closeButton.classList.add( 'invisible' )
-                $section.classList.remove( 'invisible' )
+                if ( e.target.id ) {
+                    let paginaActual = null
 
-                const paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+                    switch ( e.target.id ) {
 
-                Vista.actualizaLecturaCon( paginaActual )
+                        case 'CloseEbook':
+                            $iframe.src = ''
+
+                            $aside.classList.add( 'invisible' )
+                            $section.classList.remove( 'invisible' )
+
+                            paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+
+                            Vista.actualizaLecturaCon( paginaActual )
+                            break;
+
+                        case 'AddEbook':
+                            const totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
+                            paginaActual        = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+
+                            e.target.classList.add( 'invisible' )
+                            Vista.agregaEbook( paginaActual, totalPaginas )
+                            break;
+                    }
+                }
             })
         })
     })
