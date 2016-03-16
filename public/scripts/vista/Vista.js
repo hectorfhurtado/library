@@ -53,12 +53,18 @@
         cargaViewerCon( data, nombrePdf )
         {
             Nando.Cargador.trae( 'Elementos' )
-                .then( Elementos => Elementos.damePorId( 'iframe' ))
-                .then( function( $iframe )
+                .then( function( Elementos )
+                {
+                    return Promise.all([
+                        Elementos.damePorId( 'iframe' ),
+                        Elementos.damePorId( 'AddEbook' ),
+                    ])
+                }).then( function([ $iframe, $addEbook ])
                 {
                     if ( data )
                     {
                         $iframe.src = `/web/viewer.html?file=${ nombrePdf }#page=${ data.actual }&zoom=page-width`
+                        $addEbook.classList.add('invisible')
 
                         sessionStorage.setItem( 'readingBook', JSON.stringify({
                             nombre: nombrePdf,
@@ -69,7 +75,8 @@
                     {
                         $iframe.src = `/web/viewer.html?file=${ nombrePdf }#zoom=page-width`
 
-                        sessionStorage.setItem( 'readingBook', null )
+                        $addEbook.classList.remove('invisible')
+                        sessionStorage.setItem( 'readingBook', JSON.stringify({ nombre: nombrePdf }))
                     }
                 })
         },
@@ -87,10 +94,34 @@
 
             const infoLibro = JSON.parse( data )
 
+            if ( !data.data ) return
+
             fetch( 'book.fetch', {
                 method: 'POST',
                 body: JSON.stringify({ actual: paginaActual, libro: infoLibro.nombre }),
             })
-        }
+        },
+
+        agregaEbook( paginaActual = 0, totalPaginas = 0 )
+        {
+            const libroString = sessionStorage.getItem( 'readingBook' )
+
+            if ( !libroString ) return
+
+            let libro = JSON.parse(libroString)
+
+            fetch( 'nuevoebook.fetch', {
+                method: 'POST',
+                body: JSON.stringify({
+                    nombre      : libro.nombre,
+                    paginas     : totalPaginas.replace('of ', ''),
+                    actual      : paginaActual,
+                    calificacion: 0,
+                    notas       : '',
+                    categoria   : '',
+                    leyendo     : true,
+                })
+            })
+        },
     }
 })()

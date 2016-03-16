@@ -42,22 +42,29 @@
         top             : 0;
     }
 
-    #CloseEbook {
+    aside {
+        display: flex;
+        flex-direction: column;
+        top  : 3rem;
+        right: 1rem;
+    }
+
+    #CloseEbook,
+    #AddEbook{
         background-color: var(--color-de-fondo);
         border          : medium solid var(--color-de-letras);
         border-radius   : 50%;
         color           : var(--color-de-letras);
-        font-size       : 2rem;
-        height          : 4rem;
+        font-size       : 1.5rem;
+        height          : 3rem;
         margin          : 0px;
         padding         : 0px;
-        right           : 0.5rem;
-        top             : 3rem;
         vertical-align  : middle;
-        width           : 4rem;
+        width           : 3rem;
     }
 
-    #CloseEbook:hover {
+    #CloseEbook:hover,
+    #AddEbook:hover {
         cursor: pointer;
     }
 
@@ -82,6 +89,9 @@
 <section class="absolute">
 </section>
 
-<button id="CloseEbook" class="absolute invisible">X</button>
+<aside class="absolute invisible">
+    <button id="CloseEbook" title="Cerrar">X</button>
+    <button id="AddEbook"   title="Adiciona">+</button>
+</aside>
 
 <script src="index.js"></script>

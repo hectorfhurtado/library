@@ -2,7 +2,7 @@ var Nando =
 {
     Cargador:
     {
-        $HEAD: document.querySelector( 'head' ),
+        $HEAD  : document.querySelector( 'head' ),
         SCRIPTS: 'scripts/',
 
         trae( modulo )
@@ -41,11 +41,8 @@ window.addEventListener( 'DOMContentLoaded', function() {
     Promise.all([
         Nando.Cargador.trae( 'Elementos' ),
         Nando.Cargador.trae( 'Vista' ),
-    ]).then( function( modulos )
+    ]).then( function([ Elementos, Vista ])
     {
-        const Elementos = modulos[ 0 ]
-        const Vista     = modulos[ 1 ]
-
         fetch( 'lista.fetch' )
             .then( lista => lista.json() )
             .then( libros => Vista.muestra( libros ))
@@ -61,22 +58,22 @@ window.addEventListener( 'DOMContentLoaded', function() {
         // que a su vez lo pasa al visor de pdfs
         Promise.all([
             Elementos.dame( 'section' ),
-            Elementos.damePorId( 'CloseEbook' ),
-        ]).then( function( elementos )
+            Elementos.dame( 'aside' ),
+        ]).then( function([ $section, $aside ])
         {
-            const $section      = elementos[ 0 ]
-            const $closeButton  = elementos[ 1 ]
-
             $section.addEventListener( 'click', function( e )
             {
-                e.preventDefault()
+                if ( e.target.pathname )
+                {
+                    e.preventDefault()
 
-                fetch( `book.fetch?info=${ e.target.pathname }` )
-                    .then( data => data.json() )
-                    .then( data => Vista.cargaViewerCon( data, e.target.textContent ))
+                    fetch( `book.fetch?info=${ e.target.pathname }` )
+                        .then( data => data.json() )
+                        .then( data => Vista.cargaViewerCon( data, e.target.textContent ))
 
-                $closeButton.classList.remove( 'invisible' )
-                $section.classList.add( 'invisible' )
+                    $aside.classList.remove( 'invisible' )
+                    $section.classList.add( 'invisible' )
+                }
             })
         })
 
@@ -85,23 +82,37 @@ window.addEventListener( 'DOMContentLoaded', function() {
         Promise.all([
             Elementos.dame( 'section' ),
             Elementos.damePorId( 'iframe' ),
-            Elementos.damePorId( 'CloseEbook' ),
-        ]).then( function( elementos )
+            Elementos.dame( 'aside' ),
+        ]).then( function([ $section, $iframe, $aside ])
         {
-            const $section      = elementos[ 0 ]
-            const $iframe       = elementos[ 1 ]
-            const $closeButton  = elementos[ 2 ]
-
-            $closeButton.addEventListener( 'click', function()
+            $aside.addEventListener( 'click', function( e )
             {
-                $iframe.src = ''
+                if ( e.target.id )
+                {
+                    let paginaActual = null
 
-                $closeButton.classList.add( 'invisible' )
-                $section.classList.remove( 'invisible' )
+                    switch ( e.target.id )
+                    {
+                        case 'CloseEbook':
+                            $iframe.src = ''
 
-                const paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+                            $aside.classList.add( 'invisible' )
+                            $section.classList.remove( 'invisible' )
 
-                Vista.actualizaLecturaCon( paginaActual )
+                            paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+
+                            Vista.actualizaLecturaCon( paginaActual )
+                            break;
+
+                        case 'AddEbook':
+                            const totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
+                            paginaActual        = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+
+                            e.target.classList.add( 'invisible' )
+                            Vista.agregaEbook( paginaActual, totalPaginas )
+                            break;
+                    }
+                }
             })
         })
     })

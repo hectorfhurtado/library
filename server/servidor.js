@@ -118,18 +118,26 @@ module.exports = {
             {
                 req.setEncoding( 'utf8' )
 
-                // TODO: Separar esta funcion para que tome mas datos, ahorita solo toma los utlimos que vengan
                 req.on( 'data', function( chunk )
                 {
                     const infoLibro = JSON.parse( chunk )
                     Libro.actualizaPaginaActual( infoLibro.libro, infoLibro.actual )
                 })
 
-                req.on( 'end', function()
-                {
-                    res.writeHead( 200, 'OK', { 'Content-Type': 'text/html' })
-                    res.end()
+                this._enviaRecibido( req, res )
+            }
+
+            // Adicionamos un nuevo ebook a la lista de los que vamos leyendo
+            if ( /nuevoebook\.fetch/.test( req.url ) && req.method == 'POST' )
+            {
+                req.setEncoding( 'utf8' )
+
+                req.on('data', function( chunk ) {
+                    const infoLibro = JSON.parse( chunk )
+                    Libro.adicionaALectura( infoLibro )
                 })
+
+                this._enviaRecibido( req, res )
             }
         }
         else
@@ -137,4 +145,13 @@ module.exports = {
             fs.createReadStream( path.join( __dirname, PATH_WEB + req.url )).pipe( res )
         }
     },
+
+    _enviaRecibido( req, res )
+    {
+        req.on( 'end', function()
+        {
+            res.writeHead( 200, 'OK', { 'Content-Type': 'text/html' })
+            res.end()
+        })
+    }
 }
