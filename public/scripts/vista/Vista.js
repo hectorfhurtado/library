@@ -27,8 +27,22 @@
                         let $li = document.createElement( 'li' )
 
                         let $a = document.createElement( 'a' )
-                        $a.href = ( categoria == 'Sin leer') ? libro : `${ categoria }/${ libro }`
                         $a.textContent = libro
+
+                        switch ( categoria ) {
+
+                            case 'Leyendo':
+                                if ( /\//.test( libro )) $a.textContent = libro.split( '/' )[ 1 ]
+                                // No hay break, continua en el siguiente 'case'
+
+                            case 'Sin leer':
+                                $a.href = libro
+                                break
+
+                            default:
+                                $a.href = `${ categoria }/${ libro }`
+                                break
+                        }
 
                         $li.appendChild( $a)
                         $ul.appendChild( $li )
@@ -92,14 +106,18 @@
 
             if ( !data ) return
 
-            const infoLibro = JSON.parse( data )
+            let infoLibro = JSON.parse( data )
 
-            if ( !data.data ) return
+            if ( !infoLibro.data ) return
 
             fetch( 'book.fetch', {
                 method: 'POST',
                 body  : JSON.stringify({ actual: paginaActual, libro: infoLibro.nombre }),
             })
+
+            infoLibro.data.actual = paginaActual
+
+            sessionStorage.setItem( 'readingBook', JSON.stringify( infoLibro ))
         },
 
         /**
@@ -109,24 +127,36 @@
          * @param {string} totalPaginas = 0 El numero total de paginas que tiene el libro
          */
         agregaEbook( paginaActual = 0, totalPaginas = 0 ) {
+            'use strict'
+
             const libroString = sessionStorage.getItem( 'readingBook' )
 
             if ( !libroString ) return
 
-            let libro = JSON.parse(libroString)
+            let libro = JSON.parse( libroString )
+
+            let detalles = {
+                nombre      : libro.nombre,
+                paginas     : totalPaginas.replace('of ', ''),
+                actual      : paginaActual,
+                calificacion: 0,
+                notas       : '',
+                categoria   : libro.categoria || '',
+                leyendo     : true,
+            }
 
             fetch( 'nuevoebook.fetch', {
                 method: 'POST',
-                body  : JSON.stringify({
-                    nombre      : libro.nombre,
-                    paginas     : totalPaginas.replace('of ', ''),
-                    actual      : paginaActual,
-                    calificacion: 0,
-                    notas       : '',
-                    categoria   : libro.categoria || '',
-                    leyendo     : true,
-                })
+                body  : JSON.stringify( Object.assign( {}, detalles ))
             })
+
+            delete detalles.nombre
+
+            sessionStorage.setItem( 'readingBook', JSON.stringify({
+                nombre   : libro.nombre,
+                categoria: detalles.categoria,
+                data     : detalles,
+            }))
         },
     }
 })()
