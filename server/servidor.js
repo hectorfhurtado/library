@@ -120,9 +120,23 @@ module.exports = {
             if ( /^\/nuevoebook\.fetch/.test( req.url ) && req.method == 'POST' ) {
                 req.setEncoding( 'utf8' )
 
-                req.on('data', function( chunk ) {
+                req.on( 'data', function( chunk ) {
                     const infoLibro = JSON.parse( chunk )
+
                     Libro.adicionaALectura( infoLibro )
+                })
+
+                this._enviaRecibido( req, res )
+            }
+
+            // eliminamos un libro de la lista de lectura
+            if ( /^\/terminaebook\.fetch/.test( req.url ) && req.method == 'POST' ) {
+                req.setEncoding( 'utf8' )
+
+                req.on( 'data', function( chunk ) {
+                    const infoLibro = JSON.parse( chunk )
+
+                    Libro.terminaLibro( infoLibro.nombre )
                 })
 
                 this._enviaRecibido( req, res )

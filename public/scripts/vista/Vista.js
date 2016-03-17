@@ -108,7 +108,8 @@
 
             let infoLibro = JSON.parse( data )
 
-            if ( !infoLibro.data ) return
+            if ( !infoLibro.data )         return
+            if ( !infoLibro.data.leyendo ) return
 
             fetch( 'book.fetch', {
                 method: 'POST',
@@ -127,13 +128,9 @@
          * @param {string} totalPaginas = 0 El numero total de paginas que tiene el libro
          */
         agregaEbook( paginaActual = 0, totalPaginas = 0 ) {
-            'use strict'
+            const libro = this.infoLibro
 
-            const libroString = sessionStorage.getItem( 'readingBook' )
-
-            if ( !libroString ) return
-
-            let libro = JSON.parse( libroString )
+            if ( !libro ) return null
 
             let detalles = {
                 nombre      : libro.nombre,
@@ -152,11 +149,92 @@
 
             delete detalles.nombre
 
-            sessionStorage.setItem( 'readingBook', JSON.stringify({
+            this.infoLibro = {
                 nombre   : libro.nombre,
                 categoria: detalles.categoria,
                 data     : detalles,
-            }))
+            }
+        },
+
+        /**
+         * Cuando queremos dejar de seguir el libro que estabams leyendo, cambiamos el estado del libro,
+         * enviamos la solicitud al servidor y eliminamos el link de la lista de libros 'Leyendo'
+         * @returns {Promise<null>}
+         */
+        terminaLibro() {
+
+            Nando.Cargador.trae( 'Elementos' ).then( function( Elementos ) {
+                const libro = this.infoLibro
+
+                if ( !libro )      return null
+                if ( !libro.data ) return null
+
+                libro.data.leyendo  = false
+                libro.data.actual   = '1'
+                this.infoLibro      = libro
+
+                if ( libro.data.categoria == '' ) {
+                    this.escogeCategoria()
+                }
+
+                fetch( 'terminaebook.fetch', {
+                    method: 'POST',
+                    body  : JSON.stringify({ nombre: libro.nombre })
+                })
+
+                return Promise.all([
+                    Elementos.damePorId( 'AddEbook' ),
+                    Elementos.damePorId( 'EndEbook' ),
+                    Elementos.dame( 'section' ),
+                ])
+            }.bind( this )).then( function([ $addEbook, $endEbook, $section ]) {
+                $addEbook.classList.remove( 'invisible' )
+                $endEbook.classList.add( 'invisible' )
+
+                const links         = $section.querySelector( 'ul' ).querySelectorAll( 'a' )
+                const libro         = this.infoLibro
+                const $libroBorrado = [ ...links ].filter( link => link.textContent == libro.nombre )[ 0 ]
+                const $li           = $libroBorrado.parentNode
+
+                $li.removeChild( $libroBorrado )
+            }.bind( this ))
+            .catch( error => console.error( error ))
+        },
+
+        /**
+         * Trae la informacion del sessionStorage y retorna la informacion encontrada o null si no existe
+         * @get
+         * @return {object}
+         */
+        get infoLibro() {
+            const libroString = sessionStorage.getItem( 'readingBook' )
+
+            if ( !libroString ) return null
+
+            return JSON.parse( libroString )
+        },
+
+        /**
+         * Guarda la informacion suministarda en el sessionStorage
+         * @param {object} Los detalles del libro o null
+         */
+        set infoLibro( libro ) {
+
+            if ( libro ) sessionStorage.setItem( 'readingBook', JSON.stringify( libro ))
+            else         sessionStorage.setItem( 'readingBook', null )
+        },
+
+        /**
+         * Muestra el input para asignar una categoria al libro
+         * @returns {promise<null>}
+         */
+        escogeCategoria() {
+
+            return Nando.Cargador.trae( 'Elementos' ).then( function( Elementos ) {
+                return Elementos.damePorId( 'CategoriaEbook' )
+            }).then( function( $categoria ) {
+                $categoria.classList.remove( 'invisible' )
+            })
         },
     }
 })()
