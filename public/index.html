@@ -50,22 +50,19 @@
     }
 
     #CloseEbook,
+    #EndEbook,
     #AddEbook{
         background-color: var(--color-de-fondo);
         border          : medium solid var(--color-de-letras);
         border-radius   : 50%;
         color           : var(--color-de-letras);
+        cursor          : pointer;
         font-size       : 1.5rem;
         height          : 3rem;
         margin          : 0px;
         padding         : 0px;
         vertical-align  : middle;
         width           : 3rem;
-    }
-
-    #CloseEbook:hover,
-    #AddEbook:hover {
-        cursor: pointer;
     }
 
     a {
@@ -92,6 +89,9 @@
 <aside class="absolute invisible">
     <button id="CloseEbook" title="Cerrar">X</button>
     <button id="AddEbook"   title="Adiciona">+</button>
+    <button id="EndEbook"   title="Terminar">-</button>
+    <input type="text" id="CategoriaEbook" class="invisible" placeholder="Escribe categoria" list="CategoriaEbookList" />
+    <datalist id="CategoriaEbookList"></datalist>
 </aside>
 
 <script src="index.js"></script>

@@ -98,7 +98,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
                             $iframe.src  = ''
 
                             Vista.actualizaLecturaCon( paginaActual )
-                            break;
+                            break
 
                         case 'AddEbook':
                             const totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
@@ -106,7 +106,11 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
                             e.target.classList.add( 'invisible' )
                             Vista.agregaEbook( paginaActual, totalPaginas )
-                            break;
+                            break
+
+                        case 'EndEbook':
+                            Vista.terminaLibro()
+                            break
                     }
                 }
             })
