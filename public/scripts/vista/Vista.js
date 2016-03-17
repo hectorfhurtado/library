@@ -191,10 +191,10 @@
                 $addEbook.classList.remove( 'invisible' )
                 $endEbook.classList.add( 'invisible' )
 
-                const links         = $section.querySelector( 'ul' ).querySelectorAll( 'a' )
-                const libro         = this.infoLibro
-                const $libroBorrado = [ ...links ].filter( link => link.textContent == libro.nombre )[ 0 ]
-                const $li           = $libroBorrado.parentNode
+                const libro             = this.infoLibro
+                const links             = $section.querySelector( 'ul' ).querySelectorAll( 'a' )
+                const [ $libroBorrado ] = [ ...links ].filter( link => link.textContent == libro.nombre )
+                const $li               = $libroBorrado.parentNode
 
                 $li.removeChild( $libroBorrado )
             }.bind( this ))
