@@ -44,6 +44,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
         fetch( 'lista.fetch' )
             .then( lista => lista.json() )
+            .then( libros => Vista.tomaCategoriasDe( libros ))
             .then( libros => Vista.muestra( libros ))
             .then( function( fragmento ) {
 
@@ -97,7 +98,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
                             paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
                             $iframe.src  = ''
 
-                            Vista.actualizaLecturaCon( paginaActual )
+                              Vista.actualizaLecturaCon( paginaActual )
                             break
 
                         case 'AddEbook':
@@ -111,6 +112,10 @@ window.addEventListener( 'DOMContentLoaded', function() {
                         case 'EndEbook':
                             Vista.terminaLibro()
                             break
+
+                        case 'CategorizeEbook':
+                            Vista.categorizaLibro()
+                            break;
                     }
                 }
             })

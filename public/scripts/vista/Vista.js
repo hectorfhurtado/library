@@ -174,7 +174,7 @@
                 this.infoLibro      = libro
 
                 if ( libro.data.categoria == '' ) {
-                    this.escogeCategoria()
+                    this.muestraInputCategoria()
                 }
 
                 fetch( 'terminaebook.fetch', {
@@ -228,13 +228,42 @@
          * Muestra el input para asignar una categoria al libro
          * @returns {promise<null>}
          */
-        escogeCategoria() {
+        muestraInputCategoria() {
 
             return Nando.Cargador.trae( 'Elementos' ).then( function( Elementos ) {
-                return Elementos.damePorId( 'CategoriaEbook' )
-            }).then( function( $categoria ) {
+                return Promise.all([
+                    Elementos.damePorId( 'CategoriaEbook' ),
+                    Elementos.damePorId( 'CategorizeEbook' ),
+                ])
+            }).then( function([ $categoria, $btnCategoriza ]) {
                 $categoria.classList.remove( 'invisible' )
+                $btnCategoriza.classList.add( 'invisible' )
             })
         },
+
+        categorizaLibro() {
+
+            this.muestraInputCategoria()
+        },
+
+        /**
+         * Toma la lista de libros y genera la lista de opciones para el input de categorias
+         * @param   {Object}          libros Objeto con la lista de categorias
+         * @returns {Promise<Object>} devolvemos la lista de libros para ser consumida por alguna otra funcion
+         */
+        tomaCategoriasDe( libros ) {
+
+            return Nando.Cargador.trae( 'Elementos' ).then( function( Elementos ) {
+                return Elementos.damePorId( 'CategoriaEbookList' )
+            }).then( function( $list ) {
+
+                Object.keys( libros ).forEach( function( categoria ) {
+                    let opt         = document.createElement( 'option' )
+                    opt.textContent = categoria
+
+                    $list.appendChild( opt )
+                })
+            }).then( () => libros )
+        }
     }
 })()
