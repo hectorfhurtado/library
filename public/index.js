@@ -120,5 +120,20 @@ window.addEventListener( 'DOMContentLoaded', function() {
                 }
             })
         })
+
+        // Al escoger una categoria
+        Promise.all([
+            Elementos.damePorId( 'CategoriaEbook' ),
+            Elementos.damePorId( 'CategorizeEbook' ),
+        ]).then( function([ $input, $categoriaBtn ]) {
+
+            $input.addEventListener( 'change', function( e ) {
+                e.target.classList.add( 'invisible' )
+                $categoriaBtn.classList.remove( 'invisible' )
+
+                console.log(e.target.value)
+                e.target.value = ''
+            })
+        })
     })
 })

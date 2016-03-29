@@ -242,8 +242,7 @@
         },
 
         categorizaLibro() {
-
-            this.muestraInputCategoria()
+            // TODO: Crear el codigo para enviar la categoria del libro al servidor. Enviar el dato del libro
         },
 
         /**
@@ -257,12 +256,14 @@
                 return Elementos.damePorId( 'CategoriaEbookList' )
             }).then( function( $list ) {
 
-                Object.keys( libros ).forEach( function( categoria ) {
-                    let opt         = document.createElement( 'option' )
-                    opt.textContent = categoria
+                Object.keys( libros )
+                    .filter( libro => /Leyendo|Sin leer/.test( libro ) == false )
+                    .forEach( function( categoria ) {
+                        let opt         = document.createElement( 'option' )
+                        opt.textContent = categoria
 
-                    $list.appendChild( opt )
-                })
+                        $list.appendChild( opt )
+                    })
             }).then( () => libros )
         }
     }
