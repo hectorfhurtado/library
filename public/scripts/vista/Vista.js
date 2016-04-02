@@ -33,7 +33,7 @@
 
                             case 'Leyendo':
                                 if ( /\//.test( libro )) $a.textContent = libro.split( '/' )[ 1 ]
-                                // No hay break, continua en el siguiente 'case'
+                                // NOTE: No hay break, continua en el siguiente 'case'
 
                             case 'Sin leer':
                                 $a.href = libro
@@ -173,7 +173,7 @@
                 libro.data.actual   = '1'
                 this.infoLibro      = libro
 
-                if ( libro.data.categoria == '' ) {
+                if ( libro.data.categoria === '' ) {
                     this.muestraInputCategoria()
                 }
 
@@ -241,8 +241,30 @@
             })
         },
 
-        categorizaLibro() {
-            // TODO: Crear el codigo para enviar la categoria del libro al servidor. Enviar el dato del libro
+        /**
+         * Asigna una categoria al libro seleccionado, si no existe la categoria, la crea en el front
+         * @param   {string}  nuevaCategoria La categoria a ser asignada
+         * @returns {Promise}
+         */
+        categorizaLibro( nuevaCategoria ) {
+			let infolibro = this.infoLibro
+
+			if ( !infolibro ) return
+			if ( infolibro.data.categoria == nuevaCategoria ) return
+
+			fetch( 'categoriza.fetch', {
+				method: 'POST',
+				body  : JSON.stringify({ categoria: nuevaCategoria, libro: infolibro.nombre })
+			})
+
+			infolibro.data.categoria = infolibro.categoria = nuevaCategoria
+			this.infoLibro           = infolibro
+
+			// Actualizamos la lista de libros
+			return Promise.all([
+				infolibro,
+				Nando.Elementos.dame( 'section' ),
+			])
         },
 
         /**
@@ -257,7 +279,7 @@
             }).then( function( $list ) {
 
                 Object.keys( libros )
-                    .filter( libro => /Leyendo|Sin leer/.test( libro ) == false )
+                    .filter( libro => /Leyendo|Sin leer/.test( libro ) === false )
                     .forEach( function( categoria ) {
                         let opt         = document.createElement( 'option' )
                         opt.textContent = categoria

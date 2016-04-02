@@ -114,7 +114,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
                             break
 
                         case 'CategorizeEbook':
-                            Vista.categorizaLibro()
+                            Vista.muestraInputCategoria()
                             break;
                     }
                 }
@@ -128,10 +128,32 @@ window.addEventListener( 'DOMContentLoaded', function() {
         ]).then( function([ $input, $categoriaBtn ]) {
 
             $input.addEventListener( 'change', function( e ) {
+
+				if ( e.target.value.trim() === '' ) return
+
                 e.target.classList.add( 'invisible' )
                 $categoriaBtn.classList.remove( 'invisible' )
 
-                console.log(e.target.value)
+				let antiguaCategoria = Vista.infoLibro.categoria
+
+				Vista.categorizaLibro( e.target.value.trim() ).then( function([ infolibro, $section ]) {
+					let $uls = $section.querySelectorAll( 'ul' )
+
+					if ( !antiguaCategoria ) antiguaCategoria = 'Sin leer'
+
+					// Tomamos la lista de ULs y en cada una buscamos el primer elemento que es un <strong> que contiene el nombre de la categoria
+					// Una vez tenemos la lista de la categoria antigua y la lista con la nueva categoria, buscamos el <li> que contiene el link
+					// con el nombre del libro a cambiar y simplemente lo cambiamos al final
+					// La categoria 'Leyendo' es especial porque se tiene como referencia para el usuario solamente
+					let [ $antiguoUl ] = [ ...$uls ].filter( $ul => (( $ul.firstChild.textContent != 'Leyendo' ) && ( $ul.firstChild.textContent == antiguaCategoria )))
+					let [ $nuevoUl ]   = [ ...$uls ].filter( $ul => (( $ul.firstChild.textContent != 'Leyendo' ) && ( $ul.firstChild.textContent == infolibro.categoria )))
+					let [ $li ]        = [ ...$antiguoUl.querySelectorAll( 'li' )].filter( $li => $li.firstChild.textContent == infolibro.nombre )
+
+					$nuevoUl.appendChild( $li )
+
+					// TODO: Continuar con la categorizacion en el lado del servidor
+				})
+
                 e.target.value = ''
             })
         })
