@@ -254,7 +254,11 @@
 
 			fetch( 'categoriza.fetch', {
 				method: 'POST',
-				body  : JSON.stringify({ categoria: nuevaCategoria, libro: infolibro.nombre })
+				body  : JSON.stringify({
+					nombre : infolibro.nombre,
+					antigua: infolibro.categoria,
+					nueva  : nuevaCategoria,
+				})
 			})
 
 			infolibro.data.categoria = infolibro.categoria = nuevaCategoria

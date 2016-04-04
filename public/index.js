@@ -147,11 +147,28 @@ window.addEventListener( 'DOMContentLoaded', function() {
 					// La categoria 'Leyendo' es especial porque se tiene como referencia para el usuario solamente
 					let [ $antiguoUl ] = [ ...$uls ].filter( $ul => (( $ul.firstChild.textContent != 'Leyendo' ) && ( $ul.firstChild.textContent == antiguaCategoria )))
 					let [ $nuevoUl ]   = [ ...$uls ].filter( $ul => (( $ul.firstChild.textContent != 'Leyendo' ) && ( $ul.firstChild.textContent == infolibro.categoria )))
-					let [ $li ]        = [ ...$antiguoUl.querySelectorAll( 'li' )].filter( $li => $li.firstChild.textContent == infolibro.nombre )
+
+					let [ $li ] = [ ...$antiguoUl.querySelectorAll( 'li' )].filter( $li => $li.firstChild.textContent == infolibro.nombre )
+
+					if ( !$nuevoUl ) {
+						$nuevoUl = document.createElement( 'ul' )
+						let $strong = document.createElement( 'strong' )
+						$strong.textContent = infolibro.categoria
+
+						$nuevoUl.appendChild( $strong )
+						$section.appendChild( $nuevoUl )
+
+						let $aLi = $li.querySelector( 'a' )
+						$aLi.href = `${ infolibro.categoria}/${ infolibro.nombre }`
+					}
+
+					if ( infolibro.categoria == 'Sin leer' ) {
+
+						let $aLi = $li.querySelector( 'a' )
+						$aLi.href = infolibro.nombre
+					}
 
 					$nuevoUl.appendChild( $li )
-
-					// TODO: Continuar con la categorizacion en el lado del servidor
 				})
 
                 e.target.value = ''

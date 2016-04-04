@@ -147,7 +147,8 @@ module.exports = {
 				req.setEncoding( 'utf8' )
 
 				req.on( 'data', function( chunk ) {
-					console.log( chunk )
+
+					if ( chunk ) Libro.categoriza( JSON.parse( chunk ))
 				})
 
 				this._enviaRecibido( req, res )
