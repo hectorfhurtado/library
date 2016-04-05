@@ -68,8 +68,9 @@
                     return Promise.all([
                         Elementos.damePorId( 'iframe' ),
                         Elementos.damePorId( 'AddEbook' ),
+                        Elementos.damePorId( 'EndEbook' ),
                     ])
-                }).then( function([ $iframe, $addEbook ]) {
+                }).then( function([ $iframe, $addEbook, $endEbook ]) {
 
                     let separador = nombrePdf.split( '/' )
                     let detalles  = {}
@@ -84,12 +85,20 @@
                         detalles.data = data
                         $iframe.src   = `/web/viewer.html?file=${ nombrePdf }#page=${ data.actual }&zoom=page-width`
 
-                        $addEbook.classList.add('invisible')
+						if ( data.leyendo ) {
+							$addEbook.classList.add('invisible')
+							$endEbook.classList.remove('invisible')
+						}
+						else {
+							$addEbook.classList.remove('invisible')
+							$endEbook.classList.add('invisible')
+						}
                     }
                     else {
                         $iframe.src = `/web/viewer.html?file=${ nombrePdf }#zoom=page-width`
 
                         $addEbook.classList.remove('invisible')
+						$endEbook.classList.add('invisible')
                     }
 
                     sessionStorage.setItem( 'readingBook', JSON.stringify( detalles ))

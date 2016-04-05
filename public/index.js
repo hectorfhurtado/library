@@ -98,15 +98,17 @@ window.addEventListener( 'DOMContentLoaded', function() {
                             paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
                             $iframe.src  = ''
 
-                              Vista.actualizaLecturaCon( paginaActual )
+							Vista.actualizaLecturaCon( paginaActual )
                             break
 
                         case 'AddEbook':
                             const totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
                             paginaActual        = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
 
-                            e.target.classList.add( 'invisible' )
                             Vista.agregaEbook( paginaActual, totalPaginas )
+
+                            e.target.classList.add( 'invisible' )
+							Nando.Elementos.damePorId( 'AddEbook' ).then( $addEbook => $addEbook.classList.remove( 'invisible' ))
                             break
 
                         case 'EndEbook':
