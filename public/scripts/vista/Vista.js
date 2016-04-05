@@ -33,7 +33,7 @@
 
                             case 'Leyendo':
                                 if ( /\//.test( libro )) $a.textContent = libro.split( '/' )[ 1 ]
-                                // No hay break, continua en el siguiente 'case'
+                                // NOTE: No hay break, continua en el siguiente 'case'
 
                             case 'Sin leer':
                                 $a.href = libro
@@ -68,8 +68,9 @@
                     return Promise.all([
                         Elementos.damePorId( 'iframe' ),
                         Elementos.damePorId( 'AddEbook' ),
+                        Elementos.damePorId( 'EndEbook' ),
                     ])
-                }).then( function([ $iframe, $addEbook ]) {
+                }).then( function([ $iframe, $addEbook, $endEbook ]) {
 
                     let separador = nombrePdf.split( '/' )
                     let detalles  = {}
@@ -84,12 +85,20 @@
                         detalles.data = data
                         $iframe.src   = `/web/viewer.html?file=${ nombrePdf }#page=${ data.actual }&zoom=page-width`
 
-                        $addEbook.classList.add('invisible')
+						if ( data.leyendo ) {
+							$addEbook.classList.add('invisible')
+							$endEbook.classList.remove('invisible')
+						}
+						else {
+							$addEbook.classList.remove('invisible')
+							$endEbook.classList.add('invisible')
+						}
                     }
                     else {
                         $iframe.src = `/web/viewer.html?file=${ nombrePdf }#zoom=page-width`
 
                         $addEbook.classList.remove('invisible')
+						$endEbook.classList.add('invisible')
                     }
 
                     sessionStorage.setItem( 'readingBook', JSON.stringify( detalles ))
@@ -173,8 +182,8 @@
                 libro.data.actual   = '1'
                 this.infoLibro      = libro
 
-                if ( libro.data.categoria == '' ) {
-                    this.escogeCategoria()
+                if ( libro.data.categoria === '' ) {
+                    this.muestraInputCategoria()
                 }
 
                 fetch( 'terminaebook.fetch', {
@@ -228,13 +237,69 @@
          * Muestra el input para asignar una categoria al libro
          * @returns {promise<null>}
          */
-        escogeCategoria() {
+        muestraInputCategoria() {
 
             return Nando.Cargador.trae( 'Elementos' ).then( function( Elementos ) {
-                return Elementos.damePorId( 'CategoriaEbook' )
-            }).then( function( $categoria ) {
+                return Promise.all([
+                    Elementos.damePorId( 'CategoriaEbook' ),
+                    Elementos.damePorId( 'CategorizeEbook' ),
+                ])
+            }).then( function([ $categoria, $btnCategoriza ]) {
                 $categoria.classList.remove( 'invisible' )
+                $btnCategoriza.classList.add( 'invisible' )
             })
         },
+
+        /**
+         * Asigna una categoria al libro seleccionado, si no existe la categoria, la crea en el front
+         * @param   {string}  nuevaCategoria La categoria a ser asignada
+         * @returns {Promise}
+         */
+        categorizaLibro( nuevaCategoria ) {
+			let infolibro = this.infoLibro
+
+			if ( !infolibro ) return
+			if ( infolibro.data.categoria == nuevaCategoria ) return
+
+			fetch( 'categoriza.fetch', {
+				method: 'POST',
+				body  : JSON.stringify({
+					nombre : infolibro.nombre,
+					antigua: infolibro.categoria,
+					nueva  : nuevaCategoria,
+				})
+			})
+
+			infolibro.data.categoria = infolibro.categoria = nuevaCategoria
+			this.infoLibro           = infolibro
+
+			// Actualizamos la lista de libros
+			return Promise.all([
+				infolibro,
+				Nando.Elementos.dame( 'section' ),
+			])
+        },
+
+        /**
+         * Toma la lista de libros y genera la lista de opciones para el input de categorias
+         * @param   {Object}          libros Objeto con la lista de categorias
+         * @returns {Promise<Object>} devolvemos la lista de libros para ser consumida por alguna otra funcion
+         */
+        tomaCategoriasDe( libros ) {
+
+            return Nando.Cargador.trae( 'Elementos' ).then( function( Elementos ) {
+                return Elementos.damePorId( 'CategoriaEbookList' )
+            }).then( function( $list ) {
+
+                Object.keys( libros )
+                    .filter( libro => /Leyendo|Sin leer/.test( libro ) === false )
+                    .forEach( function( categoria ) {
+                        let opt         = document.createElement( 'option' )
+                        opt.textContent = categoria
+
+                        $list.appendChild( opt )
+                    })
+            }).then( () => libros )
+        }
     }
 })()

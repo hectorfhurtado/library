@@ -44,6 +44,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
         fetch( 'lista.fetch' )
             .then( lista => lista.json() )
+            .then( libros => Vista.tomaCategoriasDe( libros ))
             .then( libros => Vista.muestra( libros ))
             .then( function( fragmento ) {
 
@@ -97,22 +98,82 @@ window.addEventListener( 'DOMContentLoaded', function() {
                             paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
                             $iframe.src  = ''
 
-                            Vista.actualizaLecturaCon( paginaActual )
+							Vista.actualizaLecturaCon( paginaActual )
                             break
 
                         case 'AddEbook':
                             const totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
                             paginaActual        = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
 
-                            e.target.classList.add( 'invisible' )
                             Vista.agregaEbook( paginaActual, totalPaginas )
+
+                            e.target.classList.add( 'invisible' )
+							Nando.Elementos.damePorId( 'AddEbook' ).then( $addEbook => $addEbook.classList.remove( 'invisible' ))
                             break
 
                         case 'EndEbook':
                             Vista.terminaLibro()
                             break
+
+                        case 'CategorizeEbook':
+                            Vista.muestraInputCategoria()
+                            break;
                     }
                 }
+            })
+        })
+
+        // Al escoger una categoria
+        Promise.all([
+            Elementos.damePorId( 'CategoriaEbook' ),
+            Elementos.damePorId( 'CategorizeEbook' ),
+        ]).then( function([ $input, $categoriaBtn ]) {
+
+            $input.addEventListener( 'change', function( e ) {
+
+				if ( e.target.value.trim() === '' ) return
+
+                e.target.classList.add( 'invisible' )
+                $categoriaBtn.classList.remove( 'invisible' )
+
+				let antiguaCategoria = Vista.infoLibro.categoria
+
+				Vista.categorizaLibro( e.target.value.trim() ).then( function([ infolibro, $section ]) {
+					let $uls = $section.querySelectorAll( 'ul' )
+
+					if ( !antiguaCategoria ) antiguaCategoria = 'Sin leer'
+
+					// Tomamos la lista de ULs y en cada una buscamos el primer elemento que es un <strong> que contiene el nombre de la categoria
+					// Una vez tenemos la lista de la categoria antigua y la lista con la nueva categoria, buscamos el <li> que contiene el link
+					// con el nombre del libro a cambiar y simplemente lo cambiamos al final
+					// La categoria 'Leyendo' es especial porque se tiene como referencia para el usuario solamente
+					let [ $antiguoUl ] = [ ...$uls ].filter( $ul => (( $ul.firstChild.textContent != 'Leyendo' ) && ( $ul.firstChild.textContent == antiguaCategoria )))
+					let [ $nuevoUl ]   = [ ...$uls ].filter( $ul => (( $ul.firstChild.textContent != 'Leyendo' ) && ( $ul.firstChild.textContent == infolibro.categoria )))
+
+					let [ $li ] = [ ...$antiguoUl.querySelectorAll( 'li' )].filter( $li => $li.firstChild.textContent == infolibro.nombre )
+
+					if ( !$nuevoUl ) {
+						$nuevoUl = document.createElement( 'ul' )
+						let $strong = document.createElement( 'strong' )
+						$strong.textContent = infolibro.categoria
+
+						$nuevoUl.appendChild( $strong )
+						$section.appendChild( $nuevoUl )
+
+						let $aLi = $li.querySelector( 'a' )
+						$aLi.href = `${ infolibro.categoria}/${ infolibro.nombre }`
+					}
+
+					if ( infolibro.categoria == 'Sin leer' ) {
+
+						let $aLi = $li.querySelector( 'a' )
+						$aLi.href = infolibro.nombre
+					}
+
+					$nuevoUl.appendChild( $li )
+				})
+
+                e.target.value = ''
             })
         })
     })

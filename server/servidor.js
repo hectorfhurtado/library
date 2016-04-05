@@ -141,6 +141,18 @@ module.exports = {
 
                 this._enviaRecibido( req, res )
             }
+
+			// modificamos la categoria del libro
+			if ( /^\/categoriza\.fetch/.test( req.url ) && req.method == 'POST' ) {
+				req.setEncoding( 'utf8' )
+
+				req.on( 'data', function( chunk ) {
+
+					if ( chunk ) Libro.categoriza( JSON.parse( chunk ))
+				})
+
+				this._enviaRecibido( req, res )
+			}
         }
         else {
             fs.createReadStream( path.join( __dirname, PATH_WEB + req.url )).pipe( res )
