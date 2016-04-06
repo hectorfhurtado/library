@@ -4,7 +4,7 @@ var Nando = {
         $HEAD  : document.querySelector( 'head' ),
         SCRIPTS: 'scripts/',
 
-        trae( modulo ) {
+        trae( modulo, path ) {
 
             return new Promise( function( res ) {
 
@@ -12,20 +12,34 @@ var Nando = {
                     res( Nando[ modulo ])
                     return
                 }
+
+				if ( Nando[ path ]) {
+					Nando[ modulo ] = Nando[ path ]
+					res( Nando[ modulo ])
+					return
+				}
+
+				let realPath = path ?
+					Nando.Cargador.SCRIPTS + path + '.js' :
+					Nando.Cargador.SCRIPTS + modulo.toLowerCase() + '/' + modulo + '.js'
+
                 let script  = document.createElement( 'script' )
                 script.type = 'text/javascript'
-                script.src  = Nando.Cargador.SCRIPTS + modulo.toLowerCase() + '/' + modulo + '.js';
+                script.src  = realPath
 
-                Nando.Cargador.$HEAD.appendChild( script );
+                Nando.Cargador.$HEAD.appendChild( script )
 
-                script.addEventListener( 'load', alCargar.bind( this ));
+                script.addEventListener( 'load', alCargar.bind( this ))
 
                 function alCargar() {
-                    script.removeEventListener( 'load', alCargar );
-                    Nando.Cargador.$HEAD.removeChild( script );
+                    script.removeEventListener( 'load', alCargar )
+                    Nando.Cargador.$HEAD.removeChild( script )
 
-                    script = null;
-                    res( Nando[ modulo ]);
+                    script = null
+
+					if ( path ) Nando[ path ] = Nando[ modulo ]
+
+                    res( Nando[ modulo ])
                 }
             })
         }
@@ -34,9 +48,15 @@ var Nando = {
 
 window.addEventListener( 'DOMContentLoaded', function() {
 
+	Nando.Cargador.trae( 'Arquitecto', 'arquitecto/index' )
+
+	return
+
     sessionStorage.setItem( 'readingBook', null )
 
-    // Traemso la lista de ebooks y la mostramos
+	// NOTE: voy aqui en el refactoring
+
+    // Traemos la lista de ebooks y la mostramos
     Promise.all([
         Nando.Cargador.trae( 'Elementos' ),
         Nando.Cargador.trae( 'Vista' ),
