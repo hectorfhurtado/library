@@ -48,7 +48,9 @@ var Nando = {
 
 window.addEventListener( 'DOMContentLoaded', function() {
 
-	Nando.Cargador.trae( 'Arquitecto', 'arquitecto/index' )
+	Nando.Cargador
+		.trae( 'Arquitecto', 'arquitecto/index' )
+	    .then( A => A.inicia() )
 
 	return
 

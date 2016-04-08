@@ -6,16 +6,32 @@
 
 		inicia() {
 
-			this.iniciaModulos()
-			this.pideLista()
+			this.iniciaLibro()
+				.then( this.pideLista )
+				.then( this.pasa )
+				.then( categorias => console.log( categorias ))
+
+			// TODO: Continuar con lo que corresponde a Vista#tomaCategoriasDe
 		},
 
 		pideLista() {
-			// TODO: Continuar desde aqui llamando a Red
+
+			return Nando.Cargador
+				.trae( 'Red', 'red/index' )
+				.then( R => R.traeJson( 'lista' ))
+				.catch( error => console.error( error ))
 		},
 
-		iniciaModulos() {
-			Nando.Cargador.trae( 'Libro', 'libro/index' ).then( Libro => Libro.inicia() )
-		}
+		pasa( lista ) {
+
+			return Nando.Libro.extraeCategoriasDe( lista )
+		},
+
+		iniciaLibro() {
+
+			return Nando.Cargador
+				.trae( 'Libro', 'libro/index' )
+				.then( L => L.inicia())
+		},
 	}
 })()
