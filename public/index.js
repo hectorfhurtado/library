@@ -56,7 +56,6 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
     sessionStorage.setItem( 'readingBook', null )
 
-	// NOTE: voy aqui en el refactoring
 
     // Traemos la lista de ebooks y la mostramos
     Promise.all([
@@ -74,6 +73,8 @@ window.addEventListener( 'DOMContentLoaded', function() {
                     .then( $section => $section.appendChild( fragmento ))
             })
             .catch( err => console.log( err ))
+
+	// NOTE: voy aqui en el refactoring
 
         // Cuando hacemos click en un link para un libro, traemos los datos acerca del libro en
         // caso de que lo estemos leyendo y queramos hacerle seguimiento. Lo pasamos a [Vista] para

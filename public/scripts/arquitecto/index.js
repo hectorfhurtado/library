@@ -8,10 +8,11 @@
 
 			this.iniciaLibro()
 				.then( this.pideLista )
-				.then( this.pasa )
+				.then( this.pideCategorias )
+                .then( this.adicionaCategoriasADatalistDeCategorias )
+				.then( this.muestraLibros )
 				.then( categorias => console.log( categorias ))
 
-			// TODO: Continuar con lo que corresponde a Vista#tomaCategoriasDe
 		},
 
 		pideLista() {
@@ -22,9 +23,9 @@
 				.catch( error => console.error( error ))
 		},
 
-		pasa( lista ) {
+		pideCategorias( lista ) {
 
-			return Nando.Libro.extraeCategoriasDe( lista )
+			return Nando.Libro.guarda( lista ).categorias
 		},
 
 		iniciaLibro() {
@@ -32,6 +33,20 @@
 			return Nando.Cargador
 				.trae( 'Libro', 'libro/index' )
 				.then( L => L.inicia())
+		},
+
+        adicionaCategoriasADatalistDeCategorias( categorias ) {
+			const categoriasFiltradas = categorias.filter( categoria => /Leyendo|Sin leer/.test( categoria ) === false )
+
+			return Nando.Cargador
+				.trae( 'Elementos', 'elementos/index' )
+			    .then( E => E.creaOptionsPara( E.damePorId( 'CategoriaEbookList' ), categoriasFiltradas ))
+				.catch( error => console.log( error ))
+		},
+
+		muestraLibros() {
+			return Promise.resolve( Nando.Libro.categoriasConLibros )
+				.then( categorias => Nando.Elementos.creaListaLibros( categorias, Nando.Elementos.dame( 'section' )))
 		},
 	}
 })()
