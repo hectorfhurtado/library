@@ -1,4 +1,4 @@
-/* global Nando */
+/* global Nando, fetch */
 
 ( function() {
 
@@ -8,12 +8,14 @@
 
 		/**
 		 * Trae informacion del servidor
-		 * @param   {string}          path El path donde esta la informacion
+		 * @param   {string}          path    El path donde esta la informacion
+		 * @param   {string}          datos   Si se neceita traer algun dato adicional en la ruta
 		 * @returns {promise<object>} La informacion si la hay
 		 */
-		traeJson( path ) {
+		traeJson( path, datos ) {
+			const ruta = path + TERMINACION + ( datos ? `?${ datos }` : '' )
 
-			return fetch( path + TERMINACION )
+			return fetch( ruta )
 				.then( informacion => informacion.json() )
 				.catch( error => console.error( error ))
 		},

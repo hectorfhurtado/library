@@ -71,7 +71,7 @@
 
 			return Promise.all([
 				promesaElemento,
-				Nando.Cargador.trae( 'DOM', 'elementos/DOM')
+				Nando.Cargador.trae( 'DOM', 'elementos/DOM' )
 			]).then( function([ $elemento, DOM ]) {
 
                 lista.forEach( function( categoria ) {
@@ -89,11 +89,31 @@
                         $a.textContent  = libro.libro
 						$a.href         = libro.link
 
-                        $li.appendChild( $a)
+                        $li.appendChild( $a )
                         $ul.appendChild( $li )
                     })
 					DOM.adiciona( $elemento, 'appendChild', $ul )
                 })
+			})
+		},
+
+		/**
+		 * Carga la ruta del libro en el Iframe de pdf.js
+		 * @author Nando
+		 * @param   {object}              detallesLibro   Los detalles del libro actual
+		 * @param   {promise<DOMElement>} promesaElemento El iframe donde vamos a mostrar el pdf
+		 * @returns {object}              Nuevamente los detalles del libro por si se necesita despues
+		 */
+		muestraLibro( detallesLibro, promesaElemento ) {
+
+			return promesaElemento.then( function( $iframe ) {
+				let pagina = ''
+
+				if ( detallesLibro && detallesLibro.actual ) pagina = `page=${ detallesLibro.actual }&`
+
+				$iframe.src = `/web/viewer.html?file=${ detallesLibro.nombre }#${ pagina }zoom=page-width`
+
+				return detallesLibro
 			})
 		},
     }

@@ -12,7 +12,9 @@
 		},
 
 		get detalleLibro() {
-			// TODO: lo de sessionStorage
+            const libroString = sessionStorage.getItem( 'infoLibro' )
+
+            return libroString ? JSON.parse( libroString ) : null
 		},
 
 		set detalleLibro( info ) {
@@ -85,6 +87,31 @@
 			}
 
 			return propiedades
+		},
+
+		/**
+		 * Extrae los detalles del libro seleccionado por el usuario en caso de que haya informacion
+		 * @author Nando
+		 * @param   {object} infoLibroDeServidor Detalles del libro
+		 * @param   {string} pathname            El path que tiene el link para extraer el nombre del libro
+		 * @returns {object} El mismo objeto que entro mas el nombre del libro
+		 */
+		extraeDetallesDe( infoLibroDeServidor, pathname ) {
+
+			if ( !infoLibroDeServidor ) {
+				infoLibroDeServidor = {}
+			}
+
+			if ( infoLibroDeServidor.categoria ) {
+				infoLibroDeServidor.nombre = pathname.replace( '/' + infoLibroDeServidor.categoria + '/', '' )
+			}
+			else {
+				infoLibroDeServidor.nombre = pathname.replace( '/', '' )
+			}
+
+			this.detalleLibro = infoLibroDeServidor
+
+			return infoLibroDeServidor
 		},
 	}
 })()
