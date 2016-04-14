@@ -80,11 +80,8 @@
 
 			return Nando.Cargador.trae( 'Elementos', 'elementos/index' ).then( function( E ) {
 
-				return Promise.all([
-					E.dame( 'section' ),
-					E.dame( 'aside' ),
-				])
-			}).then( function ([ $section, $aside ]) {
+				return E.dame( 'section' )
+			}).then( function ( $section ) {
 
 				$section.addEventListener( 'click', this._clickEnSectionLibros.bind( this ))
 			}.bind( this ))
@@ -100,6 +97,8 @@
 				.then( R => R.traeJson( 'book', `info=${ e.target.pathname }` ))
 				.then( infoLibro => Nando.Libro.extraeDetallesDe( infoLibro, unescape( e.target.pathname )))
 				.then( detalleLibro => Nando.Elementos.muestraLibro( detalleLibro, Nando.Elementos.damePorId( 'iframe' )))
+				.then( () => Nando.Cargador.trae( 'Estados', 'elementos/estados' ))
+				.then( E => E.cambiaA( E.LIBRO ))
 			// TODO: Continuar con los estados para saber que elementos deben mostrarse
 				.then( detallelibro => console.log( detallelibro ))
 		},
