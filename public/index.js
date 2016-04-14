@@ -88,7 +88,6 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				if ( e.target.pathname ) {
 					e.preventDefault()
 
-	// NOTE: voy aqui en el refactoring
 					fetch( `book.fetch?info=${ e.target.pathname }` )
 						.then( data => data.json() )
 						.then( data => Vista.cargaViewerCon( data, e.target.pathname ))
@@ -98,6 +97,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				}
 			})
 		})
+	// NOTE: voy aqui en el refactoring
 
 		// Cuando hacemos click en el boton de cerrar, actualizamos nuestro progdeso si estamos
 		// leyendo este libro. Luego ocultamos el boton de cerrar y mostramos la lista de ebooks

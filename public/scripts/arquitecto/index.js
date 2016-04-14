@@ -84,6 +84,8 @@
 			}).then( function ( $section ) {
 
 				$section.addEventListener( 'click', this._clickEnSectionLibros.bind( this ))
+
+				// TODO: continuar con los eventos para los botones del Aside
 			}.bind( this ))
 		},
 
@@ -99,7 +101,6 @@
 				.then( detalleLibro => Nando.Elementos.muestraLibro( detalleLibro, Nando.Elementos.damePorId( 'iframe' )))
 				.then( () => Nando.Cargador.trae( 'Estados', 'elementos/estados' ))
 				.then( E => E.cambiaA( E.LIBRO ))
-			// TODO: Continuar con los estados para saber que elementos deben mostrarse
 				.then( detallelibro => console.log( detallelibro ))
 		},
 	}
