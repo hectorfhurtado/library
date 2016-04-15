@@ -71,7 +71,7 @@
 
 			return Promise.all([
 				promesaElemento,
-				Nando.Cargador.trae( 'DOM', 'elementos/DOM' )
+				Nando.Cargador.trae( 'DOM' )
 			]).then( function([ $elemento, DOM ]) {
 
                 lista.forEach( function( categoria ) {
@@ -102,7 +102,7 @@
 		 * @author Nando
 		 * @param   {object}              detallesLibro   Los detalles del libro actual
 		 * @param   {promise<DOMElement>} promesaElemento El iframe donde vamos a mostrar el pdf
-		 * @returns {object}              Nuevamente los detalles del libro por si se necesita despues
+		 *                                                @returns {object}              Nuevamente los detalles del libro por si se necesita despues
 		 */
 		muestraLibro( detallesLibro, promesaElemento ) {
 
@@ -114,6 +114,24 @@
 				$iframe.src = `/web/viewer.html?file=${ detallesLibro.nombre }#${ pagina }zoom=page-width`
 
 				return detallesLibro
+			})
+		},
+
+
+		/**
+		 * Obtiene la pagina en la que quedo el usuario, limpia el visor de pdfs y devuelve la pagina obtenida
+		 * @author Nando
+		 * @param   {promise<DOMElement>} promesaIframe El iframe donde esta el libro
+		 * @returns {promise<String>}     La pagina en la que quedo
+		 */
+		limpiaPdfjs( promesaIframe ) {
+
+			return promesaIframe.then( function( $iframe ) {
+				let paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
+
+				$iframe.src  = ''
+
+				return paginaActual
 			})
 		},
     }

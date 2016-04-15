@@ -24,7 +24,7 @@
 		pideLista() {
 
 			return Nando.Cargador
-				.trae( 'Red', 'red/index' )
+				.trae( 'Red' )
 				.then( R => R.traeJson( 'lista' ))
 				.catch( error => console.error( error ))
 		},
@@ -43,7 +43,7 @@
 		iniciaLibro() {
 
 			return Nando.Cargador
-				.trae( 'Libro', 'libro/index' )
+				.trae( 'Libro' )
 				.then( L => L.inicia())
 		},
 
@@ -59,7 +59,7 @@
 			const categoriasFiltradas = categorias.filter( categoria => /Leyendo|Sin leer/.test( categoria ) === false )
 
 			return Nando.Cargador
-				.trae( 'Elementos', 'elementos/index' )
+				.trae( 'Elementos' )
 			    .then( E => E.creaOptionsPara( E.damePorId( 'CategoriaEbookList' ), categoriasFiltradas ))
 				.catch( error => console.log( error ))
 		},
@@ -76,32 +76,96 @@
 				.then( categorias => Nando.Elementos.creaListaLibros( categorias, Nando.Elementos.dame( 'section' )))
 		},
 
+		/**
+		 * Inicializa los event handlers para los elementos que contienen links y/o botones
+		 * @author Nando
+		 * @returns {Promise} [[Description]]
+		 */
 		inicializaEventHandlers() {
 
-			return Nando.Cargador.trae( 'Elementos', 'elementos/index' ).then( function( E ) {
+			return Nando.Cargador.trae( 'Elementos' ).then( function( E ) {
 
-				return E.dame( 'section' )
-			}).then( function ( $section ) {
+				return Promise.all([
+					E.dame( 'section' ),
+					E.dame( 'aside' ),
+				])
+			}).then( function([ $section, $aside ]) {
 
 				$section.addEventListener( 'click', this._clickEnSectionLibros.bind( this ))
-
-				// TODO: continuar con los eventos para los botones del Aside
+				$aside.addEventListener( 'click', this._clickEnMenu.bind( this ))
 			}.bind( this ))
 		},
 
+		/**
+		 * Cuando hacemos click en un link de un libro lo traemos, mostramos en el pdfjs y anunciamos
+		 * el cambio de estado de todos los elementos del UI
+		 * @private
+		 * @author Nando
+		 * @param {object} e Event
+		 */
 		_clickEnSectionLibros( e ) {
 
 			if ( !e.target.pathname ) return
 
 			e.preventDefault()
 
-			Nando.Cargador.trae( 'Red', 'red/index' )
+			Nando.Cargador.trae( 'Red' )
 				.then( R => R.traeJson( 'book', `info=${ e.target.pathname }` ))
 				.then( infoLibro => Nando.Libro.extraeDetallesDe( infoLibro, unescape( e.target.pathname )))
 				.then( detalleLibro => Nando.Elementos.muestraLibro( detalleLibro, Nando.Elementos.damePorId( 'iframe' )))
-				.then( () => Nando.Cargador.trae( 'Estados', 'elementos/estados' ))
-				.then( E => E.cambiaA( E.LIBRO ))
-				.then( detallelibro => console.log( detallelibro ))
+				.then( () => Nando.Cargador.trae( 'Estados' ))
+				.then( E => {
+					let detalle = Nando.Libro.detalleLibro
+
+					if ( detalle.leyendo ) E.cambiaA( E.LEYENDO )
+					else E.cambiaA( E.LIBRO )
+				})
+		},
+
+		_clickEnMenu( e ) {
+
+			if ( e.target.id ) {
+
+				switch( e.target.id ) {
+					case 'CloseEbook':
+						this._cerrarLibro()
+						break
+
+					case 'AddEbook':
+						// TODO: continuar aqui
+						break
+				}
+			}
+		},
+
+		/**
+		 * Tiene la logica para cerrar el libro y guardar en donde vamos si estamos leyendo
+		 * @private
+		 * @author Nando
+		 * @returns {promise}
+		 */
+		_cerrarLibro() {
+
+			Nando.Cargador.trae( 'Elementos' )
+				.then( E => E.limpiaPdfjs( E.damePorId( 'iframe' )))
+				.then( paginaActual => {
+					let detalle = Nando.Libro.detalleLibro
+
+					if ( !detalle.leyendo ) return null
+
+					detalle.actual            = paginaActual
+					Nando.Libro.detalleLibro  = detalle
+
+					return detalle
+				}).then( actualizacion => {
+
+					if ( !actualizacion ) return null
+
+					Nando.Red.enviaJson( 'book', {
+						actual: actualizacion.actual,
+						libro : actualizacion.nombre,
+					})
+				}).then( () => Nando.Estados.cambiaA( Nando.Estados.INICIO ))
 		},
 	}
 })()

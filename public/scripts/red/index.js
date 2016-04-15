@@ -19,5 +19,21 @@
 				.then( informacion => informacion.json() )
 				.catch( error => console.error( error ))
 		},
+
+		/**
+		 * Envia un mensaje POST al servidor
+		 * @author Nando
+		 * @param {string} path  El endpoint al que le queremos enviar el dato
+		 * @param {object} carga La informacion a enviar
+		 */
+		enviaJson( path, carga ) {
+			const ruta = path + TERMINACION
+			const body = JSON.stringify( carga )
+
+			fetch( ruta, {
+				method: 'POST',
+				body  : body,
+			})
+		},
 	}
 })()

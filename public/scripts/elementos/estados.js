@@ -34,11 +34,15 @@
 
 			switch( estado ) {
 				case this.INICIO:
+					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaInicio.bind( this ))
 					break
 
 				case this.LIBRO:
-
 					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaLibro.bind( this ))
+					break
+
+				case this.LEYENDO:
+					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaLeyendo.bind( this ))
 					break
 			}
 		},
@@ -59,6 +63,26 @@
 		},
 
 		/**
+		 * El estado inicio solo necesita que no se vea el menu y que se vea el listado de libros
+		 * @private
+		 * @author Nando
+		 * @param {object} $section
+		 * @param {object} $aside
+		 */
+		_estadoParaInicio([ $section, $aside ]) {
+
+			// No visibles
+			this._oculta([
+				$aside,
+			])
+
+			// visibles
+			this._muestra([
+				$section
+			])
+		},
+
+		/**
 		 * Cambia el estado de los elementos suministrados
 		 * @private
 		 * @author Nando
@@ -73,23 +97,45 @@
 		_estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
 
 			// No visibles
-			this._oculta( $section )
-			this._oculta( $end )
-			this._oculta( $categoria )
+			this._oculta([
+				$section,
+				$end,
+				$categoria,
+			])
 
 			// Visibles
-			this._muestra( $aside )
-			this._muestra( $close )
-			this._muestra( $add )
-			this._muestra( $categorize )
+			this._muestra([
+				$aside,
+				$close,
+				$add,
+				$categorize,
+			])
 		},
 
-		_muestra( $elemento ) {
-			$elemento.classList.remove( 'invisible' )
+		_estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+
+			// No visibles
+			this._oculta([
+				$section,
+				$add,
+				$categoria,
+			])
+
+			// Visibles
+			this._muestra([
+				$aside,
+				$close,
+				$end,
+				$categorize,
+			])
 		},
 
-		_oculta( $elemento ) {
-			$elemento.classList.add( 'invisible' )
+		_muestra( $elementos ) {
+			$elementos.forEach( $elemento => $elemento.classList.remove( 'invisible' ))
+		},
+
+		_oculta( $elementos ) {
+			$elementos.forEach( $elemento => $elemento.classList.add( 'invisible' ))
 		},
 	}
 

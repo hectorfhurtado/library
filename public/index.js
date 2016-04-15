@@ -1,6 +1,16 @@
 var Nando = {
 
 	Cargador: {
+
+		paths: {
+			'Arquitecto': 'arquitecto/index',
+			'Elementos' : 'elementos/index',
+			'DOM'       : 'elementos/DOM',
+			'Estados'   : 'elementos/estados',
+			'Libro'     : 'libro/index',
+			'Red'       : 'red/index',
+		},
+
 		$HEAD  : document.querySelector( 'head' ),
 		SCRIPTS: 'scripts/',
 
@@ -21,7 +31,7 @@ var Nando = {
 
 				let realPath = path ?
 					Nando.Cargador.SCRIPTS + path + '.js' :
-					Nando.Cargador.SCRIPTS + modulo.toLowerCase() + '/' + modulo + '.js'
+					Nando.Cargador.SCRIPTS + this.paths[ modulo ] + '.js'
 
 				let script  = document.createElement( 'script' )
 				script.type = 'text/javascript'
@@ -41,7 +51,7 @@ var Nando = {
 
 					res( Nando[ modulo ])
 				}
-			})
+			}.bind( this ))
 		}
 	}
 }
@@ -49,7 +59,7 @@ var Nando = {
 window.addEventListener( 'DOMContentLoaded', function() {
 
 	Nando.Cargador
-		.trae( 'Arquitecto', 'arquitecto/index' )
+		.trae( 'Arquitecto' )
 		.then( A => A.inicia() )
 
 	return
@@ -97,7 +107,6 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				}
 			})
 		})
-	// NOTE: voy aqui en el refactoring
 
 		// Cuando hacemos click en el boton de cerrar, actualizamos nuestro progdeso si estamos
 		// leyendo este libro. Luego ocultamos el boton de cerrar y mostramos la lista de ebooks
@@ -124,6 +133,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 							Vista.actualizaLecturaCon( paginaActual )
 							break
 
+	// NOTE: voy aqui en el refactoring
 						case 'AddEbook':
 							const totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
 							paginaActual        = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
