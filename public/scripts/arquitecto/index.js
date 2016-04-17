@@ -128,11 +128,15 @@
 
 				switch( e.target.id ) {
 					case 'CloseEbook':
-						this._cerrarLibro()
+						this._cierraLibro()
 						break
 
 					case 'AddEbook':
-						// TODO: continuar aqui
+						this._adicionaLibro()
+						break
+
+					case 'EndEbook':
+						// TODO: Continuar aqui
 						break
 				}
 			}
@@ -144,7 +148,7 @@
 		 * @author Nando
 		 * @returns {promise}
 		 */
-		_cerrarLibro() {
+		_cierraLibro() {
 
 			Nando.Cargador.trae( 'Elementos' )
 				.then( E => E.limpiaPdfjs( E.damePorId( 'iframe' )))
@@ -166,6 +170,22 @@
 						libro : actualizacion.nombre,
 					})
 				}).then( () => Nando.Estados.cambiaA( Nando.Estados.INICIO ))
+				.catch( error => console.error( error ))
+		},
+
+		/**
+		 * Adivoins un nuevo libro a la categoria 'Leyendo' y hace el cambio en el UI y en el servidor
+		 * @private
+		 * @author Nando
+		 */
+		_adicionaLibro() {
+			Nando.Cargador.trae( 'Elementos' )
+				.then( Elementos => Elementos.infoPaginasPdf( Elementos.damePorId( 'iframe' )))
+				.then( infoPaginas => Nando.Libro.adiciona( infoPaginas ))
+				.then( informacion => Nando.Red.enviaJson( 'nuevoebook', informacion ))
+				.then( () => Nando.Estados.cambiaA( Nando.Estados.LEYENDO ))
+				.then( () => Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' )))
+				.catch( error => console.error( error ))
 		},
 	}
 })()

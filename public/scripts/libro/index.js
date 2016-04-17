@@ -113,5 +113,32 @@
 
 			return infoLibroDeServidor
 		},
+
+		/**
+		 * Asigna los campos para que al libro se le pueda hacer seguimiento com oleyendo
+		 * @author Nando
+		 * @param   {object}         infoPaginas Con tiene el total de paginas y la pagina en la que esta el usuario
+		 * @returns {object|promise} Si todo sale bien retorna el objeto con los campos del libro, sino, un rechazo
+		 */
+		adiciona( infoPaginas ) {
+			let detalles = this.detalleLibro
+
+			if ( !detalles ) return Promise.reject( 'No hay informacion del nombre del libro' )
+
+			detalles.actual  = infoPaginas.actual || 0
+			detalles.leyendo = true
+
+			// Asignamos valores por defecto si no los tiene
+			Object.assign( detalles,  {
+				paginas     : infoPaginas.paginas || 0,
+				calificacion: 0,
+				notas       : '',
+				categoria   : '',
+			})
+
+			this.detalleLibro = detalles
+
+			return detalles
+		},
 	}
 })()

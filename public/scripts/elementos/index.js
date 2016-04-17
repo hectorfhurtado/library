@@ -134,5 +134,58 @@
 				return paginaActual
 			})
 		},
+
+		/**
+		 * Obtine la informacion del iframe donde esta el pdf de pdfjs
+		 * @author Nando
+		 * @param   {promise<DOElement>} promesaIframe Debe ser un iframe de pdfjs
+		 * @returns {object}             La informacion de la pagina actual en el pdf y el total de paginas
+		 */
+		infoPaginasPdf( promesaIframe ) {
+
+			return promesaIframe.then( function( $iframe ) {
+				let totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
+
+				return {
+					actual : $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value,
+					paginas: totalPaginas.replace( 'of ', '' ),
+				}
+			})
+		},
+
+		/**
+		 * Adiciona el libro a la lista suministrada en [categoria]
+		 * @author Nando
+		 * @param   {string}              categoria         El nombre de la vategoria a la cual se le va a adicionar el link
+		 * @param   {object}              detalleLibro
+		 * @param   {promise<DOMElement>} promesaContenedor El contenedor donde se encuentra la lista a buscar
+		 * @returns {promise}
+		 */
+		adicionaALa( categoria, detalleLibro, promesaContenedor ) {
+
+			return promesaContenedor.then( $contenedor => {
+				let [ $ul ] = [ ...$contenedor.querySelectorAll( 'ul' )].filter( $ul => $ul.firstChild.textContent == categoria )
+
+				return $ul
+			}).then( $ul => {
+
+				if ( !$ul ) return Promise.reject( '<UL> no encontrado' )
+
+				return Promise.all([
+					$ul,
+					Nando.Cargador.trae( 'DOM' ),
+				])
+			}).then(([ $ul, DOM ]) => {
+				let $li = document.createElement( 'li' )
+				let $a  = document.createElement( 'a' )
+
+				$a.href        = detalleLibro.categoria ? `${ detalleLibro.categoria }/${ detalleLibro.nombre }` : detalleLibro.nombre
+				$a.textContent = detalleLibro.nombre
+
+				$li.appendChild( $a )
+
+				DOM.adiciona( $ul, 'appendChild', $li )
+			})
+		},
     }
 })()

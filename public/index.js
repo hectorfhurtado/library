@@ -133,7 +133,6 @@ window.addEventListener( 'DOMContentLoaded', function() {
 							Vista.actualizaLecturaCon( paginaActual )
 							break
 
-	// NOTE: voy aqui en el refactoring
 						case 'AddEbook':
 							const totalPaginas  = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent
 							paginaActual        = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value
@@ -145,6 +144,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 							break
 
 						case 'EndEbook':
+	// NOTE: voy aqui en el refactoring
 							Vista.terminaLibro()
 							break
 
