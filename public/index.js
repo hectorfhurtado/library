@@ -144,7 +144,6 @@ window.addEventListener( 'DOMContentLoaded', function() {
 							break
 
 						case 'EndEbook':
-	// NOTE: voy aqui en el refactoring
 							Vista.terminaLibro()
 							break
 
@@ -170,6 +169,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				$categoriaBtn.classList.remove( 'invisible' )
 
 				let antiguaCategoria = Vista.infoLibro.categoria
+	// NOTE: voy aqui en el refactoring
 
 				Vista.categorizaLibro( e.target.value.trim() ).then( function([ infolibro, $section ]) {
 					let $uls = $section.querySelectorAll( 'ul' )

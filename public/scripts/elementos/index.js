@@ -187,5 +187,45 @@
 				DOM.adiciona( $ul, 'appendChild', $li )
 			})
 		},
+
+		/**
+		 * Busca el link de la categoria suministrada y lo elimina si lo encuentra
+		 * @author Nando
+		 * @param   {string}              categoria         El nombre de la categoria
+		 * @param   {object}              detalleLibro
+		 * @param   {promise<DOMElement>} promesaContenedor
+		 * @returns {promise}             No regresamos nada util en la promesa
+		 */
+		eliminaDeLa( categoria, detalleLibro, promesaContenedor ) {
+
+			return promesaContenedor.then( $contenedor => {
+				let [ $ulCategoria ] = this._buscaYFiltra( $contenedor, 'ul', categoria )
+
+				if ( !$ulCategoria ) return Promise.reject( 'No encontre el <UL> solicitado' )
+
+				let [ $li ] = this._buscaYFiltra( $ulCategoria, 'li', detalleLibro.nombre )
+
+				if ( !$li ) return Promise.reject( 'No encontre el libro solicitado' )
+
+				return Promise.all([
+					$ulCategoria,
+					$li,
+					Nando.Cargador.trae( 'DOM' ),
+				]).then(([ $ul, $li, DOM ]) => DOM.adiciona( $ul, 'removeChild', $li ))
+			})
+		},
+
+		/**
+		 * En un contenedor DOM buscamos todos los [[tag]] que hayan y filtramos por [[filtro]]
+		 * @private
+		 * @author Nando
+		 * @param   {object} $contenedor DOMElement
+		 * @param   {string} tag         El tag por el que vamos a filtrar
+		 * @param   {string} filtro      Lo que debe contener el primer hijo en su textContent
+		 * @returns {Array}
+		 */
+		_buscaYFiltra( $contenedor, tag, filtro ) {
+			return [ ...$contenedor.querySelectorAll( tag )].filter( $elemento => $elemento.firstChild.textContent == filtro )
+		},
     }
 })()

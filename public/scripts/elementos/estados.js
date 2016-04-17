@@ -44,6 +44,11 @@
 				case this.LEYENDO:
 					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaLeyendo.bind( this ))
 					break
+
+				case this.CATEGORIZA:
+					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaCategoriza.bind( this ))
+					break
+
 			}
 		},
 
@@ -127,6 +132,19 @@
 				$close,
 				$end,
 				$categorize,
+			])
+		},
+
+		_estadoParaCategoriza([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+
+			// No visibles
+			this._oculta([
+				$categorize,
+			])
+
+			// Visibles
+			this._muestra([
+				$categoria,
 			])
 		},
 

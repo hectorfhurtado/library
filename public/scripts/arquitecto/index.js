@@ -88,11 +88,13 @@
 				return Promise.all([
 					E.dame( 'section' ),
 					E.dame( 'aside' ),
+					E.damePorId( 'CategoriaEbook' ),
 				])
-			}).then( function([ $section, $aside ]) {
+			}).then( function([ $section, $aside, $inputCategoria ]) {
 
 				$section.addEventListener( 'click', this._clickEnSectionLibros.bind( this ))
 				$aside.addEventListener( 'click', this._clickEnMenu.bind( this ))
+				$inputCategoria.addEventListener( 'change', this._changeInputCategoria.bind( this ))
 			}.bind( this ))
 		},
 
@@ -136,7 +138,11 @@
 						break
 
 					case 'EndEbook':
-						// TODO: Continuar aqui
+						this._terminaLibro()
+						break
+
+					case 'CategorizeEbook':
+						this._muestraInputCategoria()
 						break
 				}
 			}
@@ -174,7 +180,7 @@
 		},
 
 		/**
-		 * Adivoins un nuevo libro a la categoria 'Leyendo' y hace el cambio en el UI y en el servidor
+		 * Adiciona un nuevo libro a la categoria 'Leyendo' y hace el cambio en el UI y en el servidor
 		 * @private
 		 * @author Nando
 		 */
@@ -187,5 +193,44 @@
 				.then( () => Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' )))
 				.catch( error => console.error( error ))
 		},
-	}
+
+		/**
+		 * Marca el libro como terminado, envia el cambio al servidor y elimina el link de la categoria 'Leyendo'
+		 * @private
+		 * @author Nando
+		 */
+		_terminaLibro() {
+			Nando.Libro.termina()
+				.then( libro => Nando.Red.enviaJson( 'terminaebook', libro ))
+				.then( () => Nando.Elementos.eliminaDeLa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' )))
+				.then( () => Nando.Estados.cambiaA( Nando.Estados.LIBRO ))
+				.then( () => {
+
+					if ( !Nando.Libro.detalleLibro.categoria ) {
+						return Nando.Estados.cambiaA( Nando.Estados.CATEGORIZA )
+					}
+				})
+				.catch( error => console.error( error ))
+
+		},
+
+		/**
+		 * Muestra el input para escribir la categoria a la que debe pertenecer el libro
+		 * @private
+		 * @author Nando
+		 */
+		_muestraInputCategoria() {
+			Nando.Cargador.trae( 'Estados' )
+				.then( Estados => Estados.cambiaA( Estados.CATEGORIZA ))
+				.catch( error => console.error( error ))
+		},
+
+		_changeInputCategoria( e ) {
+			if ( e.target.value.trim() === '' ) return
+
+			let categoriaNueva = e.target.value.trim()
+
+			// TODO: Continuar aqui
+		},
+ 	}
 })()

@@ -140,5 +140,21 @@
 
 			return detalles
 		},
+
+		/**
+		 * Actualiza los atributos del libro para iniciar la proxima vez
+		 * @author Nando
+		 * @returns {object} Los detalles del libro
+		 */
+		termina() {
+			let detalles = this.detalleLibro
+
+			detalles.actual  = 1
+			detalles.leyendo = false
+
+			this.detalleLibro = detalles
+
+			return Promise.resolve( detalles )
+		},
 	}
 })()
