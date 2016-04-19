@@ -156,5 +156,20 @@
 
 			return Promise.resolve( detalles )
 		},
+		
+		/**
+		 * Actualiza la categoria en la informacion del libro
+		 * @param	{String}			El nombre de la nueva categoria
+		 * @return  {promise<Object>}
+		 */
+		actualiza( categoria ) {
+			if ( !categoria ) return Promise.resolve( null )
+			
+			let detalles       = this.detalleLibro
+			detalles.categoria = categoria
+			this.detalleLibro  = detalles
+			
+			return Promise.resolve( detalles )
+		},
 	}
 })()

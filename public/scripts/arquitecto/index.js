@@ -11,7 +11,7 @@
 				.then( this.pideCategorias )
                 .then( this.adicionaCategoriasADatalistDeCategorias )
 				.then( this.muestraLibros )
-				.then( categorias => console.log( categorias ))
+				.catch( error => console.error( error ))
 
 			this.inicializaEventHandlers()
 		},
@@ -225,12 +225,35 @@
 				.catch( error => console.error( error ))
 		},
 
+		/**
+		 * Cambia o asigna una categoria a un ebook
+		 * @param	{Event}	e
+		 */
 		_changeInputCategoria( e ) {
-			if ( e.target.value.trim() === '' ) return
-
 			let categoriaNueva = e.target.value.trim()
+			
+			if ( categoriaNueva === '' ) return
 
-			// TODO: Continuar aqui
+			let detalles         = Nando.Libro.detalleLibro
+			let categoriaAntigua = detalles.categoria
+			
+			Nando.Libro.actualiza( categoriaNueva )
+				.then( detalleLibro => {
+					if ( !detalleLibro ) return Promise.reject( 'No hay informacion para realizar la categorizacion' )
+					
+					const cambio = {
+						nombre : detalleLibro.nombre,
+						antigua: categoriaAntigua,
+						nueva  : detalleLibro.categoria,
+					}
+
+					Nando.Red.enviaJson( 'categoriza', cambio )
+					
+					return detalleLibro
+				})
+				.then( detalleLibro => Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( 'section' )))
+				.then( () => Nando.Estados.cambiaA( Nando.Estados.anterior ))
+				.catch( error => console.log( error ))
 		},
  	}
 })()

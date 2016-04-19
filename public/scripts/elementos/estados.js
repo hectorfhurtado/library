@@ -31,25 +31,40 @@
 		 * @param {Symbol} estado
 		 */
 		cambiaA( estado ) {
-
+			
 			switch( estado ) {
 				case this.INICIO:
-					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaInicio.bind( this ))
+					this._haceSwitch( estado, '_estadoParaInicio' )
 					break
 
 				case this.LIBRO:
-					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaLibro.bind( this ))
+					this._haceSwitch( estado, '_estadoParaLibro' )
 					break
 
 				case this.LEYENDO:
-					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaLeyendo.bind( this ))
+					this._haceSwitch( estado, '_estadoParaLeyendo' )
 					break
 
 				case this.CATEGORIZA:
-					Promise.all( this._armaPromesasElementos() ).then( this._estadoParaCategoriza.bind( this ))
+					this._haceSwitch( estado, '_estadoParaCategoriza' )
 					break
-
 			}
+		},
+		
+		/**
+		 * Se encarga de llamar a la funcion necesaria en el switch
+		 * @param	{Symbol}	estado	El nombre del estado al que va a cambiar
+		 * @param	{String}	funcion	La funcion que se debe llamar para realizar el cambio de estado
+		 */
+		_haceSwitch( estado, funcion ) {
+			this._actualizaEstadoInterno( estado )
+			
+			Promise.all( this._armaPromesasElementos() ).then( this[ funcion ].bind( this ))
+		},
+		
+		_actualizaEstadoInterno( estado ) {
+			this.anterior = this.actual
+			this.actual   = estado
 		},
 
 		/**
@@ -146,6 +161,8 @@
 			this._muestra([
 				$categoria,
 			])
+			
+			$categoria.value = ''
 		},
 
 		_muestra( $elementos ) {

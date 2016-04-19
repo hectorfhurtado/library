@@ -107,11 +107,13 @@
 		muestraLibro( detallesLibro, promesaElemento ) {
 
 			return promesaElemento.then( function( $iframe ) {
-				let pagina = ''
+				let pagina    = ''
+				let categoria = ''
 
 				if ( detallesLibro && detallesLibro.actual ) pagina = `page=${ detallesLibro.actual }&`
-
-				$iframe.src = `/web/viewer.html?file=${ detallesLibro.nombre }#${ pagina }zoom=page-width`
+				if ( detallesLibro && detallesLibro.categoria ) categoria = `${ detallesLibro.categoria }/`
+				
+				$iframe.src = `/web/viewer.html?file=${ categoria }${ detallesLibro.nombre }#${ pagina }zoom=page-width`
 
 				return detallesLibro
 			})
@@ -206,7 +208,7 @@
 				let [ $li ] = this._buscaYFiltra( $ulCategoria, 'li', detalleLibro.nombre )
 
 				if ( !$li ) return Promise.reject( 'No encontre el libro solicitado' )
-
+				
 				return Promise.all([
 					$ulCategoria,
 					$li,
@@ -226,6 +228,19 @@
 		 */
 		_buscaYFiltra( $contenedor, tag, filtro ) {
 			return [ ...$contenedor.querySelectorAll( tag )].filter( $elemento => $elemento.firstChild.textContent == filtro )
+		},
+		
+		/**
+		 * Cambia de categoria un ebook  en la lista de libros
+		 * @param	{String}				antiguaCategoria	El nombre de la categoria a eliminar
+		 * @param	{object}				detalleLibro		El [[detalleLibro]] contiene la nueva categoria
+		 * @param	{promise<DOMElement>}	promesaContenedor	Resuelve al objeto que contiene los links
+		 * @returns	{Promise}
+		 */
+		cambiaCategoria( antiguaCategoria, detalleLibro, promesaContenedor ) {
+			
+			return this.adicionaALa( detalleLibro.categoria, detalleLibro, promesaContenedor )
+				.then( this.eliminaDeLa( antiguaCategoria || 'Sin leer', detalleLibro, promesaContenedor ))
 		},
     }
 })()
