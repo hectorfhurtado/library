@@ -2,15 +2,15 @@
 
 ( function() {
 
+	let _pilaFunciones = []
+	
 	Nando.DOM = {
-
-		_pilaFunciones: [],
 
 		/**
 		 * Devuelve si queda algo para hacer
 		 */
 		get quedanFunciones() {
-			return !!this._pilaFunciones.length
+			return !!_pilaFunciones.length
 		},
 
 		/**
@@ -24,23 +24,25 @@
 		adiciona( $aEsteElemento, conUnaFuncion, $esteElemento ) {
 
 			if ( this.quedanFunciones === false ) {
-				requestAnimationFrame( this.correFuncion.bind( this ))
+				requestAnimationFrame( _correFuncion )
 			}
 
-			this._pilaFunciones.push([ $aEsteElemento, conUnaFuncion, $esteElemento ])
+			_pilaFunciones.push([ $aEsteElemento, conUnaFuncion, $esteElemento ])
 		},
+	}
+	
+	/**
+	 * Cuando requestAnimationFrame llama a esta funcion, toma el trabajo para hacer y lo ejecuta
+	 * @author Nando
+	 * @private
+	 */
+	function _correFuncion() {
+		let [ $elementoA, funcion, $elementoB ] = _pilaFunciones.shift()
 
-		/**
-		 * Cuando requestAnimationFrame llama a esta funcion, toma el trabajo para hacer y lo ejecuta
-		 */
-		correFuncion() {
-			let [ $elementoA, funcion, $elementoB ] = this._pilaFunciones.shift()
+		$elementoA[ funcion ]( $elementoB )
 
-			$elementoA[ funcion ]( $elementoB )
-
-			if ( this.quedanFunciones ) {
-				requestAnimationFrame( this.correFuncion.bind( this ))
-			}
-		},
+		if ( Nando.DOM.quedanFunciones ) {
+			requestAnimationFrame( _correFuncion )
+		}
 	}
 })()

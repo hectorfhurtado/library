@@ -1,10 +1,10 @@
 /* global Nando */
 
 ( function() {
+	
+	let elementos = {}
 
     Nando.Elementos = {
-
-        elementos: {},
 
         /**
          * Tomamos un selector y almacenamos el elemento del DOM para tener un cache y no perder tiempo
@@ -16,10 +16,10 @@
 
             return new Promise( function( res ) {
 
-                if ( !this.elementos[ selector ]) {
-                    this.elementos[ selector ] = document.querySelector( selector )
+                if ( !elementos[ selector ]) {
+                    elementos[ selector ] = document.querySelector( selector )
                 }
-                res( this.elementos[ selector ])
+                res( elementos[ selector ])
             }.bind( this ))
         },
 
@@ -32,10 +32,10 @@
 
             return new Promise( function( res ) {
 
-                if ( !this.elementos[ id ]) {
-                    this.elementos[ id ] = document.getElementById( id )
+                if ( !elementos[ id ]) {
+                    elementos[ id ] = document.getElementById( id )
                 }
-                res( this.elementos[ id ])
+                res( elementos[ id ])
             }.bind( this ))
         },
 
@@ -166,12 +166,21 @@
 		adicionaALa( categoria, detalleLibro, promesaContenedor ) {
 
 			return promesaContenedor.then( $contenedor => {
-				let [ $ul ] = [ ...$contenedor.querySelectorAll( 'ul' )].filter( $ul => $ul.firstChild.textContent == categoria )
+				let [ $ul ] = _buscaYFiltra( $contenedor, 'ul', categoria )
 
-				return $ul
-			}).then( $ul => {
-
-				if ( !$ul ) return Promise.reject( '<UL> no encontrado' )
+				return [ $ul, $contenedor ]
+			}).then(([ $ul, $contenedor ]) => {
+				
+				// Si no existe la categoria en la lista, la crea
+				if ( !$ul ) {
+					let $strong = document.createElement( 'strong')
+					
+					$ul                 = document.createElement( 'ul')
+					$strong.textContent = categoria
+					
+					$ul.appendChild( $strong )
+					$contenedor.appendChild( $ul )
+				}
 
 				return Promise.all([
 					$ul,
@@ -201,11 +210,11 @@
 		eliminaDeLa( categoria, detalleLibro, promesaContenedor ) {
 
 			return promesaContenedor.then( $contenedor => {
-				let [ $ulCategoria ] = this._buscaYFiltra( $contenedor, 'ul', categoria )
+				let [ $ulCategoria ] = _buscaYFiltra( $contenedor, 'ul', categoria )
 
 				if ( !$ulCategoria ) return Promise.reject( 'No encontre el <UL> solicitado' )
 
-				let [ $li ] = this._buscaYFiltra( $ulCategoria, 'li', detalleLibro.nombre )
+				let [ $li ] = _buscaYFiltra( $ulCategoria, 'li', detalleLibro.nombre )
 
 				if ( !$li ) return Promise.reject( 'No encontre el libro solicitado' )
 				
@@ -215,19 +224,6 @@
 					Nando.Cargador.trae( 'DOM' ),
 				]).then(([ $ul, $li, DOM ]) => DOM.adiciona( $ul, 'removeChild', $li ))
 			})
-		},
-
-		/**
-		 * En un contenedor DOM buscamos todos los [[tag]] que hayan y filtramos por [[filtro]]
-		 * @private
-		 * @author Nando
-		 * @param   {object} $contenedor DOMElement
-		 * @param   {string} tag         El tag por el que vamos a filtrar
-		 * @param   {string} filtro      Lo que debe contener el primer hijo en su textContent
-		 * @returns {Array}
-		 */
-		_buscaYFiltra( $contenedor, tag, filtro ) {
-			return [ ...$contenedor.querySelectorAll( tag )].filter( $elemento => $elemento.firstChild.textContent == filtro )
 		},
 		
 		/**
@@ -240,7 +236,20 @@
 		cambiaCategoria( antiguaCategoria, detalleLibro, promesaContenedor ) {
 			
 			return this.adicionaALa( detalleLibro.categoria, detalleLibro, promesaContenedor )
-				.then( this.eliminaDeLa( antiguaCategoria || 'Sin leer', detalleLibro, promesaContenedor ))
+				.then( () => this.eliminaDeLa( antiguaCategoria || 'Sin leer', detalleLibro, promesaContenedor ))
 		},
     }
+	
+	/**
+	 * En un contenedor DOM buscamos todos los [[tag]] que hayan y filtramos por [[filtro]]
+	 * @private
+	 * @author Nando
+	 * @param   {object} $contenedor DOMElement
+	 * @param   {string} tag         El tag por el que vamos a filtrar
+	 * @param   {string} filtro      Lo que debe contener el primer hijo en su textContent
+	 * @returns {Array}
+	 */
+	function _buscaYFiltra( $contenedor, tag, filtro ) {
+		return [ ...$contenedor.querySelectorAll( tag )].filter( $elemento => $elemento.firstChild.textContent == filtro )
+	}
 })()

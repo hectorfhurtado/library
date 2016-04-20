@@ -1,11 +1,11 @@
 /* global Nando */
 
 (function() {
+	
+	// La lista de libros que tiene el usuario
+	let _lista = null
 
 	Nando.Libro = {
-
-        // La lista de libros que tiene el usuario
-        _lista: null,
 
 		inicia() {
 			this.detalleLibro = null
@@ -22,7 +22,7 @@
 		},
 
         guarda( lista ) {
-            this._lista = lista
+            _lista = lista
 
             return this
         },
@@ -33,9 +33,9 @@
 		 */
 		get categorias() {
 
-			if ( !this._lista ) return null
+			if ( !_lista ) return null
 
-			return Object.keys( this._lista )
+			return Object.keys( _lista )
 		},
 
 		/**
@@ -44,49 +44,15 @@
 		 */
 		get categoriasConLibros() {
 
-			if ( !this._lista ) return null
+			if ( !_lista ) return null
 
 			return this.categorias.map( function( categoria ) {
 				let grupo = {}
 
-				grupo[ categoria ] = this._lista[ categoria ].map( this._armaPropiedades.bind( this, categoria ))
+				grupo[ categoria ] = _lista[ categoria ].map( _armaPropiedades.bind( this, categoria ))
 				return grupo
+		
 			}.bind( this ))
-		},
-
-		/**
-		 * Crea las categorias para armar los links que se muestran al ususario
-		 * @private
-		 * @author Nando
-		 * @param   {string} categoria La categoria del libro
-		 * @param   {string} path      El path donde se encuentra el libro en la carpeta 'ebooks'
-		 * @returns {Array}  Con las propiedades libro y link
-		 */
-		_armaPropiedades( categoria, path ) {
-			// Para 'Sin leer
-			let propiedades = {
-				libro: path,
-				link : path,
-			}
-
-			switch ( categoria ) {
-			case 'Leyendo':
-
-				if ( /\//.test( path )) {
-					propiedades.libro = path.split( '/' )[ 1 ]
-				}
-				break
-
-			case 'Sin leer':
-				// NOOP
-				break
-
-			default:
-				propiedades.link = `${ categoria }/${ path }`
-				break
-			}
-
-			return propiedades
 		},
 
 		/**
@@ -171,5 +137,41 @@
 			
 			return Promise.resolve( detalles )
 		},
+	}
+	
+	/**
+	 * Crea las categorias para armar los links que se muestran al ususario
+	 * @private
+	 * @author Nando
+	 * @param   {string} categoria La categoria del libro
+	 * @param   {string} path      El path donde se encuentra el libro en la carpeta 'ebooks'
+	 * @returns {Array}  Con las propiedades libro y link
+	 */
+	function _armaPropiedades( categoria, path ) {
+		
+		// Para 'Sin leer
+		let propiedades = {
+			libro: path,
+			link : path,
+		}
+
+		switch ( categoria ) {
+		case 'Leyendo':
+
+			if ( /\//.test( path )) {
+				propiedades.libro = path.split( '/' )[ 1 ]
+			}
+			break
+
+		case 'Sin leer':
+			// NOOP
+			break
+
+		default:
+			propiedades.link = `${ categoria }/${ path }`
+			break
+		}
+
+		return propiedades
 	}
 })()

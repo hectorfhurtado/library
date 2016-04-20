@@ -1,29 +1,45 @@
 /* global Nando */
 
 ( function() {
+	
+	const INICIO     = Symbol( 'inicio' )
+	const LIBRO      = Symbol( 'libro' )
+	const LEYENDO    = Symbol( 'leyendo' )
+	const CATEGORIZA = Symbol( 'categoriza' )
+
+	const ELEMENTOS = [
+		'section',
+		'aside',
+	]
+
+	const ELEMENTOS_POR_ID = [
+		'CloseEbook',
+		'AddEbook',
+		'EndEbook',
+		'CategorizeEbook',
+		'CategoriaEbook',
+	]
 
 	Nando.Estados = {
+		
+		get INICIO() {
+			return INICIO
+		},
 
-		INICIO    : Symbol( 'inicio' ),
-		LIBRO     : Symbol( 'libro' ),
-		LEYENDO   : Symbol( 'leyendo' ),
-		CATEGORIZA: Symbol( 'categoriza' ),
-
-		ELEMENTOS: [
-			'section',
-			'aside',
-		],
-
-		ELEMENTOS_POR_ID: [
-			'CloseEbook',
-			'AddEbook',
-			'EndEbook',
-			'CategorizeEbook',
-			'CategoriaEbook',
-		],
+		get LIBRO() {
+			return LIBRO
+		},
+		
+		get LEYENDO() {
+			return LEYENDO
+		},
+		
+		get CATEGORIZA() {
+			return CATEGORIZA
+		},
 
 		anterior: null,
-		actual  : this.INICIO,
+		actual  : INICIO,
 
 		/**
 		 * Cambia el estado de los elementos del UI
@@ -33,145 +49,142 @@
 		cambiaA( estado ) {
 			
 			switch( estado ) {
-				case this.INICIO:
-					this._haceSwitch( estado, '_estadoParaInicio' )
+				case INICIO:
+					_actualizaEstadoInterno( estado )
+		
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaInicio )
 					break
 
-				case this.LIBRO:
-					this._haceSwitch( estado, '_estadoParaLibro' )
+				case LIBRO:
+					_actualizaEstadoInterno( estado )
+		
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaLibro )
 					break
 
-				case this.LEYENDO:
-					this._haceSwitch( estado, '_estadoParaLeyendo' )
+				case LEYENDO:
+					_actualizaEstadoInterno( estado )
+		
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaLeyendo )
 					break
 
-				case this.CATEGORIZA:
-					this._haceSwitch( estado, '_estadoParaCategoriza' )
+				case CATEGORIZA:
+					_actualizaEstadoInterno( estado )
+		
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaCategoriza )
 					break
 			}
-		},
+		}
+	}
+	
+	function _actualizaEstadoInterno( estado ) {
+		Nando.Estados.anterior = Nando.Estados.actual
+		Nando.Estados.actual   = estado
+	}
+
+	/**
+	 * Crea un arreglo de promesas con los elementos de la pantalla que seran modificados
+	 * @private
+	 * @author Nando
+	 * @returns {Array} Un arreglo con todos los elementos a mostrar/ocultar
+	 */
+	function _armaPromesasElementos() {
+		let promesas = []
+
+		ELEMENTOS.forEach( tagElemento => promesas.push( Nando.Elementos.dame( tagElemento )))
+		ELEMENTOS_POR_ID.forEach( nombreElemento => promesas.push( Nando.Elementos.damePorId( nombreElemento )))
+
+		return promesas
+	}
+
+	/**
+	 * El estado inicio solo necesita que no se vea el menu y que se vea el listado de libros
+	 * @private
+	 * @author Nando
+	 * @param {object} $section
+	 * @param {object} $aside
+	 */
+	function _estadoParaInicio([ $section, $aside ]) {
+
+		// No visibles
+		_oculta([
+			$aside,
+		])
+
+		// visibles
+		_muestra([
+			$section
+		])
+	}
+
+	/**
+	 * Cambia el estado de los elementos suministrados
+	 * @private
+	 * @author Nando
+	 * @param {object} $section
+	 * @param {object} $aside
+	 * @param {object} $close             boton
+	 * @param {object} $add               boton
+	 * @param {object} $end               boton
+	 * @param {object} $categorize        boton
+	 * @param {object} $categoria         Este es un Input
+	 */
+	function _estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+
+		// No visibles
+		_oculta([
+			$section,
+			$end,
+			$categoria,
+		])
+
+		// Visibles
+		_muestra([
+			$aside,
+			$close,
+			$add,
+			$categorize,
+		])
+	}
+
+	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+
+		// No visibles
+		_oculta([
+			$section,
+			$add,
+			$categoria,
+		])
+
+		// Visibles
+		_muestra([
+			$aside,
+			$close,
+			$end,
+			$categorize,
+		])
+	}
+
+	function _estadoParaCategoriza([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+
+		// No visibles
+		_oculta([
+			$categorize,
+		])
+
+		// Visibles
+		_muestra([
+			$categoria,
+		])
 		
-		/**
-		 * Se encarga de llamar a la funcion necesaria en el switch
-		 * @param	{Symbol}	estado	El nombre del estado al que va a cambiar
-		 * @param	{String}	funcion	La funcion que se debe llamar para realizar el cambio de estado
-		 */
-		_haceSwitch( estado, funcion ) {
-			this._actualizaEstadoInterno( estado )
-			
-			Promise.all( this._armaPromesasElementos() ).then( this[ funcion ].bind( this ))
-		},
-		
-		_actualizaEstadoInterno( estado ) {
-			this.anterior = this.actual
-			this.actual   = estado
-		},
+		$categoria.value = ''
+	}
 
-		/**
-		 * Crea un arreglo de promesas con los elementos de la pantalla que seran modificados
-		 * @private
-		 * @author Nando
-		 * @returns {Array} Un arreglo con todos los elementos a mostrar/ocultar
-		 */
-		_armaPromesasElementos() {
-			let promesas = []
+	function _muestra( $elementos ) {
+		$elementos.forEach( $elemento => $elemento.classList.remove( 'invisible' ))
+	}
 
-			this.ELEMENTOS.forEach( tagElemento => promesas.push( Nando.Elementos.dame( tagElemento )))
-			this.ELEMENTOS_POR_ID.forEach( nombreElemento => promesas.push( Nando.Elementos.damePorId( nombreElemento )))
-
-			return promesas
-		},
-
-		/**
-		 * El estado inicio solo necesita que no se vea el menu y que se vea el listado de libros
-		 * @private
-		 * @author Nando
-		 * @param {object} $section
-		 * @param {object} $aside
-		 */
-		_estadoParaInicio([ $section, $aside ]) {
-
-			// No visibles
-			this._oculta([
-				$aside,
-			])
-
-			// visibles
-			this._muestra([
-				$section
-			])
-		},
-
-		/**
-		 * Cambia el estado de los elementos suministrados
-		 * @private
-		 * @author Nando
-		 * @param {object} $section
-		 * @param {object} $aside
-		 * @param {object} $close             boton
-		 * @param {object} $add               boton
-		 * @param {object} $end               boton
-		 * @param {object} $categorize        boton
-		 * @param {object} $categoria         Este es un Input
-		 */
-		_estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
-
-			// No visibles
-			this._oculta([
-				$section,
-				$end,
-				$categoria,
-			])
-
-			// Visibles
-			this._muestra([
-				$aside,
-				$close,
-				$add,
-				$categorize,
-			])
-		},
-
-		_estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
-
-			// No visibles
-			this._oculta([
-				$section,
-				$add,
-				$categoria,
-			])
-
-			// Visibles
-			this._muestra([
-				$aside,
-				$close,
-				$end,
-				$categorize,
-			])
-		},
-
-		_estadoParaCategoriza([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
-
-			// No visibles
-			this._oculta([
-				$categorize,
-			])
-
-			// Visibles
-			this._muestra([
-				$categoria,
-			])
-			
-			$categoria.value = ''
-		},
-
-		_muestra( $elementos ) {
-			$elementos.forEach( $elemento => $elemento.classList.remove( 'invisible' ))
-		},
-
-		_oculta( $elementos ) {
-			$elementos.forEach( $elemento => $elemento.classList.add( 'invisible' ))
-		},
+	function _oculta( $elementos ) {
+		$elementos.forEach( $elemento => $elemento.classList.add( 'invisible' ))
 	}
 
 	Nando.Cargador.trae( 'Elementos', 'elementos/index' )
