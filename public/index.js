@@ -3,17 +3,21 @@ var Nando = {
 	Cargador: {
 
 		// TODO: Mover esta lista a un archivo en el servidor y consultarla con un fetch
-		paths: {
-			'Arquitecto': 'arquitecto/index',
-			'Elementos' : 'elementos/index',
-			'DOM'       : 'elementos/DOM',
-			'Estados'   : 'elementos/estados',
-			'Libro'     : 'libro/index',
-			'Red'       : 'red/index',
-		},
+		paths: null,
 
 		$HEAD  : document.querySelector( 'head' ),
 		SCRIPTS: 'scripts/',
+		
+		traePaths() {
+			
+			return fetch( 'paths.json' )
+				.then( paths => paths.json() )
+				.then( paths => {
+					this.paths = paths
+					
+					return this 
+				})
+		},
 
 		trae( modulo, path ) {
 
@@ -60,7 +64,8 @@ var Nando = {
 window.addEventListener( 'DOMContentLoaded', function() {
 
 	Nando.Cargador
-		.trae( 'Arquitecto' )
+		.traePaths()
+		.then( Cargador => Cargador.trae( 'Arquitecto' ))
 		.then( A => A.inicia() )
 		.catch( error => console.log( error ))
 })
