@@ -1,0 +1,8 @@
+{
+    "Arquitecto": "arquitecto/index",
+    "Elementos" : "elementos/index",
+    "DOM"       : "elementos/DOM",
+    "Estados"   : "elementos/estados",
+    "Libro"     : "libro/index",
+    "Red"       : "red/index"
+}
