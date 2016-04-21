@@ -2,7 +2,6 @@ var Nando = {
 
 	Cargador: {
 
-		// TODO: Mover esta lista a un archivo en el servidor y consultarla con un fetch
 		paths: null,
 
 		$HEAD  : document.querySelector( 'head' ),
