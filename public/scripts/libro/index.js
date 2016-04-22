@@ -137,6 +137,17 @@
 			
 			return Promise.resolve( detalles )
 		},
+		
+		get ebooks() {
+			
+			if ( !_lista ) return null
+			
+			let ebooks = []
+			
+			this.categorias.forEach( categoria => ebooks.push( ..._lista[ categoria ]))
+			
+			return new Set( ebooks )
+		},
 	}
 	
 	/**

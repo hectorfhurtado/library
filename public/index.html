@@ -65,6 +65,14 @@
         vertical-align  : middle;
         width           : 3rem;
     }
+    
+    #BuscarEbook {
+        width: 80%;
+        margin-left: 2.5rem;
+        padding: 0.5rem;
+        margin-top: 2rem;
+        padding-left: 1rem;
+    }
 
     a {
         color: var(--color-de-letras);
@@ -85,6 +93,8 @@
 <iframe id="iframe" src="" ></iframe>
 
 <section class="absolute">
+    <input type="text" id="BuscarEbook" list="BuscarEbookList" placeholder="Escribe el ebook a buscar" />
+    <datalist id="BuscarEbookList"></datalist>
 </section>
 
 <aside class="absolute invisible">
