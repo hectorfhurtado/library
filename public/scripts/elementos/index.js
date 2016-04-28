@@ -238,6 +238,41 @@
 			return this.adicionaALa( detalleLibro.categoria, detalleLibro, promesaContenedor )
 				.then( () => this.eliminaDeLa( antiguaCategoria || 'Sin leer', detalleLibro, promesaContenedor ))
 		},
+		
+		/**
+		 * Buscamos todos los elementos que contengan el texto suministrado como filtro
+		 * y es lo que devolvemos
+		 * @returns	{Object}	DOMElement si encuentra algo
+		 */
+		buscaConTextContent( texto, tag, promesaContenedor ) {
+			
+			return promesaContenedor.then( $contenedor => {
+				return _buscaYFiltra( $contenedor, tag, texto )
+			})
+		},
+		
+		/**
+		 * Mueve el link encontrado a la vista del usuario para que lo pueda escoger
+		 * Adiciona un color amarillo a la seleccion para que el usuario lo pueda distinguir
+		 */
+		scrollTo( $elemento ) {
+			
+			if ( !$elemento ) return
+			
+			try {
+				
+				$elemento.scrollIntoView({
+					behavior: 'smooth',
+					block:     'start',
+				})
+			}
+			catch( e ) {
+				
+				$elemento.scrollIntoView( true )
+			}
+			
+			$elemento.style.color = 'yellow'
+		},
     }
 	
 	/**

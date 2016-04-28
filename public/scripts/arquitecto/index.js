@@ -8,6 +8,8 @@
 			.then( pideLista )
 			.then( pideCategorias )
 			.then( adicionaCategoriasADatalistDeCategorias )
+			.then( pideEbooks )
+			.then( adicionaCategoriasADatalistDeEbooks )
 			.then( muestraLibros )
 			.catch( error => console.error( error ))
 
@@ -87,12 +89,14 @@
 				E.dame( 'section' ),
 				E.dame( 'aside' ),
 				E.damePorId( 'CategoriaEbook' ),
+				E.damePorId( 'BuscarEbook' ),
 			])
-		}).then( function([ $section, $aside, $inputCategoria ]) {
+		}).then( function([ $section, $aside, $inputCategoria, $inputBuscar ]) {
 
 			$section.addEventListener( 'click', _clickEnSectionLibros )
 			$aside.addEventListener( 'click', _clickEnMenu )
 			$inputCategoria.addEventListener( 'change', _changeInputCategoria )
+			$inputBuscar.addEventListener( 'change', _changeBuscarEbook )
 		})
 	}
 	
@@ -253,6 +257,23 @@
 			})
 			.then( detalleLibro => Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( 'section' )))
 			.then( () => Nando.Estados.cambiaA( Nando.Estados.anterior ))
+			.catch( error => console.log( error ))
+	}
+	
+	function pideEbooks() {
+		return Nando.Libro.ebooks
+	}
+	
+	function adicionaCategoriasADatalistDeEbooks( ebooks ) {
+		return Nando.Elementos.creaOptionsPara( Nando.Elementos.damePorId( 'BuscarEbookList' ), ebooks )
+	}
+	
+	function _changeBuscarEbook() {
+		const ebook = this.value.trim()
+		
+		return Nando.Cargador.trae( 'Elementos' )
+			.then( Elementos => Elementos.buscaConTextContent( ebook, 'a', Nando.Elementos.dame( 'section' )))
+			.then(([ $elemento ]) => Nando.Elementos.scrollTo( $elemento ))
 			.catch( error => console.log( error ))
 	}
 	
