@@ -260,14 +260,27 @@
 			.catch( error => console.log( error ))
 	}
 	
+	/**
+	 * retorna la lista de ebooks
+	 * @returns	{promise<Array>}
+	 */
 	function pideEbooks() {
 		return Nando.Libro.ebooks
 	}
 	
+	/**
+	 * Al datalist de busqueda le agregamos la lista de los ebooks que tienemos
+	 * @returns	{promise}
+	 */
 	function adicionaCategoriasADatalistDeEbooks( ebooks ) {
 		return Nando.Elementos.creaOptionsPara( Nando.Elementos.damePorId( 'BuscarEbookList' ), ebooks )
 	}
 	
+	/**
+	 * Tomamos el nombre del libro del datalist y lo buscamos en la lista de links haciendo
+	 * scroll para que el usuario pueda ver este link y hacer click si quiere.
+	 * El link encontrado lo marcamos de un color amarillo
+	 */
 	function _changeBuscarEbook() {
 		const ebook = this.value.trim()
 		
