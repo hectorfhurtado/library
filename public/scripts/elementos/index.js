@@ -260,14 +260,12 @@
 			if ( !$elemento ) return
 			
 			try {
-				
 				$elemento.scrollIntoView({
 					behavior: 'smooth',
 					block:     'start',
 				})
 			}
 			catch( e ) {
-				
 				$elemento.scrollIntoView( true )
 			}
 			
