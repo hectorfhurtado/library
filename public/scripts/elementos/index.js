@@ -259,10 +259,17 @@
 			
 			if ( !$elemento ) return
 			
-			$elemento.scrollIntoView({
-				behavior: 'smooth',
-				block:     'start',
-			})
+			try {
+				
+				$elemento.scrollIntoView({
+					behavior: 'smooth',
+					block:     'start',
+				})
+			}
+			catch( e ) {
+				
+				$elemento.scrollIntoView( true )
+			}
 			
 			$elemento.style.color = 'yellow'
 		},
