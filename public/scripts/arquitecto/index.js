@@ -271,9 +271,10 @@
 	function _changeBuscarEbook() {
 		const ebook = this.value.trim()
 		
-		// TODO: continuar aqui
-		
-		console.log( ebook )
+		return Nando.Cargador.trae( 'Elementos' )
+			.then( Elementos => Elementos.buscaConTextContent( ebook, 'a', Nando.Elementos.dame( 'section' )))
+			.then(([ $elemento ]) => Nando.Elementos.scrollTo( $elemento ))
+			.catch( error => console.log( error ))
 	}
 	
 	Nando.Arquitecto = {
