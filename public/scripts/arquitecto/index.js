@@ -119,7 +119,7 @@
 			if ( dataset.id == 'azar' ) {
 				let ebook = Nando.Libro.traeLibroAlAzarDe( 'Sin leer' )
 				
-				_changeBuscarEbook.bind({ value: ebook })()
+				return _changeBuscarEbook.bind({ value: ebook })()
 			}
 			
 			return
