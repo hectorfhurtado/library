@@ -103,15 +103,29 @@
 	/**
 	 * Cuando hacemos click en un link de un libro lo traemos, mostramos en el pdfjs y anunciamos
 	 * el cambio de estado de todos los elementos del UI
+	 * Cuando hacemos click en 'Recomiendame un libro al azar, busca en la lista de libros Sin leer
+	 * para que la persona lea uno que no haya contemplado
 	 * @private
 	 * @author Nando
 	 * @param {object} e Event
 	 */
 	function _clickEnSectionLibros( e ) {
+		e.preventDefault()
+		
+		let dataset = e.target.dataset
+		
+		if ( 'id' in dataset ) {
+			
+			if ( dataset.id == 'azar' ) {
+				let ebook = Nando.Libro.traeLibroAlAzarDe( 'Sin leer' )
+				
+				_changeBuscarEbook.bind({ value: ebook })()
+			}
+			
+			return
+		}
 
 		if ( !e.target.pathname ) return
-
-		e.preventDefault()
 
 		Nando.Cargador.trae( 'Red' )
 			.then( R => R.traeJson( 'book', `info=${ e.target.pathname }` ))

@@ -79,6 +79,19 @@
                     const $ul                 = document.createElement( 'ul' )
                     const $strong             = document.createElement( 'strong' )
                     $strong.textContent       = nombreCategoria
+					
+					// A la categoria 'Sin leer' le adicionamos un link para recomendar
+					// un libro al azar
+					if ( nombreCategoria == 'Sin leer' ) {
+						let linkAzar         = document.createElement( 'a' )
+						linkAzar.dataset.id  = 'azar'
+						linkAzar.textContent = 'Recomiendame un libro al azar'
+						linkAzar.href        = ''
+						
+						$strong.textContent += ' - '
+						
+						$strong.appendChild( linkAzar )
+					}
 
                     $ul.appendChild( $strong )
 
