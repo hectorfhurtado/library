@@ -148,6 +148,18 @@
 			
 			return new Set( ebooks )
 		},
+		
+		/**
+		 * Trae un libro al azar de la categoria suministrada
+		 * @param	{string}	categoria	La categoria de la que queremos traer el libro
+		 * @returns	{string}
+		 */
+		traeLibroAlAzarDe( categoria ) {
+			let ebooks       = _lista[ categoria ]
+			let numeroAlAzar = ( Math.random() * ebooks.length ) | 0
+			
+			return ebooks[ numeroAlAzar ] 
+		},
 	}
 	
 	/**
