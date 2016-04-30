@@ -296,6 +296,9 @@
 	 * @returns {Array}
 	 */
 	function _buscaYFiltra( $contenedor, tag, filtro ) {
-		return [ ...$contenedor.querySelectorAll( tag )].filter( $elemento => $elemento.firstChild.textContent == filtro )
+		let encontrados      = $contenedor.querySelectorAll( tag )
+		let encontradosArray = Array.from( encontrados )
+
+		return encontradosArray.filter( $elemento => $elemento.firstChild.textContent == filtro )
 	}
 })()
