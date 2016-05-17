@@ -258,7 +258,7 @@
 			.then( detalleLibro => {
 				
 				if ( !detalleLibro ) return Promise.reject( 'No hay informacion para realizar la categorizacion' )
-				
+
 				const cambio = {
 					nombre : detalleLibro.nombre,
 					antigua: categoriaAntigua,

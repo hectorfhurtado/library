@@ -72,7 +72,15 @@
 				infoLibroDeServidor.nombre = pathname.replace( '/' + infoLibroDeServidor.categoria + '/', '' )
 			}
 			else {
-				infoLibroDeServidor.nombre = pathname.replace( '/', '' )
+				let split     = pathname.split('/')
+				let categoria = null
+				let nombre    = null
+				
+				if ( split.length > 2 ) [ , categoria, nombre ] = split 
+				else                    [ , nombre ]            = split
+				
+				infoLibroDeServidor.nombre    = nombre
+				infoLibroDeServidor.categoria = categoria
 			}
 
 			this.detalleLibro = infoLibroDeServidor
