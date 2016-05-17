@@ -248,8 +248,6 @@
 		 */
 		cambiaCategoria( antiguaCategoria, detalleLibro, promesaContenedor ) {
 			
-			debugger
-			
 			return this.adicionaALa( detalleLibro.categoria, detalleLibro, promesaContenedor )
 				.then( () => this.eliminaDeLa( antiguaCategoria || 'Sin leer', detalleLibro, promesaContenedor ))
 		},
