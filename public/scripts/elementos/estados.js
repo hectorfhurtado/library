@@ -6,6 +6,7 @@
 	const LIBRO      = Symbol( 'libro' )
 	const LEYENDO    = Symbol( 'leyendo' )
 	const CATEGORIZA = Symbol( 'categoriza' )
+	const CALIFICA   = Symbol( 'califica' )
 
 	const ELEMENTOS = [
 		'section',
@@ -18,6 +19,8 @@
 		'EndEbook',
 		'CategorizeEbook',
 		'CategoriaEbook',
+		'RankEbook',
+		'RankList',
 	]
 
 	Nando.Estados = {
@@ -37,6 +40,10 @@
 		get CATEGORIZA() {
 			return CATEGORIZA
 		},
+		
+		get CALIFICA() {
+			return CALIFICA
+		},
 
 		anterior: null,
 		actual  : INICIO,
@@ -48,7 +55,7 @@
 		 */
 		cambiaA( estado ) {
 			
-			switch( estado ) {
+			switch ( estado ) {
 				case INICIO:
 					_actualizaEstadoInterno( estado )
 		
@@ -71,6 +78,15 @@
 					_actualizaEstadoInterno( estado )
 		
 					Promise.all( _armaPromesasElementos() ).then( _estadoParaCategoriza )
+					break
+					
+				case CALIFICA:
+					_actualizaEstadoInterno( estado )
+
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaCalifica )				
+					break
+					
+				default:
 					break
 			}
 		}
@@ -164,7 +180,7 @@
 		])
 	}
 
-	function _estadoParaCategoriza([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+	function _estadoParaCategoriza([ , , , , , $categorize, $categoria ]) {
 
 		// No visibles
 		_oculta([
@@ -177,6 +193,19 @@
 		])
 		
 		$categoria.value = ''
+	}
+	
+	function _estadoParaCalifica([ , , , , , , , $rank, $rankList ]) {
+
+		// No visibles
+		_oculta([
+			$rank,
+		])
+
+		// Visibles
+		_muestra([
+			$rankList,
+		])
 	}
 
 	function _muestra( $elementos ) {

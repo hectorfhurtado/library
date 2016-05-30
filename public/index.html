@@ -52,6 +52,7 @@
     #CloseEbook,
     #EndEbook,
     #CategorizeEbook,
+    #RankEbook,
     #AddEbook{
         background-color: var(--color-de-fondo);
         border          : medium solid var(--color-de-letras);
@@ -103,6 +104,10 @@
     <button id="EndEbook"   title="Terminar">-</button>
     <button id="CategorizeEbook"   title="Categorizar">&hArr;</button>
     <input type="text" id="CategoriaEbook" class="invisible" placeholder="Escribe categoria" list="CategoriaEbookList" />
+    <button id="RankEbook"  title="Calificar">&#9734</button>
+    <div id="RankList" class="invisible">
+        &#9734 &#9734 &#9734 &#9734 &#9734
+    </div>
     <datalist id="CategoriaEbookList"></datalist>
 </aside>
 

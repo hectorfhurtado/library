@@ -160,6 +160,10 @@
 			case 'CategorizeEbook':
 				_muestraInputCategoria()
 				break
+				
+			case 'RankEbook':
+				_muestraBarraCalificacion()
+				break
 		}
 	}
 	
@@ -302,6 +306,17 @@
 			.then( Elementos => Elementos.buscaConTextContent( ebook, 'a', Nando.Elementos.dame( 'section' )))
 			.then(([ $elemento ]) => Nando.Elementos.scrollTo( $elemento ))
 			.catch( error => console.log( error ))
+	}
+	
+	/**
+	 * Al hacer click sobre el boton de estrella (para calificar), cambiamos el estado a CALIFICA
+	 */
+	async function _muestraBarraCalificacion() {
+		
+		/* jshint lastsemic: true */
+		let Estados = await Nando.Cargador.trae( 'Estados' )
+		
+		Estados.cambiaA( Estados.CALIFICA )
 	}
 	
 	Nando.Arquitecto = {
