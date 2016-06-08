@@ -284,6 +284,21 @@
 			
 			$elemento.style.color = 'yellow'
 		},
+
+		/**
+		 * Escribe la calificacion suministrada al boton encontrado
+		 * @param	{String}		calificacion
+		 * @param	{HTMLElement}	$elemento
+		 */
+		califica( calificacion, $elemento ) {
+			console.assert( !!calificacion, 'Debe haber una calificacion para el libro' )
+			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento )
+
+			let $span = $elemento.querySelector( 'span' )
+			console.assert( !!$span, 'Debe existir el span a cambiar', $span )
+
+			$span.textContent = calificacion
+		},
     }
 	
 	/**

@@ -90,13 +90,15 @@
 				E.dame( 'aside' ),
 				E.damePorId( 'CategoriaEbook' ),
 				E.damePorId( 'BuscarEbook' ),
+				E.damePorId( 'RankList' ),
 			])
-		}).then( function([ $section, $aside, $inputCategoria, $inputBuscar ]) {
+		}).then( function([ $section, $aside, $inputCategoria, $inputBuscar, $rankList ]) {
 
 			$section.addEventListener( 'click', _clickEnSectionLibros )
 			$aside.addEventListener( 'click', _clickEnMenu )
 			$inputCategoria.addEventListener( 'change', _changeInputCategoria )
 			$inputBuscar.addEventListener( 'change', _changeBuscarEbook )
+			$rankList.addEventListener( 'click', _clickEnRankList )
 		})
 	}
 	
@@ -138,6 +140,13 @@
 				if ( detalle.leyendo ) E.cambiaA( E.LEYENDO )
 				else E.cambiaA( E.LIBRO )
 			})
+			.then(() => {
+
+				return Nando.Elementos.damePorId( 'RankEbook' )
+					.then( $rankEbook => {
+						Nando.Elementos.califica( Nando.Libro.detalleLibro.calificacion || 0, $rankEbook )
+					})
+			})
 	}
 	
 	function _clickEnMenu( e ) {
@@ -159,6 +168,10 @@
 
 			case 'CategorizeEbook':
 				_muestraInputCategoria()
+				break
+				
+			case 'RankEbook':
+				_muestraBarraCalificacion()
 				break
 		}
 	}
@@ -302,6 +315,40 @@
 			.then( Elementos => Elementos.buscaConTextContent( ebook, 'a', Nando.Elementos.dame( 'section' )))
 			.then(([ $elemento ]) => Nando.Elementos.scrollTo( $elemento ))
 			.catch( error => console.log( error ))
+	}
+	
+	/**
+	 * Al hacer click sobre el boton de estrella (para calificar), cambiamos el estado a CALIFICA
+	 */
+	async function _muestraBarraCalificacion() {
+		let Estados = await Nando.Cargador.trae( 'Estados' )
+		
+		Estados.cambiaA( Estados.CALIFICA )
+	}
+	
+	/**
+	 * Al hacer click en un boton con calificacion, las asigna en el objeto con la informacion del libro y
+	 * actualiza el UI.
+	 * @param	{Event}	e
+	 */
+	async function _clickEnRankList(e) {
+		const Elementos      = await Nando.Cargador.trae( 'Elementos' )
+		let [ calificacion ] = /\d/.exec( e.target.textContent )
+
+		if ( !calificacion ) return
+
+		const Libro = await Nando.Cargador.trae( 'Libro' )
+		Libro.calificaCon( calificacion )
+
+		const Red      = await Nando.Cargador.trae( 'Red' )
+		let { nombre } = Libro.detalleLibro
+		Red.enviaJson( 'califica', { calificacion, libro: nombre })
+
+		let $botonCalificacion = await Elementos.damePorId( 'RankEbook' )
+		Elementos.califica( calificacion, $botonCalificacion )
+
+		const Estados = await Nando.Cargador.trae( 'Estados' )
+		Estados.cambiaA( Estados.anterior )
 	}
 	
 	Nando.Arquitecto = {

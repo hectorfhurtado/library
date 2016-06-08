@@ -18,6 +18,9 @@
 		},
 
 		set detalleLibro( info ) {
+			console.assert( !!info || info === null, 'Info debe contener informacion', info )
+			info && console.assert( typeof info == 'object', 'Info debe ser un objeto', info )
+
 			sessionStorage.setItem( 'infoLibro', JSON.stringify( info ))
 		},
 
@@ -167,6 +170,22 @@
 			let numeroAlAzar = ( Math.random() * ebooks.length ) | 0
 			
 			return ebooks[ numeroAlAzar ] 
+		},
+
+		/**
+		 * Actualiza el detalle del libro con la calificacion suministrada
+		 * @param	{String}	calificacion
+		 */
+		calificaCon( calificacion ) {
+			console.assert( !!calificacion, 'Debe existir la calificacion a realizar', calificacion )
+
+			let detalleLibro = this.detalleLibro
+			console.assert( !!detalleLibro, 'No hay informacion de detalleLibro', detalleLibro )
+
+			detalleLibro.calificacion = +calificacion
+			this.detalleLibro         = detalleLibro
+
+			return detalleLibro
 		},
 	}
 	
