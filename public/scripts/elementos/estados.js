@@ -144,13 +144,14 @@
 	 * @param {object} $categorize        boton
 	 * @param {object} $categoria         Este es un Input
 	 */
-	function _estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+	function _estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) {
 
 		// No visibles
 		_oculta([
 			$section,
 			$end,
 			$categoria,
+			$rankList,
 		])
 
 		// Visibles
@@ -159,16 +160,18 @@
 			$close,
 			$add,
 			$categorize,
+			$rank,
 		])
 	}
 
-	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria ]) {
+	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) {
 
 		// No visibles
 		_oculta([
 			$section,
 			$add,
 			$categoria,
+			$rankList,
 		])
 
 		// Visibles
@@ -177,6 +180,7 @@
 			$close,
 			$end,
 			$categorize,
+			$rank,
 		])
 	}
 

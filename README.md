@@ -83,8 +83,10 @@ Esta es la disposicion de las carpetas
         reading.json
 ```
 
-Aqui en Github excluyo las carpetas __ebooks__ por lo que contienen y los que vienen del proyecto pdf.js que son __web__ y __build__ porque es un proyecto de codigo abierto y lo puedes conseguir en cualquier lugar.
+Aqui en Github excluyo las carpetas __ebooks__ por lo que contienen. Cuando no existe esta carpeta, la aplicacion la crea.
 
 Debes tener instalado [Node](https://nodejs.org/en/).
 
-En la carpeta del proyecto, simplemente ejecutas `node server\index.js` en Windows o `node server/index.js` en Linux o Mac desde un terminal.
+En la carpeta del proyecto, simplemente ejecutas `server.bat` o `node server\index.js` en Windows o `node server/index.js` en Linux o Mac desde un terminal.
+
+__Nota:__ uso funciones async/await que en este momento solo estan en Edge y en Chrome Canary (pasando el argumento `--js-flags="--harmony-async-await"`) en el ejecutable. Asi que puede que no "funcione" de una, pero es mientras los navegadores se actualizan al nuevo estandar.

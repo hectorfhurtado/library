@@ -43,16 +43,17 @@
     }
 
     aside {
-        display: flex;
+        display       : flex;
         flex-direction: column;
-        top  : 3rem;
-        right: 1rem;
+        top           : 3rem;
+        right         : 1rem;
     }
 
     #CloseEbook,
     #EndEbook,
     #CategorizeEbook,
     #RankEbook,
+    #RankList > button,
     #AddEbook{
         background-color: var(--color-de-fondo);
         border          : medium solid var(--color-de-letras);
@@ -65,13 +66,28 @@
         padding         : 0px;
         vertical-align  : middle;
         width           : 3rem;
+        position        : relative;
+    }
+    
+    button > span {
+        display    : block;
+        font-size  : 0.6rem;
+        font-weight: bold;
+        margin-top : -0.4rem;
+    }
+    
+    #RankList > button:hover::after {
+        position: absolute;
+        top     : 0.2rem;
+        content : '★';
+        left    : 0.7rem;
     }
     
     #BuscarEbook {
-        width: 80%;
-        margin-left: 2.5rem;
-        padding: 0.5rem;
-        margin-top: 2rem;
+        width       : 80%;
+        margin-left : 2.5rem;
+        padding     : 0.5rem;
+        margin-top  : 2rem;
         padding-left: 1rem;
     }
 
@@ -104,9 +120,13 @@
     <button id="EndEbook"   title="Terminar">-</button>
     <button id="CategorizeEbook"   title="Categorizar">&hArr;</button>
     <input type="text" id="CategoriaEbook" class="invisible" placeholder="Escribe categoria" list="CategoriaEbookList" />
-    <button id="RankEbook"  title="Calificar">&#9734</button>
+    <button id="RankEbook"  title="Calificar">&#9733<span>0</span></button>
     <div id="RankList" class="invisible">
-        &#9734 &#9734 &#9734 &#9734 &#9734
+        <button>&#9734<span>1</span></button>
+        <button>&#9734<span>2</span></button>
+        <button>&#9734<span>3</span></button>
+        <button>&#9734<span>4</span></button>
+        <button>&#9734<span>5</span></button>
     </div>
     <datalist id="CategoriaEbookList"></datalist>
 </aside>

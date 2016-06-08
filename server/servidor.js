@@ -153,6 +153,17 @@ module.exports = {
 
 				this._enviaRecibido( req, res )
 			}
+
+            // modificamos la calificacion del libro
+            if ( /^\/califica\.fetch/.test( req.url ) && req.method == 'POST' ) {
+                req.setEncoding( 'utf8' )
+
+                req.on( 'data', ( chunk ) => {
+                    if (chunk ) Libro.califica( JSON.parse( chunk ))
+                })
+
+                this._enviaRecibido( req, res )
+            }
         }
         else {
             fs.createReadStream( path.join( __dirname, PATH_WEB + req.url )).pipe( res )
