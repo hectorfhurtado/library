@@ -2,6 +2,8 @@
 
 ( function() {
 	
+	const UNIDAD_ESPACIADO_CSS = 32 
+
 	let elementos = {}
 
     Nando.Elementos = {
@@ -10,7 +12,7 @@
          * Tomamos un selector y almacenamos el elemento del DOM para tener un cache y no perder tiempo
          * haciendo query al DOM
          * @param   {string}              selector Un selector de CSS
-         * @returns {Promise<DOMElement>}
+         * @returns {Promise<DOMElement>} Devuelve una promesa con el elemento solicitado
          */
         dame( selector ) {
 
@@ -20,13 +22,13 @@
                     elementos[ selector ] = document.querySelector( selector )
                 }
                 res( elementos[ selector ])
-            }.bind( this ))
+            })
         },
 
         /**
          * Buscamos el elemento por el ID y lo guardamos en cache para futura referencia
          * @param   {string}   id
-         * @returns {promise<DOMElement>}
+         * @returns {promise<DOMElement>}	Devuelve una promesa con el elemento solicitado
          */
         damePorId( id ) {
 
@@ -36,7 +38,7 @@
                     elementos[ id ] = document.getElementById( id )
                 }
                 res( elementos[ id ])
-            }.bind( this ))
+            })
         },
 
 		/**
@@ -56,7 +58,7 @@
 
 					$elemento.appendChild( opt )
 				})
-			}.bind( this ))
+			})
 		},
 
 		/**
@@ -82,7 +84,7 @@
 					
 					// A la categoria 'Sin leer' le adicionamos un link para recomendar
 					// un libro al azar
-					if ( nombreCategoria == 'Sin leer' ) {
+					if ( nombreCategoria === 'Sin leer' ) {
 						let linkAzar         = document.createElement( 'a' )
 						linkAzar.dataset.id  = 'azar'
 						linkAzar.textContent = 'Recomiendame un libro al azar'
@@ -174,7 +176,7 @@
 		 * @param   {string}              categoria         El nombre de la vategoria a la cual se le va a adicionar el link
 		 * @param   {object}              detalleLibro
 		 * @param   {promise<DOMElement>} promesaContenedor El contenedor donde se encuentra la lista a buscar
-		 * @returns {promise}
+		 * @returns {promise}			  Regresa una promesa para continuar la cadena
 		 */
 		adicionaALa( categoria, detalleLibro, promesaContenedor ) {
 
@@ -188,6 +190,7 @@
 				if ( !$ul ) {
 					let $strong = document.createElement( 'strong')
 					
+					/* eslint no-param-reassign: "off" */
 					$ul                 = document.createElement( 'ul')
 					$strong.textContent = categoria
 					
@@ -199,7 +202,8 @@
 					$ul,
 					Nando.Cargador.trae( 'DOM' ),
 				])
-			}).then(([ $ul, DOM ]) => {
+			})
+			.then(([ $ul, DOM ]) => {
 				let $li = document.createElement( 'li' )
 				let $a  = document.createElement( 'a' )
 
@@ -235,7 +239,7 @@
 					$ulCategoria,
 					$li,
 					Nando.Cargador.trae( 'DOM' ),
-				]).then(([ $ul, $li, DOM ]) => DOM.adiciona( $ul, 'removeChild', $li ))
+				]).then(([ $ul, $nli, DOM ]) => DOM.adiciona( $ul, 'removeChild', $nli ))
 			})
 		},
 		
@@ -244,7 +248,7 @@
 		 * @param	{String}				antiguaCategoria	El nombre de la categoria a eliminar
 		 * @param	{object}				detalleLibro		El [[detalleLibro]] contiene la nueva categoria
 		 * @param	{promise<DOMElement>}	promesaContenedor	Resuelve al objeto que contiene los links
-		 * @returns	{Promise}
+		 * @returns	{Promise}				promesa
 		 */
 		cambiaCategoria( antiguaCategoria, detalleLibro, promesaContenedor ) {
 			
@@ -255,18 +259,22 @@
 		/**
 		 * Buscamos todos los elementos que contengan el texto suministrado como filtro
 		 * y es lo que devolvemos
+		 * @param	{String}	texto
+		 * @param	{String}	tag
+		 * @param	{Promise}	promesaContenedor	
 		 * @returns	{Object}	DOMElement si encuentra algo
 		 */
 		buscaConTextContent( texto, tag, promesaContenedor ) {
 			
-			return promesaContenedor.then( $contenedor => {
-				return _buscaYFiltra( $contenedor, tag, texto )
-			})
+			return promesaContenedor.then( $contenedor => 
+				_buscaYFiltra( $contenedor, tag, texto )
+			)
 		},
 		
 		/**
 		 * Mueve el link encontrado a la vista del usuario para que lo pueda escoger
 		 * Adiciona un color amarillo a la seleccion para que el usuario lo pueda distinguir
+		 * @param	{DOMElement}	$elemento
 		 */
 		scrollTo( $elemento ) {
 			
@@ -278,7 +286,7 @@
 					block:     'start',
 				})
 			}
-			catch( e ) {
+			catch (e) {
 				$elemento.scrollIntoView( true )
 			}
 			
@@ -299,6 +307,30 @@
 
 			$span.textContent = calificacion
 		},
+
+		/**
+		 * Se encarga de ubicar el elemento en un multiplo de [[UNIDAD_ESPACIADO_CSS]] en pixeles
+		 * Lastimosamente no hay un Math.floor en CSS
+		 * @param	{String}		direccion	horizontal | vertical
+		 * @param	{DOMElement}	$elemento	El elemento a ubicar
+		 */
+		posicionAlCien( direccion, $elemento ) {
+			let tamano = $elemento.getBoundingClientRect()
+
+			if (direccion === 'vertical') {
+				let alto      = tamano.height
+				let correcion = Math.floor( alto / UNIDAD_ESPACIADO_CSS ) * UNIDAD_ESPACIADO_CSS
+
+				$elemento.style.height = correcion + 'px'
+			}
+
+			if (direccion === 'horizontal') {
+				let ancho     = tamano.width
+				let correcion = Math.floor( ancho / UNIDAD_ESPACIADO_CSS ) * UNIDAD_ESPACIADO_CSS
+
+				$elemento.style.width = correcion + 'px'
+			}
+		},
     }
 	
 	/**
@@ -308,12 +340,12 @@
 	 * @param   {object} $contenedor DOMElement
 	 * @param   {string} tag         El tag por el que vamos a filtrar
 	 * @param   {string} filtro      Lo que debe contener el primer hijo en su textContent
-	 * @returns {Array}
+	 * @returns {Array}				 Array
 	 */
 	function _buscaYFiltra( $contenedor, tag, filtro ) {
 		let encontrados      = $contenedor.querySelectorAll( tag )
 		let encontradosArray = Array.from( encontrados )
 
-		return encontradosArray.filter( $elemento => $elemento.firstChild.textContent == filtro )
+		return encontradosArray.filter( $elemento => $elemento.firstChild.textContent === filtro )
 	}
 })()

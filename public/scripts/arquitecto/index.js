@@ -11,6 +11,7 @@
 			.then( pideEbooks )
 			.then( adicionaCategoriasADatalistDeEbooks )
 			.then( muestraLibros )
+			.then( ajustaPosicionElementos )
 			.catch( error => console.error( error ))
 
 		inicializaEventHandlers()
@@ -349,6 +350,18 @@
 
 		const Estados = await Nando.Cargador.trae( 'Estados' )
 		Estados.cambiaA( Estados.anterior )
+	}
+
+	/**
+	 * Ubica a los elementos que necesitan ajuste en su CSS
+	 */
+	async function ajustaPosicionElementos() {
+		const Elementos = await Nando.Cargador.trae( 'Elementos' )
+		const $section  = await Elementos.dame( 'section' )
+
+		Elementos.posicionAlCien( 'vertical', $section )
+
+		// TODO: ajustar el ancho del $section al 60%
 	}
 	
 	Nando.Arquitecto = {
