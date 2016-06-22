@@ -1,19 +1,21 @@
 /* global Nando */
 
-( function() {
-	
-	const INICIO     = Symbol( 'inicio' )
-	const LIBRO      = Symbol( 'libro' )
-	const LEYENDO    = Symbol( 'leyendo' )
-	const CATEGORIZA = Symbol( 'categoriza' )
-	const CALIFICA   = Symbol( 'califica' )
+(function() 
+{
+	const INICIO     = Symbol( 'inicio' );
+	const LIBRO      = Symbol( 'libro' );
+	const LEYENDO    = Symbol( 'leyendo' );
+	const CATEGORIZA = Symbol( 'categoriza' );
+	const CALIFICA   = Symbol( 'califica' );
 
-	const ELEMENTOS = [
+	const ELEMENTOS = 
+	[
 		'section',
 		'aside',
-	]
+	];
 
-	const ELEMENTOS_POR_ID = [
+	const ELEMENTOS_POR_ID = 
+	[
 		'CloseEbook',
 		'AddEbook',
 		'EndEbook',
@@ -21,28 +23,33 @@
 		'CategoriaEbook',
 		'RankEbook',
 		'RankList',
-	]
+	];
 
-	Nando.Estados = {
-		
-		get INICIO() {
-			return INICIO
+	Nando.Estados = 
+	{
+		get INICIO() 
+		{
+			return INICIO;
 		},
 
-		get LIBRO() {
-			return LIBRO
+		get LIBRO() 
+		{
+			return LIBRO;
 		},
 		
-		get LEYENDO() {
-			return LEYENDO
+		get LEYENDO() 
+		{
+			return LEYENDO;
 		},
 		
-		get CATEGORIZA() {
-			return CATEGORIZA
+		get CATEGORIZA() 
+		{
+			return CATEGORIZA;
 		},
 		
-		get CALIFICA() {
-			return CALIFICA
+		get CALIFICA() 
+		{
+			return CALIFICA;
 		},
 
 		anterior: null,
@@ -53,48 +60,50 @@
 		 * @author Nando
 		 * @param {Symbol} estado
 		 */
-		cambiaA( estado ) {
-			
-			switch ( estado ) {
+		cambiaA( estado ) 
+		{
+			switch ( estado ) 
+			{
 				case INICIO:
-					_actualizaEstadoInterno( estado )
+					_actualizaEstadoInterno( estado );
 		
-					Promise.all( _armaPromesasElementos() ).then( _estadoParaInicio )
-					break
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaInicio );
+					break;
 
 				case LIBRO:
-					_actualizaEstadoInterno( estado )
+					_actualizaEstadoInterno( estado );
 		
-					Promise.all( _armaPromesasElementos() ).then( _estadoParaLibro )
-					break
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaLibro );
+					break;
 
 				case LEYENDO:
-					_actualizaEstadoInterno( estado )
+					_actualizaEstadoInterno( estado );
 		
-					Promise.all( _armaPromesasElementos() ).then( _estadoParaLeyendo )
-					break
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaLeyendo );
+					break;
 
 				case CATEGORIZA:
-					_actualizaEstadoInterno( estado )
+					_actualizaEstadoInterno( estado );
 		
-					Promise.all( _armaPromesasElementos() ).then( _estadoParaCategoriza )
-					break
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaCategoriza );
+					break;
 					
 				case CALIFICA:
-					_actualizaEstadoInterno( estado )
+					_actualizaEstadoInterno( estado );
 
-					Promise.all( _armaPromesasElementos() ).then( _estadoParaCalifica )				
-					break
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaCalifica );				
+					break;
 					
 				default:
-					break
+					break;
 			}
 		}
-	}
+	};
 	
-	function _actualizaEstadoInterno( estado ) {
-		Nando.Estados.anterior = Nando.Estados.actual
-		Nando.Estados.actual   = estado
+	function _actualizaEstadoInterno( estado ) 
+	{
+		Nando.Estados.anterior = Nando.Estados.actual;
+		Nando.Estados.actual   = estado;
 	}
 
 	/**
@@ -103,13 +112,14 @@
 	 * @author Nando
 	 * @returns {Array} Un arreglo con todos los elementos a mostrar/ocultar
 	 */
-	function _armaPromesasElementos() {
-		let promesas = []
+	function _armaPromesasElementos() 
+	{
+		let promesas = [];
 
-		ELEMENTOS.forEach( tagElemento => promesas.push( Nando.Elementos.dame( tagElemento )))
-		ELEMENTOS_POR_ID.forEach( nombreElemento => promesas.push( Nando.Elementos.damePorId( nombreElemento )))
+		ELEMENTOS.forEach( tagElemento => promesas.push( Nando.Elementos.dame( tagElemento )));
+		ELEMENTOS_POR_ID.forEach( nombreElemento => promesas.push( Nando.Elementos.damePorId( nombreElemento )));
 
-		return promesas
+		return promesas;
 	}
 
 	/**
@@ -119,17 +129,19 @@
 	 * @param {object} $section
 	 * @param {object} $aside
 	 */
-	function _estadoParaInicio([ $section, $aside ]) {
-
+	function _estadoParaInicio([ $section, $aside ]) 
+	{
 		// No visibles
-		_oculta([
+		_oculta(
+		[
 			$aside,
-		])
+		]);
 
 		// visibles
-		_muestra([
-			$section
-		])
+		_muestra(
+		[
+			$section,
+		]);
 	}
 
 	/**
@@ -144,81 +156,91 @@
 	 * @param {object} $categorize        boton
 	 * @param {object} $categoria         Este es un Input
 	 */
-	function _estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) {
-
+	function _estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) 
+	{
 		// No visibles
-		_oculta([
+		_oculta(
+		[
 			$section,
 			$end,
 			$categoria,
 			$rankList,
-		])
+		]);
 
 		// Visibles
-		_muestra([
+		_muestra(
+		[
 			$aside,
 			$close,
 			$add,
 			$categorize,
 			$rank,
-		])
+		]);
 	}
 
-	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) {
-
+	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) 
+	{
 		// No visibles
-		_oculta([
+		_oculta(
+		[
 			$section,
 			$add,
 			$categoria,
 			$rankList,
-		])
+		]);
 
 		// Visibles
-		_muestra([
+		_muestra(
+		[
 			$aside,
 			$close,
 			$end,
 			$categorize,
 			$rank,
-		])
+		]);
 	}
 
-	function _estadoParaCategoriza([ , , , , , $categorize, $categoria ]) {
-
+	function _estadoParaCategoriza([ , , , , , $categorize, $categoria ]) 
+	{
 		// No visibles
-		_oculta([
+		_oculta(
+		[
 			$categorize,
-		])
+		]);
 
 		// Visibles
-		_muestra([
+		_muestra(
+		[
 			$categoria,
-		])
+		]);
 		
-		$categoria.value = ''
+		$categoria.value = '';
 	}
 	
-	function _estadoParaCalifica([ , , , , , , , $rank, $rankList ]) {
-
+	function _estadoParaCalifica([ , , , , , , , $rank, $rankList ]) 
+	{
 		// No visibles
-		_oculta([
+		_oculta(
+		[
 			$rank,
-		])
+		]);
 
 		// Visibles
-		_muestra([
+		_muestra(
+		[
 			$rankList,
-		])
+		]);
 	}
 
-	function _muestra( $elementos ) {
-		$elementos.forEach( $elemento => $elemento.classList.remove( 'invisible' ))
+	function _muestra( $elementos ) 
+	{
+		$elementos.forEach( $elemento => $elemento.classList.remove( 'invisible' ));
 	}
 
-	function _oculta( $elementos ) {
-		$elementos.forEach( $elemento => $elemento.classList.add( 'invisible' ))
+	function _oculta( $elementos ) 
+	{
+		$elementos.forEach( $elemento => $elemento.classList.add( 'invisible' ));
 	}
 
-	Nando.Cargador.trae( 'Elementos', 'elementos/index' )
-})()
+	Nando.Cargador.trae( 'Elementos', 'elementos/index' );
+})();
