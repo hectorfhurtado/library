@@ -271,7 +271,10 @@
 		cambiaCategoria( antiguaCategoria, detalleLibro, promesaContenedor ) 
 		{
 			return this.adicionaALa( detalleLibro.categoria, detalleLibro, promesaContenedor )
-				.then(() => this.eliminaDeLa( antiguaCategoria || 'Sin leer', detalleLibro, promesaContenedor ));
+				.then(() => 
+				{
+					this.eliminaDeLa( antiguaCategoria || 'Sin leer - Recomiendame un libro al azar', detalleLibro, promesaContenedor );
+				});
 		},
 		
 		/**
@@ -321,7 +324,7 @@
 		 */
 		califica( calificacion, $elemento ) 
 		{
-			console.assert( Boolean(calificacion), 'Debe haber una calificacion para el libro' );
+			console.assert( calificacion === 0 || Boolean(calificacion), 'Debe haber una calificacion para el libro' );
 			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento );
 
 			let $span = $elemento.querySelector( 'span' );
@@ -333,27 +336,24 @@
 		/**
 		 * Se encarga de ubicar el elemento en un multiplo de [[UNIDAD_ESPACIADO_CSS]] en pixeles
 		 * Lastimosamente no hay un Math.floor en CSS
-		 * @param	{String}		direccion	horizontal | vertical
+		 * @param	{String}		direcciones	horizontal | vertical
 		 * @param	{DOMElement}	$elemento	El elemento a ubicar
 		 */
-		posicionAlCien( direccion, $elemento ) 
+		posicionAlCien( direcciones, $elemento ) 
 		{
+			console.assert( Array.isArray( direcciones ), 'Direcciones debe ser un arreglo', direcciones );
 			let tamano = $elemento.getBoundingClientRect();
 
-			if (direccion === 'vertical') 
+			for (let direccion of direcciones)
 			{
-				let alto      = tamano.height;
-				let correcion = Math.floor( alto / UNIDAD_ESPACIADO_CSS ) * UNIDAD_ESPACIADO_CSS;
+				let propiedad = tamano[ direccion ];
 
-				$elemento.style.height = correcion + 'px';
-			}
+				if (direccion === 'width'  && window.innerWidth  < tamano[ direccion ]) propiedad = window.innerWidth;
+				if (direccion === 'height' && window.innerHeight < tamano[ direccion ]) propiedad = window.innerHeight;
 
-			if (direccion === 'horizontal') 
-			{
-				let ancho     = tamano.width;
-				let correcion = Math.floor( ancho / UNIDAD_ESPACIADO_CSS ) * UNIDAD_ESPACIADO_CSS;
+				let correcion = Math.floor( propiedad / UNIDAD_ESPACIADO_CSS ) * UNIDAD_ESPACIADO_CSS;
 
-				$elemento.style.width = correcion + 'px';
+				$elemento.style[ direccion ] = correcion + 'px';
 			}
 		},
     };
@@ -371,7 +371,8 @@
 	{
 		let encontrados      = $contenedor.querySelectorAll( tag );
 		let encontradosArray = Array.from( encontrados );
+		let filtrado         = encontradosArray.filter( $elemento => $elemento.firstChild.textContent === filtro );
 
-		return encontradosArray.filter( $elemento => $elemento.firstChild.textContent === filtro );
+		return filtrado;
 	}
 })();

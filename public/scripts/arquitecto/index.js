@@ -2,17 +2,18 @@
 
 (function() 
 {
-	function inicia() 
+	async function inicia() 
 	{
-		iniciaLibro()
-			.then( pideLista )
-			.then( pideCategorias )
-			.then( adicionaCategoriasADatalistDeCategorias )
-			.then( pideEbooks )
-			.then( adicionaCategoriasADatalistDeEbooks )
-			.then( muestraLibros )
-			.then( ajustaPosicionElementos )
-			.catch( error => console.error( error ));
+		await iniciaLibro();
+		let lista = await pideLista();
+		let categorias = pideCategorias( lista );
+
+		await adicionaCategoriasADatalistDeCategorias( categorias );
+
+		let ebooks = pideEbooks();
+		
+		await adicionaCategoriasADatalistDeEbooks( ebooks );
+		await muestraLibros();
 
 		inicializaEventHandlers();
 	}
@@ -22,12 +23,10 @@
 	 * @author Nando
 	 * @returns {Promise<object>} El objeto con la informacion del servidor
 	 */
-	function pideLista() 
+	async function pideLista() 
 	{
-		return Nando.Cargador
-			.trae( 'Red' )
-			.then( R => R.traeJson( 'lista' ))
-			.catch( error => console.error( error ));
+		let Red = await Nando.Cargador.trae( 'Red' );
+		return Red.traeJson( 'lista' );
 	}
 
 	/**
@@ -41,11 +40,10 @@
 		return Nando.Libro.guarda( lista ).categorias;
 	}
 
-	function iniciaLibro() 
+	async function iniciaLibro() 
 	{
-		return Nando.Cargador
-			.trae( 'Libro' )
-			.then( L => L.inicia());
+		let Libro =  await Nando.Cargador.trae( 'Libro' );
+		Libro.inicia();
 	}
 	
 	/**
@@ -56,14 +54,13 @@
 	 * @param   {Array}              categorias La lista de categorias
 	 * @returns {Promise<undefined>} No devolvemos nada en la promesa
 	 */
-	function adicionaCategoriasADatalistDeCategorias( categorias ) 
+	async function adicionaCategoriasADatalistDeCategorias( categorias ) 
 	{
-		const categoriasFiltradas = categorias.filter( categoria => /Leyendo|Sin leer/.test( categoria ) === false );
-
-		return Nando.Cargador
-			.trae( 'Elementos' )
-			.then( E => E.creaOptionsPara( E.damePorId( 'CategoriaEbookList' ), categoriasFiltradas ))
-			.catch( error => console.log( error ));
+		const filtro              = /Leyendo|Sin leer/;
+		const categoriasFiltradas = categorias.filter( categoria => filtro.test( categoria ) === false );
+		const Elementos           = await Nando.Cargador.trae( 'Elementos' );
+		
+		Elementos.creaOptionsPara( Elementos.damePorId( 'CategoriaEbookList' ), categoriasFiltradas );
 	}
 	
 	/**
@@ -74,8 +71,9 @@
 	 */
 	function muestraLibros() 
 	{
-		return Promise.resolve( Nando.Libro.categoriasConLibros )
-			.then( categorias => Nando.Elementos.creaListaLibros( categorias, Nando.Elementos.dame( 'section' )));
+		let categorias = Nando.Libro.categoriasConLibros;
+
+		return Nando.Elementos.creaListaLibros( categorias, Nando.Elementos.dame( 'section' ));
 	}
 	
 	/**
@@ -83,26 +81,26 @@
 	 * @author Nando
 	 * @returns {Promise} [[Description]]
 	 */
-	function inicializaEventHandlers() 
+	async function inicializaEventHandlers() 
 	{
-		return Nando.Cargador.trae( 'Elementos' ).then( function( E ) 
-		{
-			return Promise.all(
-			[
-				E.dame( 'section' ),
-				E.dame( 'aside' ),
-				E.damePorId( 'CategoriaEbook' ),
-				E.damePorId( 'BuscarEbook' ),
-				E.damePorId( 'RankList' ),
-			])
-		}).then( function([ $section, $aside, $inputCategoria, $inputBuscar, $rankList ]) 
-		{
-			$section.addEventListener( 'click', _clickEnSectionLibros );
-			$aside.addEventListener( 'click', _clickEnMenu );
-			$inputCategoria.addEventListener( 'change', _changeInputCategoria );
-			$inputBuscar.addEventListener( 'change', _changeBuscarEbook );
-			$rankList.addEventListener( 'click', _clickEnRankList );
-		})
+		const  Elementos = await Nando.Cargador.trae( 'Elementos' );
+
+		const [ $section, $aside, $inputCategoria, $inputBuscar, $rankList ] = await Promise.all(
+		[
+			Elementos.dame( 'section' ),
+			Elementos.dame( 'aside' ),
+			Elementos.damePorId( 'CategoriaEbook' ),
+			Elementos.damePorId( 'BuscarEbook' ),
+			Elementos.damePorId( 'RankList' ),
+		]);
+
+		$section.addEventListener( 'click', _clickEnSectionLibros, false );
+		$aside.addEventListener( 'click', _clickEnMenu, false );
+		$inputCategoria.addEventListener( 'change', _changeInputCategoria, false );
+		$inputBuscar.addEventListener( 'change', _changeBuscarEbook, false );
+		$rankList.addEventListener( 'click', _clickEnRankList, false );
+
+		window.addEventListener( 'resize', ajustaPosicionElementos, false);
 	}
 	
 	/**
@@ -114,7 +112,7 @@
 	 * @author Nando
 	 * @param {object} e Event
 	 */
-	function _clickEnSectionLibros( e ) 
+	async function _clickEnSectionLibros( e ) 
 	{
 		e.preventDefault();
 		
@@ -134,26 +132,20 @@
 
 		if ( !e.target.pathname ) return;
 
-		Nando.Cargador.trae( 'Red' )
-			.then( R => R.traeJson( 'book', `info=${ e.target.pathname }` ))
-			.then( infoLibro => Nando.Libro.extraeDetallesDe( infoLibro, unescape( e.target.pathname )))
-			.then( detalleLibro => Nando.Elementos.muestraLibro( detalleLibro, Nando.Elementos.damePorId( 'iframe' )))
-			.then( () => Nando.Cargador.trae( 'Estados' ))
-			.then( E => 
-			{
-				let detalle = Nando.Libro.detalleLibro;
+		let Red          = await Nando.Cargador.trae( 'Red' );
+		let infoLibro    = await Red.traeJson( 'book', `info=${ e.target.pathname }` );
+		let detalleLibro = Nando.Libro.extraeDetallesDe( infoLibro, unescape( e.target.pathname ));
 
-				if ( detalle.leyendo ) E.cambiaA( E.LEYENDO );
-				else E.cambiaA( E.LIBRO );
-			})
-			.then(() => 
-			{
-				return Nando.Elementos.damePorId( 'RankEbook' )
-					.then( $rankEbook => 
-					{
-						Nando.Elementos.califica( Nando.Libro.detalleLibro.calificacion || 0, $rankEbook );
-					});
-			});
+		await Nando.Elementos.muestraLibro( detalleLibro, Nando.Elementos.damePorId( 'iframe' ));
+
+		let Estados = await Nando.Cargador.trae( 'Estados' );
+		let detalle = Nando.Libro.detalleLibro;
+
+		if ( detalle.leyendo ) Estados.cambiaA( Estados.LEYENDO );
+		else Estados.cambiaA( Estados.LIBRO );		
+
+		let $rankEbook = await Nando.Elementos.damePorId( 'RankEbook' );
+		Nando.Elementos.califica( Nando.Libro.detalleLibro.calificacion || 0, $rankEbook );
 	}
 	
 	function _clickEnMenu( e ) 
@@ -190,31 +182,24 @@
 	 * @author Nando
 	 * @returns {promise}
 	 */
-	function _cierraLibro() 
+	async function _cierraLibro() 
 	{
-		Nando.Cargador.trae( 'Elementos' )
-			.then( E => E.limpiaPdfjs( E.damePorId( 'iframe' )))
-			.then( paginaActual => 
-			{
-				let detalle = Nando.Libro.detalleLibro;
+		let Elementos = await Nando.Cargador.trae( 'Elementos' );
+		let paginaActual = await Elementos.limpiaPdfjs( Elementos.damePorId( 'iframe' )); 
+		let detalle = Nando.Libro.detalleLibro;
 
-				if ( !detalle.leyendo ) return null;
+		Nando.Estados.cambiaA( Nando.Estados.INICIO );
 
-				detalle.actual            = paginaActual;
-				Nando.Libro.detalleLibro  = detalle;
+		if ( !detalle.leyendo ) return null;
 
-				return detalle;
-			}).then( actualizacion => 
-			{
-				if ( !actualizacion ) return null;
-
-				Nando.Red.enviaJson( 'book', 
-				{
-					actual: actualizacion.actual,
-					libro : actualizacion.nombre,
-				});
-			}).then( () => Nando.Estados.cambiaA( Nando.Estados.INICIO ))
-			.catch( error => console.error( error ));
+		detalle.actual            = paginaActual;
+		Nando.Libro.detalleLibro  = detalle;
+		
+		await Nando.Red.enviaJson( 'book', 
+		{
+			actual: detalle.actual,
+			libro : detalle.nombre,
+		});
 	}
 
 	/**
@@ -222,15 +207,17 @@
 	 * @private
 	 * @author Nando
 	 */
-	function _adicionaLibro() 
+	async function _adicionaLibro() 
 	{
-		Nando.Cargador.trae( 'Elementos' )
-			.then( Elementos => Elementos.infoPaginasPdf( Elementos.damePorId( 'iframe' )))
-			.then( infoPaginas => Nando.Libro.adiciona( infoPaginas ))
-			.then( informacion => Nando.Red.enviaJson( 'nuevoebook', informacion ))
-			.then( () => Nando.Estados.cambiaA( Nando.Estados.LEYENDO ))
-			.then( () => Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' )))
-			.catch( error => console.error( error ));
+		let Elementos   = await Nando.Cargador.trae( 'Elementos' );
+		let infoPaginas = await Elementos.infoPaginasPdf( Elementos.damePorId( 'iframe' ));
+		let informacion = Nando.Libro.adiciona( infoPaginas );
+
+		await Nando.Red.enviaJson( 'nuevoebook', informacion );
+
+		Nando.Estados.cambiaA( Nando.Estados.LEYENDO );
+
+		return Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' ));
 	}
 
 	/**
@@ -238,20 +225,17 @@
 	 * @private
 	 * @author Nando
 	 */
-	function _terminaLibro() 
+	async function _terminaLibro() 
 	{
-		Nando.Libro.termina()
-			.then( libro => Nando.Red.enviaJson( 'terminaebook', libro ))
-			.then( () => Nando.Elementos.eliminaDeLa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' )))
-			.then( () => Nando.Estados.cambiaA( Nando.Estados.LIBRO ))
-			.then( () => 
-			{
-				if ( !Nando.Libro.detalleLibro.categoria ) 
-				{
-					return Nando.Estados.cambiaA( Nando.Estados.CATEGORIZA );
-				}
-			})
-			.catch( error => console.error( error ));
+		let libro = Nando.Libro.termina();
+
+		await Nando.Red.enviaJson( 'terminaebook', libro );
+		await Nando.Elementos.eliminaDeLa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' ));
+
+		if ( !Nando.Libro.detalleLibro.categoria ) 
+			Nando.Estados.cambiaA( Nando.Estados.CATEGORIZA );
+		else
+			Nando.Estados.cambiaA( Nando.Estados.LIBRO );
 	}
 	
 	/**
@@ -259,18 +243,18 @@
 	 * @private
 	 * @author Nando
 	 */
-	function _muestraInputCategoria() 
+	async function _muestraInputCategoria() 
 	{
-		Nando.Cargador.trae( 'Estados' )
-			.then( Estados => Estados.cambiaA( Estados.CATEGORIZA ))
-			.catch( error => console.error( error ));
+		let Estados = await Nando.Cargador.trae( 'Estados' );
+
+		Estados.cambiaA( Estados.CATEGORIZA );
 	}
 	
 	/**
 	 * Cambia o asigna una categoria a un ebook
 	 * @param	{Event}	e
 	 */
-	function _changeInputCategoria( e ) 
+	async function _changeInputCategoria( e ) 
 	{
 		let categoriaNueva = e.target.value.trim();
 		
@@ -278,26 +262,19 @@
 
 		let detalles         = Nando.Libro.detalleLibro;
 		let categoriaAntigua = detalles.categoria;
-		
-		Nando.Libro.actualiza( categoriaNueva )
-			.then( detalleLibro => 
-			{
-				if ( !detalleLibro ) return Promise.reject( 'No hay informacion para realizar la categorizacion' );
+		let detalleLibro     = Nando.Libro.actualiza( categoriaNueva );
 
-				const cambio = 
-				{
-					nombre : detalleLibro.nombre,
-					antigua: categoriaAntigua,
-					nueva  : detalleLibro.categoria,
-				};
+		const cambio = 
+		{
+			nombre : detalleLibro.nombre,
+			antigua: categoriaAntigua,
+			nueva  : detalleLibro.categoria,
+		};
 
-				Nando.Red.enviaJson( 'categoriza', cambio );
-				
-				return detalleLibro;
-			})
-			.then( detalleLibro => Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( 'section' )))
-			.then( () => Nando.Estados.cambiaA( Nando.Estados.anterior ))
-			.catch( error => console.log( error ));
+		await Nando.Red.enviaJson( 'categoriza', cambio );
+		await Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( 'section' ));
+
+		Nando.Estados.cambiaA( Nando.Estados.anterior );
 	}
 	
 	/**
@@ -313,7 +290,7 @@
 	 * Al datalist de busqueda le agregamos la lista de los ebooks que tienemos
 	 * @returns	{promise}
 	 */
-	function adicionaCategoriasADatalistDeEbooks( ebooks ) 
+	async function adicionaCategoriasADatalistDeEbooks( ebooks ) 
 	{
 		return Nando.Elementos.creaOptionsPara( Nando.Elementos.damePorId( 'BuscarEbookList' ), ebooks );
 	}
@@ -323,14 +300,13 @@
 	 * scroll para que el usuario pueda ver este link y hacer click si quiere.
 	 * El link encontrado lo marcamos de un color amarillo
 	 */
-	function _changeBuscarEbook() 
+	async function _changeBuscarEbook() 
 	{
-		const ebook = this.value.trim();
+		const ebook         = this.value.trim();
+		const Elementos     = await Nando.Cargador.trae( 'Elementos' );
+		const [ $elemento ] = await Elementos.buscaConTextContent( ebook, 'a', Elementos.dame( 'section' ));
 		
-		return Nando.Cargador.trae( 'Elementos' )
-			.then( Elementos => Elementos.buscaConTextContent( ebook, 'a', Nando.Elementos.dame( 'section' )))
-			.then(([ $elemento ]) => Nando.Elementos.scrollTo( $elemento ))
-			.catch( error => console.log( error ));
+		Elementos.scrollTo( $elemento );
 	}
 	
 	/**
@@ -374,12 +350,11 @@
 	 */
 	async function ajustaPosicionElementos() 
 	{
-		const Elementos = await Nando.Cargador.trae( 'Elementos' );
-		const $section  = await Elementos.dame( 'section' );
+		const Elementos   = await Nando.Cargador.trae( 'Elementos' );
+		const $section    = await Elementos.dame( 'section' );
+		const propiedades = [ 'width', 'height' ];
 
-		Elementos.posicionAlCien( 'vertical', $section );
-
-		// TODO: ajustar el ancho del $section al 60%
+		Elementos.posicionAlCien( propiedades, $section );
 	}
 	
 	Nando.Arquitecto = 

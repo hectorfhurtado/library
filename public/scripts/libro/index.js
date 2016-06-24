@@ -144,7 +144,7 @@
 
 			this.detalleLibro = detalles;
 
-			return Promise.resolve( detalles );
+			return detalles;
 		},
 		
 		/**
@@ -160,7 +160,7 @@
 			detalles.categoria = categoria;
 			this.detalleLibro  = detalles;
 			
-			return Promise.resolve( detalles );
+			return detalles;
 		},
 		
 		get ebooks() 

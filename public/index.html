@@ -13,12 +13,16 @@
             --default-space  : 32px;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         html, body, iframe {
             height : 100%;
             margin : 0;
             padding: 0;
             width  : 100%;
-            font-size: calc(var(--default-space) / 2);
+            font-size: 16px;
         }
 
         body {
@@ -27,17 +31,21 @@
         }
 
         .grid-guide {
-            background-image: radial-gradient(hsl(0, 0%, 100%) calc(var(--default-space) / 16), hsla(0, 0%, 0%, 0) 0);
-            background-size: var(--default-space) var(--default-space);
-            background-position: calc(var(--default-space) / 2) calc(var(--default-space) / 2);
+            background-image: radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
+            background-size: 2rem 2rem;
+            background-position: 1rem 1rem;
         }
 
         ul {
             list-style: none;
+            padding-left: 2rem;
+            margin: 2rem 0;
+            line-height: 2rem;
         }
 
         li {
-            padding-left: 1rem;
+            padding-left: 2rem;
+            line-height: 2rem;
         }
 
         section {
@@ -50,7 +58,7 @@
             margin-top      : 2rem;
             overflow-y      : auto;
             top             : 0;
-            widows          : 60%;
+            width           : 60%;
         }
 
         aside {
@@ -71,7 +79,7 @@
             border-radius   : 50%;
             color           : var(--color-de-letras);
             cursor          : pointer;
-            font-size       : 1.5rem;
+            font-size       : 2rem;
             height          : 3rem;
             margin          : 0px;
             padding         : 0px;
@@ -95,11 +103,13 @@
         }
         
         #BuscarEbook {
-            width       : 80%;
-            margin-left : 2.5rem;
-            padding     : 0.5rem;
+            font-size   : inherit;
+            height      : 2rem;
+            line-height : 2rem;
+            margin-left : 2rem;
             margin-top  : 2rem;
-            padding-left: 1rem;
+            padding-left: 2rem;
+            width       : 80%;
         }
 
         a {
