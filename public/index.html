@@ -5,11 +5,33 @@
 
 <body class="grid-guide">
     <style>
+        @font-face {
+            font-family: "Concert One";
+            src: url("/fuentes/Concert_One/ConcertOne-Regular.ttf");
+        }
+
+        @font-face {
+            font-family: "Work Sans";
+            src: url("/fuentes/Work_Sans/WorkSans-Regular.ttf");
+        }
+
+        @font-face {
+            font-family: "Work Sans Bold";
+            src: url("/fuentes/Work_Sans/WorkSans-Bold.ttf");
+        }
+
         :root {
+            /*--color-de-fondo : rgb(63, 63, 63);
+            --fondo-semitransparente: hsla(195, 100%, 50%, 0.1);
+            --color-de-letras: hsl(195, 53%, 79%);;
+            --link-visitado  : hsl(195, 100%, 40%);
+            --sombra-de-letras: hsla(195, 100%, 75%, 0.5);
+            --default-space  : 32px;*/
             --color-de-fondo : rgb(63, 63, 63);
-            --fondo-semitransparente: hsla(0, 100%, 0%, 0.2);
-            --color-de-letras: rgb(242, 242, 242);
-            --link-visitado  : rgb(177, 177, 177);
+            --fondo-semitransparente: hsla(186, 100%, 50%, 0.1);
+            --color-de-letras: hsl(186, 100%, 75%);
+            --link-visitado  : hsl(186, 100%, 40%);
+            --sombra-de-letras: hsla(186, 100%, 75%, 0.5);
             --default-space  : 32px;
         }
 
@@ -30,11 +52,11 @@
             overflow        : hidden;
         }
 
-        .grid-guide {
+        /*.grid-guide {
             background-image: radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
             background-size: 2rem 2rem;
             background-position: 1rem 1rem;
-        }
+        }*/
 
         ul {
             list-style: none;
@@ -46,11 +68,19 @@
         li {
             padding-left: 2rem;
             line-height: 2rem;
+            font-family: "Work Sans";
+        }
+
+        strong { 
+            font-family:  "Concert One";
+            font-weight: normal;
+            font-size:   1.25rem;
+            height:      1rem;
         }
 
         section {
-            background-color: var(--fondo-semitransparente);
-            border          : solid thin #908e8e;
+            background-color: transparent;
+            border          : solid thin var(--color-de-letras);
             color           : var(--color-de-letras);
             height          : 34rem;
             left            : 0;
@@ -59,6 +89,15 @@
             overflow-y      : auto;
             top             : 0;
             width           : 60%;
+            overflow-x      : hidden;
+        }
+
+        input {
+            background-color: transparent;
+            color: inherit;
+            border: none;
+            outline: none;
+            border-bottom: solid var(--color-de-letras);
         }
 
         aside {
@@ -114,6 +153,9 @@
 
         a {
             color: var(--color-de-letras);
+            text-decoration: none;
+            text-overflow: ellipsis;
+            text-rendering: optimizeLegibility;
         }
 
         a:visited {

@@ -45,6 +45,7 @@ module.exports =
 		else if ( /\.json$/.test(       req.url ))  res.setHeader( 'Content-type', 'application/json' );
 		else if ( /\.ico$/.test(        req.url ))  res.setHeader( 'Content-type', 'image/x-icon' );
 		else if ( /\.svg$/.test(        req.url ))  res.setHeader( 'Content-type', 'image/svg+xml' );
+		else if ( /\.ttf$/.test(        req.url ))  res.setHeader( 'Content-type', 'application/x-font-ttf' );
 		else                                        return;
 	},
     
