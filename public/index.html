@@ -33,10 +33,22 @@
             --link-visitado  : hsl(186, 100%, 40%);
             --sombra-de-letras: hsla(186, 100%, 75%, 0.5);
             --default-space  : 32px;
+            --fondo-oscuro-transparente: hsla(0, 0%, 0%, 0.5);
         }
 
         * {
             box-sizing: border-box;
+        }
+
+        /* from https://css-tricks.com/custom-scrollbars-in-webkit/ */
+        ::-webkit-scrollbar {
+            width: calc(1rem / 2);
+        }
+        ::-webkit-scrollbar-track        {
+            border-left: solid thin var(--color-de-letras); 
+        }
+        ::-webkit-scrollbar-thumb        {
+            background-color: var(--color-de-letras);
         }
 
         html, body, iframe {
@@ -52,11 +64,11 @@
             overflow        : hidden;
         }
 
-        /*.grid-guide {
+        .grid-guide {
             background-image: radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
             background-size: 2rem 2rem;
             background-position: 1rem 1rem;
-        }*/
+        }
 
         ul {
             list-style: none;
@@ -71,6 +83,15 @@
             font-family: "Work Sans";
         }
 
+        li:hover {
+            background-color: var(--color-de-letras);
+        }
+
+        li:hover > a,
+        li:hover > a:visited {
+            color: var(--fondo-oscuro-transparente);
+        }
+
         strong { 
             font-family:  "Concert One";
             font-weight: normal;
@@ -79,7 +100,7 @@
         }
 
         section {
-            background-color: transparent;
+            background-color: var(--fondo-semitransparente);
             border          : solid thin var(--color-de-letras);
             color           : var(--color-de-letras);
             height          : 34rem;
