@@ -3,132 +3,288 @@
 <meta charset="utf-8">
 <title>Library</title>
 
-<style>
-    :root {
-        --color-de-fondo : rgb(63, 63, 63);
-        --color-de-letras: rgb(242, 242, 242);
-        --link-visitado  : rgb(177, 177, 177);
-    }
+<body class="grid-guide">
+    <style>
+        @font-face {
+            font-family: "Concert One";
+            src: url("/fuentes/Concert_One/ConcertOne-Regular.ttf");
+        }
 
-    html, body, iframe {
-        height : 100%;
-        margin : 0;
-        padding: 0;
-        width  : 100%;
-    }
+        @font-face {
+            font-family: "Work Sans";
+            src: url("/fuentes/Work_Sans/WorkSans-Regular.ttf");
+        }
 
-    body {
-        background-color: var(--color-de-fondo);
-        overflow        : hidden;
-    }
+        @font-face {
+            font-family: "Work Sans Bold";
+            src: url("/fuentes/Work_Sans/WorkSans-Bold.ttf");
+        }
 
-    ul {
-        list-style: none;
-    }
+        :root {
+            --color-de-fondo : rgb(63, 63, 63);
+            --fondo-semitransparente: hsla(186, 100%, 50%, 0.1);
+            --color-de-letras: hsl(186, 100%, 75%);
+            --link-visitado  : hsl(186, 100%, 40%);
+            --sombra-de-letras: hsla(186, 100%, 75%, 0.5);
+            --default-space  : 32px;
+            --fondo-oscuro-transparente: hsla(0, 0%, 0%, 0.5);
+        }
 
-    li {
-        padding-left: 1rem;
-    }
+        @keyframes crece {
+            from {
+                transform: scale(0, 0.);
+            }
+            from {
+                transform: scale(0.01, 0.01);
+                background-color: var(--color-de-letras);
+            }
+            50% {
+                transform: scale(1, 0.01);
+                background-color: var(--color-de-letras);
+            }
+            to {
+                transform: scale(1, 1);
+                background-color: var(--fondo-semitransparente);
+            }
+        }
 
-    section {
-        background-color: var(--color-de-fondo);
-        border          : solid thin #908e8e;
-        color           : var(--color-de-letras);
-        height          : 90%;
-        left            : 0;
-        margin-left     : 3rem;
-        margin-top      : 2rem;
-        overflow-y      : auto;
-        top             : 0;
-    }
+        @keyframes disminuye {
+            from {
+                transform: scale(1, 1);
+                background-color: var(--fondo-semitransparente);
+            }
+            50% {
+                transform: scale(1, 0.01);
+                background-color: var(--color-de-letras);
+            }
+            99% {
+                transform: scale(0.01, 0.01);
+            }
+            to {
+                transform: scale(0, 0);
+                background-color: var(--color-de-letras);
+            }
+        }
 
-    aside {
-        display       : flex;
-        flex-direction: column;
-        top           : 3rem;
-        right         : 1rem;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    #CloseEbook,
-    #EndEbook,
-    #CategorizeEbook,
-    #RankEbook,
-    #RankList > button,
-    #AddEbook{
-        background-color: var(--color-de-fondo);
-        border          : medium solid var(--color-de-letras);
-        border-radius   : 50%;
-        color           : var(--color-de-letras);
-        cursor          : pointer;
-        font-size       : 1.5rem;
-        height          : 3rem;
-        margin          : 0px;
-        padding         : 0px;
-        vertical-align  : middle;
-        width           : 3rem;
-        position        : relative;
-    }
-    
-    button > span {
-        display    : block;
-        font-size  : 0.6rem;
-        font-weight: bold;
-        margin-top : -0.4rem;
-    }
-    
-    #RankList > button:hover::after {
-        position: absolute;
-        top     : 0.2rem;
-        content : '★';
-        left    : 0.7rem;
-    }
-    
-    #BuscarEbook {
-        width       : 80%;
-        margin-left : 2.5rem;
-        padding     : 0.5rem;
-        margin-top  : 2rem;
-        padding-left: 1rem;
-    }
+        /* from https://css-tricks.com/custom-scrollbars-in-webkit/ */
+        ::-webkit-scrollbar {
+            width: calc(1rem / 2);
+        }
+        ::-webkit-scrollbar-track        {
+            border-left: solid thin var(--color-de-letras); 
+        }
+        ::-webkit-scrollbar-thumb        {
+            background-color: var(--color-de-letras);
+        }
 
-    a {
-        color: var(--color-de-letras);
-    }
+        html, body, iframe {
+            height : 100%;
+            margin : 0;
+            padding: 0;
+            width  : 100%;
+            font-size: 16px;
+        }
 
-    a:visited {
-        color: var(--link-visitado);
-    }
+        body {
+            background-color: var(--color-de-fondo);
+            overflow        : hidden;
+        }
 
-    .absolute {
-        position: absolute;
-    }
+        /*.grid-guide {
+            background-image: radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
+            background-size: 2rem 2rem;
+            background-position: 1rem 1rem;
+        }*/
 
-    .invisible {
-        display: none;
-    }
-</style>
-<iframe id="iframe" src="" ></iframe>
+        ul {
+            list-style: none;
+            padding-left: 2rem;
+            margin: 2rem 0;
+            line-height: 2rem;
+        }
 
-<section class="absolute">
-    <input type="text" id="BuscarEbook" list="BuscarEbookList" placeholder="Escribe el ebook a buscar" />
-    <datalist id="BuscarEbookList"></datalist>
-</section>
+        li {
+            padding-left: 2rem;
+            line-height: 2rem;
+            font-family: "Work Sans";
+        }
 
-<aside class="absolute invisible">
-    <button id="CloseEbook" title="Cerrar">X</button>
-    <button id="AddEbook"   title="Adiciona">+</button>
-    <button id="EndEbook"   title="Terminar">-</button>
-    <button id="CategorizeEbook"   title="Categorizar">&hArr;</button>
-    <input type="text" id="CategoriaEbook" class="invisible" placeholder="Escribe categoria" list="CategoriaEbookList" />
-    <button id="RankEbook"  title="Calificar">&#9733<span>0</span></button>
-    <div id="RankList" class="invisible">
-        <button>&#9734<span>1</span></button>
-        <button>&#9734<span>2</span></button>
-        <button>&#9734<span>3</span></button>
-        <button>&#9734<span>4</span></button>
-        <button>&#9734<span>5</span></button>
-    </div>
-    <datalist id="CategoriaEbookList"></datalist>
-</aside>
+        li:hover {
+            background-color: var(--color-de-letras);
+        }
 
-<script src="index.js"></script>
+        li:hover > a,
+        li:hover > a:visited {
+            color: var(--fondo-oscuro-transparente);
+        }
+
+        strong { 
+            font-family:  "Concert One";
+            font-weight: normal;
+            font-size:   1.25rem;
+            height:      1rem;
+        }
+
+        section {
+            background-color: var(--fondo-semitransparente);
+            border          : solid thin var(--color-de-letras);
+            color           : var(--color-de-letras);
+            height          : 34rem;
+            left            : 0;
+            margin-left     : 2rem;
+            margin-top      : 2rem;
+            overflow-y      : auto;
+            top             : 0;
+            width           : 60%;
+            overflow-x      : hidden;
+
+            transform-origin: top center;
+        }
+
+        section > * {
+            opacity: 0;
+            transition: opacity 0.2s 0.6s cubic-bezier(0.55, 0.09, 0.68, 0.53);
+        }
+
+        .grow-animation {
+            animation: crece 0.6s cubic-bezier(0.55, 0.09, 0.68, 0.53) forwards;
+        }
+
+        .shrink-animation {
+            animation: disminuye 0.6s cubic-bezier(0.55, 0.09, 0.68, 0.53) forwards;
+        }
+
+        .grow-animation > * {
+            opacity: 1;
+        }
+
+        input {
+            background-color: transparent;
+            color: inherit;
+            border: none;
+            outline: none;
+            border-bottom: solid var(--color-de-letras);
+        }
+
+        aside {
+            background-color: var(--fondo-semitransparente);
+            border: solid thin var(--color-de-letras); 
+            display       : flex;
+            flex-direction: column;
+            top           : 2rem;
+            right         : 2rem;
+            min-width     : 4rem;
+            transform-origin: top center;
+            transition: width 0.3s ease-in;
+        }
+
+        #CloseEbook,
+        #EndEbook,
+        #CategorizeEbook,
+        #RankEbook,
+        #RankList > button,
+        #AddEbook {
+            background-color: transparent;
+            border          : none;
+            color           : var(--color-de-letras);
+            cursor          : pointer;
+            font-size       : 2rem;
+            height          : 4rem;
+            margin          : 0px;
+            padding         : 0px;
+            vertical-align  : middle;
+            width           : 100%;
+            position        : relative;
+        }
+
+        #CloseEbook:hover,
+        #EndEbook:hover,
+        #CategorizeEbook:hover,
+        #RankEbook:hover,
+        #RankList:hover > button,
+        #AddEbook:hover,
+        #CategoriaEbook:hover {
+            background-color: var(--fondo-oscuro-transparente);
+        }
+        
+        button > span {
+            display    : block;
+            font-size  : 0.6rem;
+            font-weight: bold;
+            margin-top : -0.4rem;
+        }
+        
+        #RankList > button:hover::after {
+            position: absolute;
+            top     : 0.5rem;
+            content : '★';
+            left    : 3.8rem;
+        }
+        
+        #BuscarEbook,
+        #CategoriaEbook {
+            font-size   : inherit;
+            height      : 2rem;
+            line-height : 2rem;
+            margin-left : 2rem;
+            margin-top  : 2rem;
+            padding-left: 2rem;
+            width       : 80%;
+        }
+
+        #CategoriaEbook {
+            height: 4rem;
+            margin: 0;
+            width: 100%;
+        }
+
+        a {
+            color: var(--color-de-letras);
+            text-decoration: none;
+            text-overflow: ellipsis;
+            text-rendering: optimizeLegibility;
+        }
+
+        a:visited {
+            color: var(--link-visitado);
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .invisible {
+            display: none;
+        }
+    </style>
+    <iframe id="iframe" src="" class="" ></iframe>
+
+    <section class="absolute grow-animation">
+        <input type="text" id="BuscarEbook" list="BuscarEbookList" placeholder="Escribe el ebook a buscar" />
+        <datalist id="BuscarEbookList"></datalist>
+        <div class="listas"></div>
+    </section>
+
+    <aside class="absolute shrink-animation">
+        <button id="CloseEbook" title="Cerrar">&times;</button>
+        <button id="AddEbook"   title="Adiciona">+</button>
+        <button id="EndEbook"   title="Terminar">-</button>
+        <button id="CategorizeEbook"   title="Categorizar">&hArr;</button>
+        <input type="text" id="CategoriaEbook" class="invisible" placeholder="Escribe categoria" list="CategoriaEbookList" />
+        <button id="RankEbook"  title="Calificar">&#9733<span>0</span></button>
+        <div id="RankList" class="invisible">
+            <button>&#9734<span>1</span></button>
+            <button>&#9734<span>2</span></button>
+            <button>&#9734<span>3</span></button>
+            <button>&#9734<span>4</span></button>
+            <button>&#9734<span>5</span></button>
+        </div>
+        <datalist id="CategoriaEbookList"></datalist>
+    </aside>
+
+    <script src="index.js"></script>
+</body>

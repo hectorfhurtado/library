@@ -32,7 +32,7 @@
         "block-spacing": "error",
         "brace-style": [
             "error",
-            "stroustrup"
+            "allman"
         ],
         "callback-return": "error",
         "camelcase": "error",
@@ -99,8 +99,16 @@
             "error",
             "unix"
         ],
-        "lines-around-comment": "error",
-        "max-depth": "error",
+        "lines-around-comment": [
+            "error",
+            {
+                "beforeBlockComment": false
+            }
+        ],
+        "max-depth": [
+            "error",
+            7
+        ],
         "max-len": [
             "error",
             {
@@ -108,7 +116,10 @@
             }
         ],
         "max-nested-callbacks": "error",
-        "max-params": "error",
+        "max-params": [
+            "error",
+            7
+        ],
         "max-statements": "off",
         "max-statements-per-line": [
             "error",
@@ -235,7 +246,7 @@
         "padded-blocks": "off",
         "prefer-arrow-callback": "off",
         "prefer-const": "off",
-        "prefer-reflect": "error",
+        "prefer-reflect": "off",
         "prefer-rest-params": "error",
         "prefer-spread": "error",
         "prefer-template": "off",
@@ -247,7 +258,7 @@
         "radix": "error",
         "require-jsdoc": "off",
         "require-yield": "error",
-        "semi": "off",
+        "semi": "error",
         "semi-spacing": "error",
         "sort-imports": "error",
         "sort-vars": "error",
@@ -278,7 +289,10 @@
             "inside"
         ],
         "wrap-regex": "error",
-        "yield-star-spacing": "error",
+        "yield-star-spacing": [
+            "error",
+            "before"
+        ],
         "yoda": "error",
         "async-await/space-after-async": 2,
         "async-await/space-after-await": 2

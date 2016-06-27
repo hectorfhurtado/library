@@ -1,10 +1,13 @@
-const http      = require( 'http' )
-const Servidor  = require( './servidor' )
-const Libro     = require( '../lib/libro')
-const server    = http.createServer(( req, res ) => Servidor.sirve( req, res ))
+const http      = require( 'http' );
+const Servidor  = require( './servidor' );
+const Libro     = require( '../lib/libro');
+const server    = http.createServer(( req, res ) => Servidor.sirve( req, res ));
 
-server.listen( 7010 )
+const PUERTO = 7010;
 
-Libro.verificaSiExisteEbooks()
+server.listen( PUERTO );
 
-console.log( 'http://localhost:7010' )
+Libro.verificaSiExisteEbooks();
+
+/* eslint no-console: "off" */
+console.log( 'http://localhost:7010' );

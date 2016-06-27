@@ -1,16 +1,17 @@
 /* global Nando */
 
-( function() {
-
-	let _pilaFunciones = []
+(function() 
+{
+	let _pilaFunciones = [];
 	
-	Nando.DOM = {
-
+	Nando.DOM = 
+	{
 		/**
 		 * Devuelve si queda algo para hacer
 		 */
-		get quedanFunciones() {
-			return !!_pilaFunciones.length
+		get quedanFunciones() 
+		{
+			return Boolean( _pilaFunciones.length );
 		},
 
 		/**
@@ -21,28 +22,31 @@
 		 * @param {string} conUnaFuncion  La funcion a realizar
 		 * @param {object} $esteElemento  Otro DOMElement
 		 */
-		adiciona( $aEsteElemento, conUnaFuncion, $esteElemento ) {
-
-			if ( this.quedanFunciones === false ) {
-				requestAnimationFrame( _correFuncion )
+		adiciona( $aEsteElemento, conUnaFuncion, $esteElemento ) 
+		{
+			if ( this.quedanFunciones === false ) 
+			{
+				requestAnimationFrame( _correFuncion );
 			}
 
-			_pilaFunciones.push([ $aEsteElemento, conUnaFuncion, $esteElemento ])
+			_pilaFunciones.push([ $aEsteElemento, conUnaFuncion, $esteElemento ]);
 		},
-	}
+	};
 	
 	/**
 	 * Cuando requestAnimationFrame llama a esta funcion, toma el trabajo para hacer y lo ejecuta
 	 * @author Nando
 	 * @private
 	 */
-	function _correFuncion() {
-		let [ $elementoA, funcion, $elementoB ] = _pilaFunciones.shift()
+	function _correFuncion() 
+	{
+		let [ $elementoA, funcion, $elementoB ] = _pilaFunciones.shift();
 
-		$elementoA[ funcion ]( $elementoB )
+		$elementoA[ funcion ]( $elementoB );
 
-		if ( Nando.DOM.quedanFunciones ) {
-			requestAnimationFrame( _correFuncion )
+		if ( Nando.DOM.quedanFunciones ) 
+		{
+			requestAnimationFrame( _correFuncion );
 		}
 	}
-})()
+})();
