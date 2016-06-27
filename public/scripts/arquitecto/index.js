@@ -4,6 +4,7 @@
 {
 	async function inicia() 
 	{
+		animarSeccionPrincipal();
 		await iniciaLibro();
 		let lista = await pideLista();
 		let categorias = pideCategorias( lista );
@@ -18,6 +19,10 @@
 		inicializaEventHandlers();
 	}
 	
+	function animarSeccionPrincipal() {
+		document.querySelector( 'section' ).classList.add( 'grow-animation' );
+	}
+
 	/**
 	 * Pide al modulo Red la lista de libros en la biblioteca del usuario
 	 * @author Nando
@@ -73,7 +78,7 @@
 	{
 		let categorias = Nando.Libro.categoriasConLibros;
 
-		return Nando.Elementos.creaListaLibros( categorias, Nando.Elementos.dame( 'section' ));
+		return Nando.Elementos.creaListaLibros( categorias, Nando.Elementos.dame( '.listas' ));
 	}
 	
 	/**
@@ -87,7 +92,7 @@
 
 		const [ $section, $aside, $inputCategoria, $inputBuscar, $rankList ] = await Promise.all(
 		[
-			Elementos.dame( 'section' ),
+			Elementos.dame( '.listas' ),
 			Elementos.dame( 'aside' ),
 			Elementos.damePorId( 'CategoriaEbook' ),
 			Elementos.damePorId( 'BuscarEbook' ),
@@ -217,7 +222,7 @@
 
 		Nando.Estados.cambiaA( Nando.Estados.LEYENDO );
 
-		return Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' ));
+		return Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( '.listas' ));
 	}
 
 	/**
@@ -230,7 +235,7 @@
 		let libro = Nando.Libro.termina();
 
 		await Nando.Red.enviaJson( 'terminaebook', libro );
-		await Nando.Elementos.eliminaDeLa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( 'section' ));
+		await Nando.Elementos.eliminaDeLa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( '.listas' ));
 
 		if ( !Nando.Libro.detalleLibro.categoria ) 
 			Nando.Estados.cambiaA( Nando.Estados.CATEGORIZA );
@@ -272,7 +277,7 @@
 		};
 
 		await Nando.Red.enviaJson( 'categoriza', cambio );
-		await Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( 'section' ));
+		await Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( '.listas' ));
 
 		Nando.Estados.cambiaA( Nando.Estados.anterior );
 	}
@@ -304,7 +309,7 @@
 	{
 		const ebook         = this.value.trim();
 		const Elementos     = await Nando.Cargador.trae( 'Elementos' );
-		const [ $elemento ] = await Elementos.buscaConTextContent( ebook, 'a', Elementos.dame( 'section' ));
+		const [ $elemento ] = await Elementos.buscaConTextContent( ebook, 'a', Elementos.dame( '.listas' ));
 		
 		Elementos.scrollTo( $elemento );
 	}

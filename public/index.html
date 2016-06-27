@@ -21,12 +21,6 @@
         }
 
         :root {
-            /*--color-de-fondo : rgb(63, 63, 63);
-            --fondo-semitransparente: hsla(195, 100%, 50%, 0.1);
-            --color-de-letras: hsl(195, 53%, 79%);;
-            --link-visitado  : hsl(195, 100%, 40%);
-            --sombra-de-letras: hsla(195, 100%, 75%, 0.5);
-            --default-space  : 32px;*/
             --color-de-fondo : rgb(63, 63, 63);
             --fondo-semitransparente: hsla(186, 100%, 50%, 0.1);
             --color-de-letras: hsl(186, 100%, 75%);
@@ -34,6 +28,42 @@
             --sombra-de-letras: hsla(186, 100%, 75%, 0.5);
             --default-space  : 32px;
             --fondo-oscuro-transparente: hsla(0, 0%, 0%, 0.5);
+        }
+
+        @keyframes crece {
+            from {
+                transform: scale(0, 0.);
+            }
+            from {
+                transform: scale(0.01, 0.01);
+                background-color: var(--color-de-letras);
+            }
+            50% {
+                transform: scale(1, 0.01);
+                background-color: var(--color-de-letras);
+            }
+            to {
+                transform: scale(1, 1);
+                background-color: var(--fondo-semitransparente);
+            }
+        }
+
+        @keyframes disminuye {
+            from {
+                transform: scale(1, 1);
+                background-color: var(--fondo-semitransparente);
+            }
+            50% {
+                transform: scale(1, 0.01);
+                background-color: var(--color-de-letras);
+            }
+            99% {
+                transform: scale(0.01, 0.01);
+            }
+            to {
+                transform: scale(0, 0);
+                background-color: var(--color-de-letras);
+            }
         }
 
         * {
@@ -64,11 +94,11 @@
             overflow        : hidden;
         }
 
-        .grid-guide {
+        /*.grid-guide {
             background-image: radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
             background-size: 2rem 2rem;
             background-position: 1rem 1rem;
-        }
+        }*/
 
         ul {
             list-style: none;
@@ -111,6 +141,25 @@
             top             : 0;
             width           : 60%;
             overflow-x      : hidden;
+
+            transform-origin: top center;
+        }
+
+        section > * {
+            opacity: 0;
+            transition: opacity 0.2s 0.6s cubic-bezier(0.55, 0.09, 0.68, 0.53);
+        }
+
+        .grow-animation {
+            animation: crece 0.6s cubic-bezier(0.55, 0.09, 0.68, 0.53) forwards;
+        }
+
+        .shrink-animation {
+            animation: disminuye 0.6s cubic-bezier(0.55, 0.09, 0.68, 0.53) forwards;
+        }
+
+        .grow-animation > * {
+            opacity: 1;
         }
 
         input {
@@ -122,10 +171,15 @@
         }
 
         aside {
+            background-color: var(--fondo-semitransparente);
+            border: solid thin var(--color-de-letras); 
             display       : flex;
             flex-direction: column;
-            top           : 3rem;
-            right         : 1rem;
+            top           : 2rem;
+            right         : 2rem;
+            min-width     : 4rem;
+            transform-origin: top center;
+            transition: width 0.3s ease-in;
         }
 
         #CloseEbook,
@@ -133,19 +187,28 @@
         #CategorizeEbook,
         #RankEbook,
         #RankList > button,
-        #AddEbook{
-            background-color: var(--color-de-fondo);
-            border          : medium solid var(--color-de-letras);
-            border-radius   : 50%;
+        #AddEbook {
+            background-color: transparent;
+            border          : none;
             color           : var(--color-de-letras);
             cursor          : pointer;
             font-size       : 2rem;
-            height          : 3rem;
+            height          : 4rem;
             margin          : 0px;
             padding         : 0px;
             vertical-align  : middle;
-            width           : 3rem;
+            width           : 100%;
             position        : relative;
+        }
+
+        #CloseEbook:hover,
+        #EndEbook:hover,
+        #CategorizeEbook:hover,
+        #RankEbook:hover,
+        #RankList:hover > button,
+        #AddEbook:hover,
+        #CategoriaEbook:hover {
+            background-color: var(--fondo-oscuro-transparente);
         }
         
         button > span {
@@ -157,12 +220,13 @@
         
         #RankList > button:hover::after {
             position: absolute;
-            top     : 0.2rem;
+            top     : 0.5rem;
             content : '★';
-            left    : 0.7rem;
+            left    : 3.8rem;
         }
         
-        #BuscarEbook {
+        #BuscarEbook,
+        #CategoriaEbook {
             font-size   : inherit;
             height      : 2rem;
             line-height : 2rem;
@@ -170,6 +234,12 @@
             margin-top  : 2rem;
             padding-left: 2rem;
             width       : 80%;
+        }
+
+        #CategoriaEbook {
+            height: 4rem;
+            margin: 0;
+            width: 100%;
         }
 
         a {
@@ -191,15 +261,16 @@
             display: none;
         }
     </style>
-    <iframe id="iframe" src="" ></iframe>
+    <iframe id="iframe" src="" class="" ></iframe>
 
-    <section class="absolute">
+    <section class="absolute grow-animation">
         <input type="text" id="BuscarEbook" list="BuscarEbookList" placeholder="Escribe el ebook a buscar" />
         <datalist id="BuscarEbookList"></datalist>
+        <div class="listas"></div>
     </section>
 
-    <aside class="absolute invisible">
-        <button id="CloseEbook" title="Cerrar">X</button>
+    <aside class="absolute shrink-animation">
+        <button id="CloseEbook" title="Cerrar">&times;</button>
         <button id="AddEbook"   title="Adiciona">+</button>
         <button id="EndEbook"   title="Terminar">-</button>
         <button id="CategorizeEbook"   title="Categorizar">&hArr;</button>

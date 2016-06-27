@@ -132,16 +132,10 @@
 	function _estadoParaInicio([ $section, $aside ]) 
 	{
 		// No visibles
-		_oculta(
-		[
-			$aside,
-		]);
+		_mueve($aside);
 
 		// visibles
-		_muestra(
-		[
-			$section,
-		]);
+		_mueve( $section, { atras: true });
 	}
 
 	/**
@@ -161,21 +155,23 @@
 		// No visibles
 		_oculta(
 		[
-			$section,
 			$end,
 			$categoria,
 			$rankList,
 		]);
 
+		_mueve( $section );
+
 		// Visibles
 		_muestra(
 		[
-			$aside,
 			$close,
 			$add,
 			$categorize,
 			$rank,
 		]);
+
+		_mueve( $aside, { atras: true });
 	}
 
 	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) 
@@ -183,21 +179,23 @@
 		// No visibles
 		_oculta(
 		[
-			$section,
 			$add,
 			$categoria,
 			$rankList,
 		]);
 
+		_mueve( $section );
+
 		// Visibles
 		_muestra(
 		[
-			$aside,
 			$close,
 			$end,
 			$categorize,
 			$rank,
 		]);
+
+		_mueve( $aside, { atras: true });
 	}
 
 	function _estadoParaCategoriza([ , , , , , $categorize, $categoria ]) 
@@ -240,6 +238,20 @@
 	function _oculta( $elementos ) 
 	{
 		$elementos.forEach( $elemento => $elemento.classList.add( 'invisible' ));
+	}
+
+	function _mueve( $sectionPrincipal, { atras } = {})
+	{
+		if (atras)
+		{
+			$sectionPrincipal.classList.add( 'grow-animation' );
+			$sectionPrincipal.classList.remove( 'shrink-animation' );
+		}
+		else
+		{
+			$sectionPrincipal.classList.remove( 'grow-animation' );
+			$sectionPrincipal.classList.add( 'shrink-animation' );
+		}
 	}
 
 	Nando.Cargador.trae( 'Elementos', 'elementos/index' );
