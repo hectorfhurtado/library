@@ -105,7 +105,7 @@
 		$inputBuscar.addEventListener( 'change', _changeBuscarEbook, false );
 		$rankList.addEventListener( 'click', _clickEnRankList, false );
 
-		window.addEventListener( 'resize', ajustaPosicionElementos, false);
+		// window.addEventListener( 'resize', ajustaPosicionElementos, false);
 	}
 	
 	/**
@@ -344,7 +344,7 @@
 		Red.enviaJson( 'califica', { calificacion, libro: nombre });
 
 		let $botonCalificacion = await Elementos.damePorId( 'RankEbook' );
-		Elementos.califica( calificacion, $botonCalificacion );
+		Elementos.califica( calificacion, $botonCalificacion, nombre );
 
 		const Estados = await Nando.Cargador.trae( 'Estados' );
 		Estados.cambiaA( Estados.anterior );

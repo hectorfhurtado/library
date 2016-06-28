@@ -74,6 +74,9 @@
 		 */
 		creaListaLibros( lista, promesaElemento ) 
 		{
+			console.assert( Array.isArray( lista ), 'Lista es un arreglo', lista);
+			console.assert( promesaElemento && 'then' in promesaElemento, 'Debe ser una promesa', promesaElemento);
+
 			return Promise.all(
 			[
 				promesaElemento,
@@ -112,6 +115,15 @@
 						$a.href         = libro.link;
 
                         $li.appendChild( $a );
+
+						if (libro.calificacion)
+						{
+							let $p         = document.createElement( 'p' );
+							$p.textContent = '★'.repeat( + libro.calificacion );
+
+							$li.appendChild( $p );
+						}
+
                         $ul.appendChild( $li );
                     });
 					DOM.adiciona( $elemento, 'appendChild', $ul );
@@ -228,6 +240,14 @@
 
 				$li.appendChild( $a );
 
+				if (detalleLibro.calificacion)
+				{
+					let $p         = document.createElement( 'p' );
+					$p.textContent = '★'.repeat( +detalleLibro.calificacion );
+
+					$li.appendChild( $p );
+				}
+
 				DOM.adiciona( $ul, 'appendChild', $li );
 			});
 		},
@@ -321,8 +341,9 @@
 		 * Escribe la calificacion suministrada al boton encontrado
 		 * @param	{String}		calificacion
 		 * @param	{HTMLElement}	$elemento
+		 * @param	{String}		nombreLibro
 		 */
-		califica( calificacion, $elemento ) 
+		califica( calificacion, $elemento, nombreLibro ) 
 		{
 			console.assert( calificacion === 0 || Boolean(calificacion), 'Debe haber una calificacion para el libro' );
 			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento );
@@ -331,6 +352,20 @@
 			console.assert( Boolean($span), 'Debe existir el span a cambiar', $span );
 
 			$span.textContent = calificacion;
+
+			let items = Array.from( document.querySelectorAll( `a[href$="${ nombreLibro }"]` ));
+
+			// TODO: ver por que no funciona el parentNode
+
+			for (let item of items )
+			{
+				let $p = item.parentNode.querySelector( 'p' );
+
+				if ($p.textContent.startWith( '★' ))
+				{
+					$p.textContent = '★'.repeat( calificacion );
+				}
+			}
 		},
 
 		/**
