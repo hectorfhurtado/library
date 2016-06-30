@@ -123,8 +123,17 @@
 
 							$li.appendChild( $p );
 						}
+						
+						if (libro.notas)
+						{
+							let $p         = document.createElement( 'p' );
+							$p.textContent = libro.notas;
+
+							$li.appendChild( $p );
+						}
 
                         $ul.appendChild( $li );
+
                     });
 					DOM.adiciona( $elemento, 'appendChild', $ul );
                 });
@@ -355,17 +364,60 @@
 
 			let items = Array.from( document.querySelectorAll( `a[href$="${ nombreLibro }"]` ));
 
-			// TODO: ver por que no funciona el parentNode
-
 			for (let item of items )
 			{
 				let $p = item.parentNode.querySelector( 'p' );
 
-				if ($p.textContent.startWith( '★' ))
+				if ($p && $p.textContent.startsWith( '★' ) )
 				{
 					$p.textContent = '★'.repeat( calificacion );
 				}
+				else if (!$p && calificacion)
+				{
+					$p             = document.createElement( 'p' );
+					$p.textContent = '★'.repeat( calificacion );
+
+					item.parentNode.appendChild( $p );
+				}
 			}
+		},
+
+		/**
+		 * Actualiza los comentarios en la lista de libros	
+		 * @param	{String}		nota
+		 * @param	{HTMLElement}	$elemento
+		 * @param	{String}		nombreLibro
+		 */
+		async comenta( nota = '', $elemento, nombreLibro ) 
+		{
+			console.assert( typeof nota === 'string', 'La nota debe ser un string', nota );
+			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento );
+			console.assert( typeof nombreLibro === 'string', 'Debe venir el nombre del libro', nombreLibro);
+
+			const $txtarea = await this.damePorId( 'Notes' );
+
+			// Si son iguales es porque el llamado viene de escribir un nuevo comentario 
+			// Si no son iguales es porque el llamado viene del inicio de la aplicacion
+			if ($txtarea.value.trim() === nota)
+			{
+				let items = Array.from( document.querySelectorAll( `a[href$="${ nombreLibro }"]` ));
+
+				for (let item of items )
+				{
+					let $p = Array.from( item.parentNode.querySelectorAll( 'p' ));
+					let p  = $p.find(p => p.textContent.startsWith( '★' ) === false);
+
+					if (p) p.textContent = nota;
+					else
+					{
+						$p = document.createElement( 'p' );
+						$p.textContent = nota;
+
+						item.parentNode.appendChild( $p );
+					} 
+				}
+			}
+			else $txtarea.value = nota;
 		},
 
 		/**

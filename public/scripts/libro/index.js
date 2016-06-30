@@ -169,7 +169,7 @@
 			
 			let ebooks = [];
 			
-			this.categorias.forEach( categoria => ebooks.push( ..._lista[ categoria ]));
+			this.categorias.forEach( categoria => ebooks.push( ..._lista[ categoria ].map( libro => libro.nombre )));
 			
 			return new Set( ebooks );
 		},
@@ -205,6 +205,19 @@
 
 			return detalleLibro;
 		},
+
+		/**
+		 * Adiciona un comentario al libro que estamos leyendo
+		 * @param	{string}	comentario
+		 */
+		agregaComentario( comentario )
+		{
+			console.assert( typeof comentario == 'string', 'El comentario debe ser un String', comentario);
+
+			let detalles      = this.detalleLibro;
+			detalles.notas    = comentario;
+			this.detalleLibro = detalles;
+		}
 	};
 	
 	/**

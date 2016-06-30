@@ -178,7 +178,20 @@ module.exports =
 
                 req.on( 'data', chunk => 
                 {
-                    if (chunk ) Libro.califica( JSON.parse( chunk ));
+                    if (chunk) Libro.califica( JSON.parse( chunk ));
+                });
+
+                this._enviaRecibido( req, res );
+            }
+
+            // modificamos los comentarios que tenemos del libro
+            if ( /^\/comenta\.fetch/.test( req.url ) && req.method === 'POST' ) 
+            {
+                req.setEncoding( 'utf8' );
+
+                req.on( 'data', chunk => 
+                {
+                    if (chunk) Libro.comenta( JSON.parse( chunk ));
                 });
 
                 this._enviaRecibido( req, res );

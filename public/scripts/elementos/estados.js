@@ -7,6 +7,7 @@
 	const LEYENDO    = Symbol( 'leyendo' );
 	const CATEGORIZA = Symbol( 'categoriza' );
 	const CALIFICA   = Symbol( 'califica' );
+	const COMENTA    = Symbol( 'comenta' );
 
 	const ELEMENTOS = 
 	[
@@ -23,6 +24,8 @@
 		'CategoriaEbook',
 		'RankEbook',
 		'RankList',
+		'AddNote',
+		'Notes',
 	];
 
 	Nando.Estados = 
@@ -50,6 +53,11 @@
 		get CALIFICA() 
 		{
 			return CALIFICA;
+		},
+
+		get COMENTA()
+		{
+			return COMENTA;
 		},
 
 		anterior: null,
@@ -93,7 +101,13 @@
 
 					Promise.all( _armaPromesasElementos() ).then( _estadoParaCalifica );				
 					break;
-					
+
+				case COMENTA:
+					_actualizaEstadoInterno( estado );
+
+					Promise.all( _armaPromesasElementos() ).then( _estadoParaComenta );
+					break;
+
 				default:
 					break;
 			}
@@ -150,7 +164,7 @@
 	 * @param {object} $categorize        boton
 	 * @param {object} $categoria         Este es un Input
 	 */
-	function _estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) 
+	function _estadoParaLibro([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList, $addNote, $notes ]) 
 	{
 		// No visibles
 		_oculta(
@@ -158,6 +172,7 @@
 			$end,
 			$categoria,
 			$rankList,
+			$notes,
 		]);
 
 		_mueve( $section );
@@ -169,12 +184,13 @@
 			$add,
 			$categorize,
 			$rank,
+			$addNote,
 		]);
 
 		_mueve( $aside, { atras: true });
 	}
 
-	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList ]) 
+	function _estadoParaLeyendo([ $section, $aside, $close, $add, $end, $categorize, $categoria, $rank, $rankList, $addNote, $notes ]) 
 	{
 		// No visibles
 		_oculta(
@@ -182,6 +198,7 @@
 			$add,
 			$categoria,
 			$rankList,
+			$notes,
 		]);
 
 		_mueve( $section );
@@ -193,6 +210,7 @@
 			$end,
 			$categorize,
 			$rank,
+			$addNote,
 		]);
 
 		_mueve( $aside, { atras: true });
@@ -228,6 +246,15 @@
 		[
 			$rankList,
 		]);
+	}
+
+	function _estadoParaComenta([ , , , , , , , , , $addNote, $notes ])
+	{
+		// No visibles
+		_oculta([ $addNote ]);
+
+		// Visibles
+		_muestra([ $notes ]);
 	}
 
 	function _muestra( $elementos ) 
