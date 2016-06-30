@@ -169,7 +169,7 @@
 			
 			let ebooks = [];
 			
-			this.categorias.forEach( categoria => ebooks.push( ..._lista[ categoria ]));
+			this.categorias.forEach( categoria => ebooks.push( ..._lista[ categoria ].map( libro => libro.nombre )));
 			
 			return new Set( ebooks );
 		},
@@ -205,32 +205,45 @@
 
 			return detalleLibro;
 		},
+
+		/**
+		 * Adiciona un comentario al libro que estamos leyendo
+		 * @param	{string}	comentario
+		 */
+		agregaComentario( comentario )
+		{
+			console.assert( typeof comentario == 'string', 'El comentario debe ser un String', comentario);
+
+			let detalles      = this.detalleLibro;
+			detalles.notas    = comentario;
+			this.detalleLibro = detalles;
+		}
 	};
 	
 	/**
 	 * Crea las categorias para armar los links que se muestran al ususario
 	 * @private
 	 * @author Nando
-	 * @param   {string} categoria La categoria del libro
-	 * @param   {string} path      El path donde se encuentra el libro en la carpeta 'ebooks'
-	 * @returns {Array}  Con las propiedades libro y link
+	 * @param   {string} categoria 	La categoria del libro
+	 * @param   {object} objeto     El objeto con la informacion del back end
+	 * @returns {Array}  			Con las propiedades libro y link
 	 */
-	function _armaPropiedades( categoria, path ) 
+	function _armaPropiedades( categoria, objeto ) 
 	{
 		// Para 'Sin leer
 		let propiedades = 
 		{
-			libro: path,
-			link : path,
+			libro: objeto.nombre,
+			link : objeto.nombre,
 		};
 
 		switch ( categoria ) 
 		{
 			case 'Leyendo':
 
-				if ( /\//.test( path )) 
+				if ( /\//.test( objeto.nombre )) 
 				{
-					propiedades.libro = path.split( '/' )[ 1 ];
+					propiedades.libro = objeto.nombre.split( '/' )[ 1 ];
 				}
 				break;
 
@@ -239,9 +252,12 @@
 				break;
 
 			default:
-				propiedades.link = `${ categoria }/${ path }`;
+				propiedades.link = `${ categoria }/${ objeto.nombre }`;
 				break;
 		}
+
+		if (objeto.calificacion) propiedades.calificacion = objeto.calificacion;
+		if (objeto.notas)        propiedades.notas        = objeto.notas;
 
 		return propiedades;
 	}

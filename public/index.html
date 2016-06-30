@@ -118,8 +118,16 @@
         }
 
         li:hover > a,
-        li:hover > a:visited {
+        li:hover > a:visited,
+        li:hover > p {
             color: var(--fondo-oscuro-transparente);
+        }
+
+        li > p {
+            padding-left: 2rem;
+            margin: 0;
+            height: 1rem;
+            line-height: 1rem;
         }
 
         strong { 
@@ -133,15 +141,14 @@
             background-color: var(--fondo-semitransparente);
             border          : solid thin var(--color-de-letras);
             color           : var(--color-de-letras);
-            height          : 34rem;
             left            : 0;
             margin-left     : 2rem;
             margin-top      : 2rem;
             overflow-y      : auto;
             top             : 0;
+            bottom          : 2rem;
             width           : 60%;
             overflow-x      : hidden;
-
             transform-origin: top center;
         }
 
@@ -187,7 +194,9 @@
         #CategorizeEbook,
         #RankEbook,
         #RankList > button,
-        #AddEbook {
+        #AddEbook,
+        #AddNote,
+        #Notes {
             background-color: transparent;
             border          : none;
             color           : var(--color-de-letras);
@@ -207,7 +216,9 @@
         #RankEbook:hover,
         #RankList:hover > button,
         #AddEbook:hover,
-        #CategoriaEbook:hover {
+        #CategoriaEbook:hover,
+        #AddNote:hover,
+        #Notes:hover {
             background-color: var(--fondo-oscuro-transparente);
         }
         
@@ -247,10 +258,18 @@
             text-decoration: none;
             text-overflow: ellipsis;
             text-rendering: optimizeLegibility;
+            background: linear-gradient(currentColor, currentColor) no-repeat;
+            background-size: 100% 1px;
+            background-position: 0 1.15rem;
+            text-shadow: 0.05rem var(--fondo-oscuro-transparente), -0.05rem var(--fondo-oscuro-transparente);
         }
 
         a:visited {
             color: var(--link-visitado);
+        }
+
+        strong > a {
+            background-position: 0 1.45rem;
         }
 
         .absolute {
@@ -259,6 +278,42 @@
 
         .invisible {
             display: none;
+        }
+
+        #Notes {
+            font-size: 1rem;
+            cursor: text;
+            padding: 1rem;
+            height: 10rem;
+        }
+
+        svg {
+            stroke: var(--color-de-letras);
+            fill: none;
+            stroke-linejoin: round;
+            stroke-width: 4;
+        }
+
+        svg .lineas {
+            pointer-events: none;
+        }
+
+        svg .lineas line {
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        svg:hover .lineas line {
+            opacity: 1;
+            transition: opacity 1s;
+        }
+
+        svg .lineas line:nth-child(2) {
+            transition-delay: 0.3s; 
+        }
+
+        svg .lineas line:nth-child(3) {
+            transition-delay: 0.6s; 
         }
     </style>
     <iframe id="iframe" src="" class="" ></iframe>
@@ -275,15 +330,29 @@
         <button id="EndEbook"   title="Terminar">-</button>
         <button id="CategorizeEbook"   title="Categorizar">&hArr;</button>
         <input type="text" id="CategoriaEbook" class="invisible" placeholder="Escribe categoria" list="CategoriaEbookList" />
-        <button id="RankEbook"  title="Calificar">&#9733<span>0</span></button>
+        <button id="RankEbook"  title="Calificar">&#9733;<span>0</span></button>
         <div id="RankList" class="invisible">
-            <button>&#9734<span>1</span></button>
-            <button>&#9734<span>2</span></button>
-            <button>&#9734<span>3</span></button>
-            <button>&#9734<span>4</span></button>
-            <button>&#9734<span>5</span></button>
+            <button>&#9734;<span>1</span></button>
+            <button>&#9734;<span>2</span></button>
+            <button>&#9734;<span>3</span></button>
+            <button>&#9734;<span>4</span></button>
+            <button>&#9734;<span>5</span></button>
         </div>
         <datalist id="CategoriaEbookList"></datalist>
+        <button id="AddNote" title="Comentarios">
+            <svg data-id="AddNote" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+                <title>Icono de notas</title>
+                <g>
+                    <path d="M 60,20 30,20 30,80 70,80 70,30 60,20 60,30 70,30"></path>
+                </g>
+                <g class="lineas">
+                    <line x1="40" y1="40" x2="60" y2="40"></line>
+                    <line x1="40" y1="50" x2="60" y2="50"></line>
+                    <line x1="40" y1="60" x2="55" y2="60"></line>
+                </g>
+            </svg>
+        </button>
+        <textarea id="Notes" class="invisible"></textarea>
     </aside>
 
     <script src="index.js"></script>

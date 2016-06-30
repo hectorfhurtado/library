@@ -90,13 +90,14 @@
 	{
 		const  Elementos = await Nando.Cargador.trae( 'Elementos' );
 
-		const [ $section, $aside, $inputCategoria, $inputBuscar, $rankList ] = await Promise.all(
+		const [ $section, $aside, $inputCategoria, $inputBuscar, $rankList, $notes ] = await Promise.all(
 		[
 			Elementos.dame( '.listas' ),
 			Elementos.dame( 'aside' ),
 			Elementos.damePorId( 'CategoriaEbook' ),
 			Elementos.damePorId( 'BuscarEbook' ),
 			Elementos.damePorId( 'RankList' ),
+			Elementos.damePorId( 'Notes' ),
 		]);
 
 		$section.addEventListener( 'click', _clickEnSectionLibros, false );
@@ -104,8 +105,9 @@
 		$inputCategoria.addEventListener( 'change', _changeInputCategoria, false );
 		$inputBuscar.addEventListener( 'change', _changeBuscarEbook, false );
 		$rankList.addEventListener( 'click', _clickEnRankList, false );
+		$notes.addEventListener( 'change', _changeEnNotas, false );
 
-		window.addEventListener( 'resize', ajustaPosicionElementos, false);
+		// window.addEventListener( 'resize', ajustaPosicionElementos, false);
 	}
 	
 	/**
@@ -150,14 +152,19 @@
 		else Estados.cambiaA( Estados.LIBRO );		
 
 		let $rankEbook = await Nando.Elementos.damePorId( 'RankEbook' );
-		Nando.Elementos.califica( Nando.Libro.detalleLibro.calificacion || 0, $rankEbook );
+		Nando.Elementos.califica( detalle.calificacion || 0, $rankEbook );
+
+		const $listas = await Nando.Elementos.dame( '.listas' );
+		Nando.Elementos.comenta( detalle.notas, $listas, detalle.nombre );
 	}
 	
 	function _clickEnMenu( e ) 
 	{
-		if ( !e.target.id ) return;
+		if ( !e.target.id && !e.target.getAttribute('data-id') ) return;
 
-		switch( e.target.id ) 
+		let ID = e.target.id || e.target.getAttribute('data-id');
+
+		switch( ID ) 
 		{
 			case 'CloseEbook':
 				_cierraLibro();
@@ -177,6 +184,10 @@
 				
 			case 'RankEbook':
 				_muestraBarraCalificacion();
+				break;
+
+			case 'AddNote':
+				_muestraAreaParaNotas();
 				break;
 		}
 	}
@@ -344,7 +355,7 @@
 		Red.enviaJson( 'califica', { calificacion, libro: nombre });
 
 		let $botonCalificacion = await Elementos.damePorId( 'RankEbook' );
-		Elementos.califica( calificacion, $botonCalificacion );
+		Elementos.califica( calificacion, $botonCalificacion, nombre );
 
 		const Estados = await Nando.Cargador.trae( 'Estados' );
 		Estados.cambiaA( Estados.anterior );
@@ -360,6 +371,35 @@
 		const propiedades = [ 'width', 'height' ];
 
 		Elementos.posicionAlCien( propiedades, $section );
+	}
+
+	async function _muestraAreaParaNotas() {
+		const Estados = await Nando.Cargador.trae( 'Estados' );
+		Estados.cambiaA( Estados.COMENTA );
+	}
+
+	/**
+	 * Se encarga de tomar el comentario escrito por el usuario y coordinar para que sea actualizado el 
+	 * estado en la app, enviado al servidor, actualizado en las listas de ebooks y actualiza el Estado 
+	 * general de la app
+	 */
+	async function _changeEnNotas()
+	{
+		const comentario = this.value.trim();
+		const Libro      = await Nando.Cargador.trae( 'Libro' );
+		Libro.agregaComentario( comentario );
+
+		// TODO: Guardar la nota aun cuando no se este leyendo el libro
+		const Red             = await Nando.Cargador.trae( 'Red' );
+		let { nombre: libro } = Libro.detalleLibro;
+		Red.enviaJson( 'comenta', { notas: comentario, libro });
+
+		const Elementos         = await Nando.Cargador.trae( 'Elementos' );
+		const $contenedorListas = await Elementos.dame( '.listas' );
+		Elementos.comenta( comentario, $contenedorListas, libro ); 
+
+		const Estados = await Nando.Cargador.trae( 'Estados' );
+		Estados.cambiaA( Estados.anterior ); 
 	}
 	
 	Nando.Arquitecto = 
