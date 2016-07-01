@@ -2,7 +2,8 @@
 
 (function() 
 {
-	const UNIDAD_ESPACIADO_CSS = 32; 
+	const UNIDAD_ESPACIADO_CSS = 32;
+	const CALIFICACION_DEFAULT = 0;
 
 	let elementos = {};
 
@@ -119,7 +120,7 @@
 						if (libro.calificacion)
 						{
 							let $p         = document.createElement( 'p' );
-							$p.textContent = '★'.repeat( + libro.calificacion );
+							$p.textContent = '★'.repeat( Number( libro.calificacion ));
 
 							$li.appendChild( $p );
 						}
@@ -168,9 +169,10 @@
 		 * Obtiene la pagina en la que quedo el usuario, limpia el visor de pdfs y devuelve la pagina obtenida
 		 * @author Nando
 		 * @param   {promise<DOMElement>} promesaIframe El iframe donde esta el libro
+		 * @param	{generator}			  generator
 		 * @returns {promise<String>}     La pagina en la que quedo
 		 */
-		limpiaPdfjs( promesaIframe ) 
+		limpiaPdfjs( promesaIframe, generator ) 
 		{
 			return promesaIframe.then( function( $iframe ) 
 			{
@@ -179,6 +181,11 @@
 				$iframe.src  = '';
 
 				return paginaActual;
+			})
+			.then( paginaActual =>
+			{
+				if (generator) generator.next( paginaActual );
+				return paginaActual;
 			});
 		},
 
@@ -186,9 +193,10 @@
 		 * Obtine la informacion del iframe donde esta el pdf de pdfjs
 		 * @author Nando
 		 * @param   {promise<DOElement>} promesaIframe Debe ser un iframe de pdfjs
+		 * @param	{generator}			 generator
 		 * @returns {object}             La informacion de la pagina actual en el pdf y el total de paginas
 		 */
-		infoPaginasPdf( promesaIframe ) 
+		infoPaginasPdf( promesaIframe, generator ) 
 		{
 			return promesaIframe.then( function( $iframe ) 
 			{
@@ -200,6 +208,11 @@
 				};
 
 				return returnObject; 
+			}).then( returnObject =>
+			{
+				if (generator) generator.next(returnObject);
+
+				return returnObject;
 			});
 		},
 
@@ -252,7 +265,7 @@
 				if (detalleLibro.calificacion)
 				{
 					let $p         = document.createElement( 'p' );
-					$p.textContent = '★'.repeat( +detalleLibro.calificacion );
+					$p.textContent = '★'.repeat( Number( detalleLibro.calificacion ));
 
 					$li.appendChild( $p );
 				}
@@ -354,7 +367,7 @@
 		 */
 		califica( calificacion, $elemento, nombreLibro ) 
 		{
-			console.assert( calificacion === 0 || Boolean(calificacion), 'Debe haber una calificacion para el libro' );
+			console.assert( calificacion === CALIFICACION_DEFAULT || Boolean(calificacion), 'Debe haber una calificacion para el libro' );
 			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento );
 
 			let $span = $elemento.querySelector( 'span' );
@@ -388,36 +401,40 @@
 		 * @param	{HTMLElement}	$elemento
 		 * @param	{String}		nombreLibro
 		 */
-		async comenta( nota = '', $elemento, nombreLibro ) 
+		comenta( nota = '', $elemento, nombreLibro ) 
 		{
 			console.assert( typeof nota === 'string', 'La nota debe ser un string', nota );
 			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento );
 			console.assert( typeof nombreLibro === 'string', 'Debe venir el nombre del libro', nombreLibro);
 
-			const $txtarea = await this.damePorId( 'Notes' );
-
-			// Si son iguales es porque el llamado viene de escribir un nuevo comentario 
-			// Si no son iguales es porque el llamado viene del inicio de la aplicacion
-			if ($txtarea.value.trim() === nota)
-			{
-				let items = Array.from( document.querySelectorAll( `a[href$="${ nombreLibro }"]` ));
-
-				for (let item of items )
+			this.damePorId( 'Notes' )
+				.then($txtarea =>
 				{
-					let $p = Array.from( item.parentNode.querySelectorAll( 'p' ));
-					let p  = $p.find(p => p.textContent.startsWith( '★' ) === false);
-
-					if (p) p.textContent = nota;
-					else
+					// Si son iguales es porque el llamado viene de escribir un nuevo comentario 
+					// Si no son iguales es porque el llamado viene del inicio de la aplicacion
+					if ($txtarea.value.trim() === nota)
 					{
-						$p = document.createElement( 'p' );
-						$p.textContent = nota;
+						let items = Array.from( document.querySelectorAll( `a[href$="${ nombreLibro }"]` ));
 
-						item.parentNode.appendChild( $p );
-					} 
-				}
-			}
-			else $txtarea.value = nota;
+						for (let item of items )
+						{
+							let $p = Array.from( item.parentNode.querySelectorAll( 'p' ));
+							let p  = $p.find(pa => pa.textContent.startsWith( '★' ) === false);
+
+							if (p) p.textContent = nota;
+							else
+							{
+								$p = document.createElement( 'p' );
+								$p.textContent = nota;
+
+								item.parentNode.appendChild( $p );
+							} 
+						}
+					}
+					else $txtarea.value = nota;
+
+				});
+
 		},
 
 		/**

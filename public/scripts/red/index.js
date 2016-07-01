@@ -8,14 +8,21 @@
 	 * Trae informacion del servidor
 	 * @param   {string}          path    El path donde esta la informacion
 	 * @param   {string}          datos   Si se neceita traer algun dato adicional en la ruta
+	 * @param	{generator}		  generator
 	 * @returns {promise<object>} La informacion si la hay
 	 */
-	function traeJson( path, datos ) 
+	function traeJson( path, datos, generator ) 
 	{
 		const ruta = path + TERMINACION + ( datos ? `?${ datos }` : '' );
 
 		return fetch( ruta )
 			.then( informacion => informacion.json() )
+			.then( informacion =>
+			{
+				if (generator) generator.next(informacion);
+
+				return informacion;
+			})
 			.catch( error => console.error( error ));
 	}
 	

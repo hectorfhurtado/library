@@ -2,36 +2,50 @@
 
 (function() 
 {
-	async function inicia() 
+	const CALIFICACION_DEFAULT = 0;
+
+	function inicia() 
 	{
 		animarSeccionPrincipal();
-		await iniciaLibro();
-		let lista = await pideLista();
-		let categorias = pideCategorias( lista );
 
-		await adicionaCategoriasADatalistDeCategorias( categorias );
+		let gen = (function *()
+		{
+			yield *iniciaLibro(gen);
 
-		let ebooks = pideEbooks();
-		
-		await adicionaCategoriasADatalistDeEbooks( ebooks );
-		await muestraLibros();
+			let lista      = yield *pideLista(gen);
+			let categorias = pideCategorias( lista );
 
-		inicializaEventHandlers();
+			yield *adicionaCategoriasADatalistDeCategorias( categorias, gen );
+
+			let ebooks = pideEbooks();
+			adicionaCategoriasADatalistDeEbooks( ebooks );
+
+			muestraLibros();
+			yield *inicializaEventHandlers(gen);
+		})();
+
+		gen.next();
 	}
 	
-	function animarSeccionPrincipal() {
+	function animarSeccionPrincipal()
+	{
 		document.querySelector( 'section' ).classList.add( 'grow-animation' );
 	}
 
 	/**
 	 * Pide al modulo Red la lista de libros en la biblioteca del usuario
 	 * @author Nando
-	 * @returns {Promise<object>} El objeto con la informacion del servidor
+	 * @param	{generator}		  generator
+	 * @returns {Array} 		  La lista de ebooks proveniente del servidor
 	 */
-	async function pideLista() 
+	function *pideLista( generator ) 
 	{
-		let Red = await Nando.Cargador.trae( 'Red' );
-		return Red.traeJson( 'lista' );
+		let Red = yield Nando.Cargador.trae( 'Red', null, generator );
+
+		let lista = yield Red.traeJson( 'lista' )
+			.then( listaJson => generator.next( listaJson ));
+
+		return lista;
 	}
 
 	/**
@@ -45,9 +59,9 @@
 		return Nando.Libro.guarda( lista ).categorias;
 	}
 
-	async function iniciaLibro() 
+	function *iniciaLibro(gen) 
 	{
-		let Libro =  await Nando.Cargador.trae( 'Libro' );
+		let Libro = yield Nando.Cargador.trae( 'Libro', null, gen );
 		Libro.inicia();
 	}
 	
@@ -57,13 +71,13 @@
 	 * son categorias como tal sino ayudantes para los libros sin categoria
 	 * @author Nando
 	 * @param   {Array}              categorias La lista de categorias
-	 * @returns {Promise<undefined>} No devolvemos nada en la promesa
+	 * @param	{generator}		     generator
 	 */
-	async function adicionaCategoriasADatalistDeCategorias( categorias ) 
+	function *adicionaCategoriasADatalistDeCategorias( categorias, generator ) 
 	{
 		const filtro              = /Leyendo|Sin leer/;
 		const categoriasFiltradas = categorias.filter( categoria => filtro.test( categoria ) === false );
-		const Elementos           = await Nando.Cargador.trae( 'Elementos' );
+		const Elementos           = yield Nando.Cargador.trae( 'Elementos', null, generator );
 		
 		Elementos.creaOptionsPara( Elementos.damePorId( 'CategoriaEbookList' ), categoriasFiltradas );
 	}
@@ -72,7 +86,7 @@
 	 * Pedimos al modulo Elementos que cree la lista con los libros para que el usuario comience a leer
 	 * alguno
 	 * @author Nando
-	 * @returns {promise}
+	 * @returns {promise}	Retorna una promesa para continuar la cadena si se requiere
 	 */
 	function muestraLibros() 
 	{
@@ -84,30 +98,29 @@
 	/**
 	 * Inicializa los event handlers para los elementos que contienen links y/o botones
 	 * @author Nando
-	 * @returns {Promise} [[Description]]
+	 * @param	{generator}	generator
 	 */
-	async function inicializaEventHandlers() 
+	function *inicializaEventHandlers( generator ) 
 	{
-		const  Elementos = await Nando.Cargador.trae( 'Elementos' );
+		const  Elementos = yield Nando.Cargador.trae( 'Elementos', null, generator );
 
-		const [ $section, $aside, $inputCategoria, $inputBuscar, $rankList, $notes ] = await Promise.all(
-		[
-			Elementos.dame( '.listas' ),
-			Elementos.dame( 'aside' ),
-			Elementos.damePorId( 'CategoriaEbook' ),
-			Elementos.damePorId( 'BuscarEbook' ),
-			Elementos.damePorId( 'RankList' ),
-			Elementos.damePorId( 'Notes' ),
-		]);
-
-		$section.addEventListener( 'click', _clickEnSectionLibros, false );
-		$aside.addEventListener( 'click', _clickEnMenu, false );
-		$inputCategoria.addEventListener( 'change', _changeInputCategoria, false );
-		$inputBuscar.addEventListener( 'change', _changeBuscarEbook, false );
-		$rankList.addEventListener( 'click', _clickEnRankList, false );
-		$notes.addEventListener( 'change', _changeEnNotas, false );
-
-		// window.addEventListener( 'resize', ajustaPosicionElementos, false);
+		Promise.all(
+			[
+				Elementos.dame( '.listas' ),
+				Elementos.dame( 'aside' ),
+				Elementos.damePorId( 'CategoriaEbook' ),
+				Elementos.damePorId( 'BuscarEbook' ),
+				Elementos.damePorId( 'RankList' ),
+				Elementos.damePorId( 'Notes' ),
+			]).then(([ $section, $aside, $inputCategoria, $inputBuscar, $rankList, $notes ]) =>
+			{
+				$section.addEventListener( 'click', _clickEnSectionLibros, false );
+				$aside.addEventListener( 'click', _clickEnMenu, false );
+				$inputCategoria.addEventListener( 'change', _changeInputCategoria, false );
+				$inputBuscar.addEventListener( 'change', _changeBuscarEbook, false );
+				$rankList.addEventListener( 'click', _clickEnRankList, false );
+				$notes.addEventListener( 'change', _changeEnNotas, false );
+			});
 	}
 	
 	/**
@@ -118,44 +131,53 @@
 	 * @private
 	 * @author Nando
 	 * @param {object} e Event
+	 * @returns	{undefined}	no retorna nada
 	 */
-	async function _clickEnSectionLibros( e ) 
+	function _clickEnSectionLibros( e ) 
 	{
 		e.preventDefault();
-		
+
 		let dataset = e.target.dataset;
 		
 		if ( 'id' in dataset ) 
 		{
-			if ( dataset.id == 'azar' ) 
+			if ( dataset.id === 'azar' ) 
 			{
 				let ebook = Nando.Libro.traeLibroAlAzarDe( 'Sin leer' );
 				
 				return _changeBuscarEbook.bind({ value: ebook })();
 			}
 			
-			return;
+			return null;
 		}
 
-		if ( !e.target.pathname ) return;
+		if ( !e.target.pathname ) return null;
 
-		let Red          = await Nando.Cargador.trae( 'Red' );
-		let infoLibro    = await Red.traeJson( 'book', `info=${ e.target.pathname }` );
-		let detalleLibro = Nando.Libro.extraeDetallesDe( infoLibro, unescape( e.target.pathname ));
+		let gen = (function *()
+		{
+			let Red          = yield Nando.Cargador.trae( 'Red', null, gen );
+			let infoLibro    = yield Red.traeJson( 'book', `info=${ e.target.pathname }`, gen );
+			let detalleLibro = Nando.Libro.extraeDetallesDe( infoLibro, unescape( e.target.pathname ));
 
-		await Nando.Elementos.muestraLibro( detalleLibro, Nando.Elementos.damePorId( 'iframe' ));
+			Nando.Elementos.muestraLibro( detalleLibro, Nando.Elementos.damePorId( 'iframe' ));
 
-		let Estados = await Nando.Cargador.trae( 'Estados' );
-		let detalle = Nando.Libro.detalleLibro;
+			let Estados = yield Nando.Cargador.trae( 'Estados', null, gen );
+			let detalle = Nando.Libro.detalleLibro;
 
-		if ( detalle.leyendo ) Estados.cambiaA( Estados.LEYENDO );
-		else Estados.cambiaA( Estados.LIBRO );		
+			if ( detalle.leyendo ) Estados.cambiaA( Estados.LEYENDO );
+			else Estados.cambiaA( Estados.LIBRO );		
 
-		let $rankEbook = await Nando.Elementos.damePorId( 'RankEbook' );
-		Nando.Elementos.califica( detalle.calificacion || 0, $rankEbook );
+			Nando.Elementos.damePorId( 'RankEbook' )
+				.then( $rankEbook => Nando.Elementos.califica( detalle.calificacion || CALIFICACION_DEFAULT, $rankEbook ));
 
-		const $listas = await Nando.Elementos.dame( '.listas' );
-		Nando.Elementos.comenta( detalle.notas, $listas, detalle.nombre );
+			Nando.Elementos.dame( '.listas' )
+				.then( $listas => Nando.Elementos.comenta( detalle.notas, $listas, detalle.nombre ));
+
+		})();
+
+		gen.next();
+
+		return null;
 	}
 	
 	function _clickEnMenu( e ) 
@@ -164,7 +186,7 @@
 
 		let ID = e.target.id || e.target.getAttribute('data-id');
 
-		switch( ID ) 
+		switch (ID) 
 		{
 			case 'CloseEbook':
 				_cierraLibro();
@@ -189,6 +211,9 @@
 			case 'AddNote':
 				_muestraAreaParaNotas();
 				break;
+
+			default:
+				break;
 		}
 	}
 	
@@ -196,26 +221,33 @@
 	 * Tiene la logica para cerrar el libro y guardar en donde vamos si estamos leyendo
 	 * @private
 	 * @author Nando
-	 * @returns {promise}
+	 * @returns {null}	No retorna nada
 	 */
-	async function _cierraLibro() 
+	function _cierraLibro() 
 	{
-		let Elementos = await Nando.Cargador.trae( 'Elementos' );
-		let paginaActual = await Elementos.limpiaPdfjs( Elementos.damePorId( 'iframe' )); 
-		let detalle = Nando.Libro.detalleLibro;
-
-		Nando.Estados.cambiaA( Nando.Estados.INICIO );
-
-		if ( !detalle.leyendo ) return null;
-
-		detalle.actual            = paginaActual;
-		Nando.Libro.detalleLibro  = detalle;
-		
-		await Nando.Red.enviaJson( 'book', 
+		let gen = (function *()
 		{
-			actual: detalle.actual,
-			libro : detalle.nombre,
-		});
+			let Elementos    = yield Nando.Cargador.trae( 'Elementos', null, gen );
+			let paginaActual = yield Elementos.limpiaPdfjs( Elementos.damePorId( 'iframe' ), gen ); 
+			let detalle      = Nando.Libro.detalleLibro;
+
+			Nando.Estados.cambiaA( Nando.Estados.INICIO );
+
+			if ( !detalle.leyendo ) return null;
+
+			detalle.actual            = paginaActual;
+			Nando.Libro.detalleLibro  = detalle;
+			
+			return Nando.Red.enviaJson( 'book', 
+			{
+				actual: detalle.actual,
+				libro : detalle.nombre,
+			});
+		})();
+
+		gen.next();
+
+		return null;
 	}
 
 	/**
@@ -223,17 +255,20 @@
 	 * @private
 	 * @author Nando
 	 */
-	async function _adicionaLibro() 
+	function _adicionaLibro() 
 	{
-		let Elementos   = await Nando.Cargador.trae( 'Elementos' );
-		let infoPaginas = await Elementos.infoPaginasPdf( Elementos.damePorId( 'iframe' ));
-		let informacion = Nando.Libro.adiciona( infoPaginas );
+		let gen = (function *()
+		{
+			let Elementos   = yield Nando.Cargador.trae( 'Elementos', null, gen );
+			let infoPaginas = yield Elementos.infoPaginasPdf( Elementos.damePorId( 'iframe' ), gen );
+			let informacion = Nando.Libro.adiciona( infoPaginas );
 
-		await Nando.Red.enviaJson( 'nuevoebook', informacion );
+			Nando.Red.enviaJson( 'nuevoebook', informacion );
+			Nando.Estados.cambiaA( Nando.Estados.LEYENDO );
+			Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( '.listas' ));
+		})();
 
-		Nando.Estados.cambiaA( Nando.Estados.LEYENDO );
-
-		return Nando.Elementos.adicionaALa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( '.listas' ));
+		gen.next();
 	}
 
 	/**
@@ -241,13 +276,14 @@
 	 * @private
 	 * @author Nando
 	 */
-	async function _terminaLibro() 
+	function _terminaLibro() 
 	{
 		let libro = Nando.Libro.termina();
 
-		await Nando.Red.enviaJson( 'terminaebook', libro );
-		await Nando.Elementos.eliminaDeLa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( '.listas' ));
+		Nando.Red.enviaJson( 'terminaebook', libro );
+		Nando.Elementos.eliminaDeLa( 'Leyendo', Nando.Libro.detalleLibro, Nando.Elementos.dame( '.listas' ));
 
+		/* eslint no-negated-condition: "off" */
 		if ( !Nando.Libro.detalleLibro.categoria ) 
 			Nando.Estados.cambiaA( Nando.Estados.CATEGORIZA );
 		else
@@ -259,18 +295,23 @@
 	 * @private
 	 * @author Nando
 	 */
-	async function _muestraInputCategoria() 
+	function _muestraInputCategoria() 
 	{
-		let Estados = await Nando.Cargador.trae( 'Estados' );
+		let gen = (function *()
+		{
+			let Estados = yield Nando.Cargador.trae( 'Estados', null, gen );
 
-		Estados.cambiaA( Estados.CATEGORIZA );
+			Estados.cambiaA( Estados.CATEGORIZA );
+		})();
+
+		gen.next();
 	}
 	
 	/**
 	 * Cambia o asigna una categoria a un ebook
 	 * @param	{Event}	e
 	 */
-	async function _changeInputCategoria( e ) 
+	function _changeInputCategoria( e ) 
 	{
 		let categoriaNueva = e.target.value.trim();
 		
@@ -287,15 +328,14 @@
 			nueva  : detalleLibro.categoria,
 		};
 
-		await Nando.Red.enviaJson( 'categoriza', cambio );
-		await Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( '.listas' ));
-
+		Nando.Red.enviaJson( 'categoriza', cambio );
+		Nando.Elementos.cambiaCategoria( categoriaAntigua, detalleLibro, Nando.Elementos.dame( '.listas' ));
 		Nando.Estados.cambiaA( Nando.Estados.anterior );
 	}
 	
 	/**
 	 * retorna la lista de ebooks
-	 * @returns	{promise<Array>}
+	 * @returns	{promise<Array>}	Devuelve los libros
 	 */
 	function pideEbooks() 
 	{
@@ -304,9 +344,10 @@
 	
 	/**
 	 * Al datalist de busqueda le agregamos la lista de los ebooks que tienemos
-	 * @returns	{promise}
+	 * @param	{Array}		ebooks
+	 * @returns	{promise}	Regresa una promesa para seguir la cadena
 	 */
-	async function adicionaCategoriasADatalistDeEbooks( ebooks ) 
+	function adicionaCategoriasADatalistDeEbooks( ebooks ) 
 	{
 		return Nando.Elementos.creaOptionsPara( Nando.Elementos.damePorId( 'BuscarEbookList' ), ebooks );
 	}
@@ -316,23 +357,34 @@
 	 * scroll para que el usuario pueda ver este link y hacer click si quiere.
 	 * El link encontrado lo marcamos de un color amarillo
 	 */
-	async function _changeBuscarEbook() 
+	function _changeBuscarEbook() 
 	{
 		const ebook         = this.value.trim();
-		const Elementos     = await Nando.Cargador.trae( 'Elementos' );
-		const [ $elemento ] = await Elementos.buscaConTextContent( ebook, 'a', Elementos.dame( '.listas' ));
-		
-		Elementos.scrollTo( $elemento );
+
+		let gen = (function *()
+		{
+			const Elementos     = yield Nando.Cargador.trae( 'Elementos', null, gen );
+
+			Elementos.buscaConTextContent( ebook, 'a', Elementos.dame( '.listas' ))
+				.then($elemento => Elementos.scrollTo( $elemento ));
+		})();
+
+		gen.next();
 	}
 	
 	/**
 	 * Al hacer click sobre el boton de estrella (para calificar), cambiamos el estado a CALIFICA
 	 */
-	async function _muestraBarraCalificacion() 
+	function _muestraBarraCalificacion() 
 	{
-		let Estados = await Nando.Cargador.trae( 'Estados' );
-		
-		Estados.cambiaA( Estados.CALIFICA );
+		let gen = (function *()
+		{
+			let Estados = yield Nando.Cargador.trae( 'Estados', null, gen );
+			
+			Estados.cambiaA( Estados.CALIFICA );
+		})();
+
+		gen.next();
 	}
 	
 	/**
@@ -340,42 +392,41 @@
 	 * actualiza el UI.
 	 * @param	{Event}	e
 	 */
-	async function _clickEnRankList(e) 
+	function _clickEnRankList(e) 
 	{
-		const Elementos      = await Nando.Cargador.trae( 'Elementos' );
-		let [ calificacion ] = /\d/.exec( e.target.textContent );
+		let gen = (function *()
+		{
+			const numerosRegexp  = /\d/;
+			const Elementos      = yield Nando.Cargador.trae( 'Elementos', null, gen );
+			let [ calificacion ] = numerosRegexp.exec( e.target.textContent );
 
-		if ( !calificacion ) return;
+			if ( !calificacion ) return;
 
-		const Libro = await Nando.Cargador.trae( 'Libro' );
-		Libro.calificaCon( calificacion );
+			const Libro = yield Nando.Cargador.trae( 'Libro', null, gen );
+			Libro.calificaCon( calificacion );
 
-		const Red      = await Nando.Cargador.trae( 'Red' );
-		let { nombre } = Libro.detalleLibro;
-		Red.enviaJson( 'califica', { calificacion, libro: nombre });
+			const Red      = yield Nando.Cargador.trae( 'Red', null, gen );
+			let { nombre } = Libro.detalleLibro;
 
-		let $botonCalificacion = await Elementos.damePorId( 'RankEbook' );
-		Elementos.califica( calificacion, $botonCalificacion, nombre );
+			Red.enviaJson( 'califica', 
+			{
+				calificacion, 
+				libro: nombre 
+			});
 
-		const Estados = await Nando.Cargador.trae( 'Estados' );
-		Estados.cambiaA( Estados.anterior );
+			Elementos.damePorId( 'RankEbook' )
+				.then($botonCalificacion => Elementos.califica( calificacion, $botonCalificacion, nombre ));
+
+			const Estados = yield Nando.Cargador.trae( 'Estados', null, gen );
+			Estados.cambiaA( Estados.anterior );
+		})();
+
+		gen.next();
 	}
 
-	/**
-	 * Ubica a los elementos que necesitan ajuste en su CSS
-	 */
-	async function ajustaPosicionElementos() 
+	function _muestraAreaParaNotas() 
 	{
-		const Elementos   = await Nando.Cargador.trae( 'Elementos' );
-		const $section    = await Elementos.dame( 'section' );
-		const propiedades = [ 'width', 'height' ];
-
-		Elementos.posicionAlCien( propiedades, $section );
-	}
-
-	async function _muestraAreaParaNotas() {
-		const Estados = await Nando.Cargador.trae( 'Estados' );
-		Estados.cambiaA( Estados.COMENTA );
+		Nando.Cargador.trae( 'Estados' ).then(Estados => Estados.cambiaA( Estados.COMENTA ));
 	}
 
 	/**
@@ -383,27 +434,39 @@
 	 * estado en la app, enviado al servidor, actualizado en las listas de ebooks y actualiza el Estado 
 	 * general de la app
 	 */
-	async function _changeEnNotas()
+	function _changeEnNotas()
 	{
 		const comentario = this.value.trim();
-		const Libro      = await Nando.Cargador.trae( 'Libro' );
-		Libro.agregaComentario( comentario );
 
-		// TODO: Guardar la nota aun cuando no se este leyendo el libro
-		const Red             = await Nando.Cargador.trae( 'Red' );
-		let { nombre: libro } = Libro.detalleLibro;
-		Red.enviaJson( 'comenta', { notas: comentario, libro });
+		let gen = (function *()
+		{
+			const Libro      = yield Nando.Cargador.trae( 'Libro', null, gen );
+			Libro.agregaComentario( comentario );
 
-		const Elementos         = await Nando.Cargador.trae( 'Elementos' );
-		const $contenedorListas = await Elementos.dame( '.listas' );
-		Elementos.comenta( comentario, $contenedorListas, libro ); 
+			// TODO: Guardar la nota aun cuando no se este leyendo el libro
+			const Red             = yield Nando.Cargador.trae( 'Red', null, gen );
+			let { nombre: libro } = Libro.detalleLibro;
 
-		const Estados = await Nando.Cargador.trae( 'Estados' );
-		Estados.cambiaA( Estados.anterior ); 
+			Red.enviaJson( 'comenta', 
+			{ 
+				notas: comentario, 
+				libro 
+			});
+
+			const Elementos = yield Nando.Cargador.trae( 'Elementos', null, gen );
+
+			Elementos.dame( '.listas' )
+				.then($contenedorListas => Elementos.comenta( comentario, $contenedorListas, libro ));
+
+			const Estados = yield Nando.Cargador.trae( 'Estados', null, gen );
+			Estados.cambiaA( Estados.anterior ); 
+		})();
+
+		gen.next();
 	}
 	
 	Nando.Arquitecto = 
 	{
 		inicia,
- 	};
+	};
 })();

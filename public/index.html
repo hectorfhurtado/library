@@ -185,6 +185,7 @@
             top           : 2rem;
             right         : 2rem;
             min-width     : 4rem;
+            max-width     : 14rem;
             transform-origin: top center;
             transition: width 0.3s ease-in;
         }
@@ -233,7 +234,7 @@
             position: absolute;
             top     : 0.5rem;
             content : '★';
-            left    : 3.8rem;
+            left    : 4.7rem;
         }
         
         #BuscarEbook,
@@ -292,6 +293,7 @@
             fill: none;
             stroke-linejoin: round;
             stroke-width: 4;
+            width: 3rem;
         }
 
         svg .lineas {
@@ -303,7 +305,7 @@
             transition: opacity 1s;
         }
 
-        svg:hover .lineas line {
+        button:hover > svg#AddNoteSvg .lineas line {
             opacity: 1;
             transition: opacity 1s;
         }
@@ -340,7 +342,7 @@
         </div>
         <datalist id="CategoriaEbookList"></datalist>
         <button id="AddNote" title="Comentarios">
-            <svg data-id="AddNote" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+            <svg data-id="AddNote" id="AddNoteSvg" viewBox="0 0 100 100">
                 <title>Icono de notas</title>
                 <g>
                     <path d="M 60,20 30,20 30,80 70,80 70,30 60,20 60,30 70,30"></path>
