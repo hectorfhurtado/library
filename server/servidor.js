@@ -122,7 +122,11 @@ module.exports =
                 req.on( 'data', function( chunk ) 
                 {
                     const infoLibro = JSON.parse( chunk );
-                    Libro.actualizaPaginaActual( infoLibro.libro, infoLibro.actual );
+                    let nombreLibro = infoLibro.nombre;
+
+                    delete infoLibro.nombre;
+
+                    Libro.actualizaPaginaActual( nombreLibro, infoLibro );
                 });
 
                 this._enviaRecibido( req, res );

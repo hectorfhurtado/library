@@ -225,24 +225,28 @@
 	 */
 	function _cierraLibro() 
 	{
+		const numeroRegexp = /\d+/;
+
 		let gen = (function *()
 		{
 			let Elementos    = yield Nando.Cargador.trae( 'Elementos', null, gen );
-			let paginaActual = yield Elementos.limpiaPdfjs( Elementos.damePorId( 'iframe' ), gen ); 
-			let detalle      = Nando.Libro.detalleLibro;
+			console.assert( typeof Elementos === 'object', 'Elementos debe ser un objeto', Elementos);
+
+			let paginaActual = yield Elementos.limpiaPdfjs( Elementos.damePorId( 'iframe' ), gen );
+			let assert       = typeof paginaActual === 'string' && numeroRegexp.test(paginaActual);
+			console.assert( assert, 'paginaActual debe ser un numero en String', paginaActual);
+
+			let detalle = Nando.Libro.detalleLibro;
 
 			Nando.Estados.cambiaA( Nando.Estados.INICIO );
 
-			if ( !detalle.leyendo ) return null;
-
-			detalle.actual            = paginaActual;
-			Nando.Libro.detalleLibro  = detalle;
-			
-			return Nando.Red.enviaJson( 'book', 
+			if (detalle.leyendo)
 			{
-				actual: detalle.actual,
-				libro : detalle.nombre,
-			});
+				detalle.actual            = paginaActual;
+				Nando.Libro.detalleLibro  = detalle;
+			}
+			
+			return Nando.Red.enviaJson( 'book', detalle);
 		})();
 
 		gen.next();

@@ -422,7 +422,7 @@
 							let p  = $p.find(pa => pa.textContent.startsWith( '★' ) === false);
 
 							if (p) p.textContent = nota;
-							else
+							else if (nota)
 							{
 								$p = document.createElement( 'p' );
 								$p.textContent = nota;
@@ -432,7 +432,6 @@
 						}
 					}
 					else $txtarea.value = nota;
-
 				});
 
 		},
