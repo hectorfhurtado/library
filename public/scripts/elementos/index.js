@@ -459,6 +459,12 @@
 				$elemento.style[ direccion ] = correcion + 'px';
 			}
 		},
+
+		abreImporttadorEbooks()
+		{
+			this.damePorId( 'ImportEbookInput' )
+				.then( $importador => $importador.click());
+		}
     };
 	
 	/**

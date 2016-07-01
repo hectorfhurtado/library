@@ -43,9 +43,30 @@
 		});
 	}
 
+	function subeLibro( nombre, libro ) 
+	{
+		const ruta = 'subelibro' + TERMINACION;
+		const headers = new Headers(
+		{
+			'Content-type': 'text/plain; charset=x-user-defined-binary',
+		});
+
+		// TODO: Estoy usando estos links
+		// https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
+		// https://davidwalsh.name/fetch
+
+		const request = new Request(ruta, {
+			headers,
+			method: 'POST',
+		});
+		
+		fetch( request )
+	}
+
 	Nando.Red = 
 	{
 		traeJson,
 		enviaJson,
+		subeLibro,
 	};
 })();

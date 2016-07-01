@@ -94,11 +94,11 @@
             overflow        : hidden;
         }
 
-        /*.grid-guide {
+        .grid-guide {
             background-image: radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
             background-size: 2rem 2rem;
             background-position: 1rem 1rem;
-        }*/
+        }
 
         ul {
             list-style: none;
@@ -197,7 +197,8 @@
         #RankList > button,
         #AddEbook,
         #AddNote,
-        #Notes {
+        #Notes,
+        #ImportEbook {
             background-color: transparent;
             border          : none;
             color           : var(--color-de-letras);
@@ -238,7 +239,8 @@
         }
         
         #BuscarEbook,
-        #CategoriaEbook {
+        #CategoriaEbook,
+        nav {
             font-size   : inherit;
             height      : 2rem;
             line-height : 2rem;
@@ -246,6 +248,10 @@
             margin-top  : 2rem;
             padding-left: 2rem;
             width       : 80%;
+        }
+
+        nav > button#ImportEbook {
+            width: 3rem;
         }
 
         #CategoriaEbook {
@@ -317,10 +323,34 @@
         svg .lineas line:nth-child(3) {
             transition-delay: 0.6s; 
         }
+
+        svg .cuadro-relleno {
+            fill: var(--color-de-letras);
+            stroke: none;
+        }
     </style>
     <iframe id="iframe" src="" class="" ></iframe>
 
     <section class="absolute grow-animation">
+        <nav>
+            <button id="ImportEbook" title="Importar Ebooks">
+                <svg data-id="ImportEbook" viewBox="0 0 100 100">
+                    <g>
+                        <path data-id="ImportEbook" d="M 70,20 L 30,20 30,80 80,80 80,30 70,20 70,30 80,30"></path>
+                        <path data-id="ImportEbook" d="M 50,45 L 35,70 65,70 Z" transform="rotate(-15 50 50)"></path>
+                    </g>
+                    <g class="cuadro-relleno" fill="white">
+                        <rect data-id="ImportEbook" x=15 y=25 width=50 height=15></rect>
+                        <text data-id="ImportEbook" x=27 y=37 font-family="sans-serif" fill="black" font-size="1rem">PDF</text>
+                    </g>
+                    <g stroke-width="8">
+                        <line data-id="ImportEbook" x1="8" y1="70" x2="38" y2="70"></line>
+                        <line data-id="ImportEbook" x1="23" y1="55" x2="23" y2="85"></line>
+                    </g>
+                </svg>
+            </button>
+            <input id="ImportEbookInput" type="file" class="invisible" accept="application/pdf" multiple />
+        </nav>
         <input type="text" id="BuscarEbook" list="BuscarEbookList" placeholder="Escribe el ebook a buscar" />
         <datalist id="BuscarEbookList"></datalist>
         <div class="listas"></div>
