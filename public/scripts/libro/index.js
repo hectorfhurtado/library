@@ -72,15 +72,21 @@
 		 */
 		extraeDetallesDe( infoLibroDeServidor, pathname ) 
 		{
-			if ( !infoLibroDeServidor ) 
+			let valoresPorDefecto =
 			{
-				/* eslint no-param-reassign: "off" */
-				infoLibroDeServidor = {};
-			}
+				paginas     : 0,
+				actual      : 1,
+				calificacion: 0,
+				notas       : '',
+				categoria   : '',
+				leyendo     : false,
+			};
 
-			if ( infoLibroDeServidor.categoria ) 
+			let infoLibro = Object.assign({}, valoresPorDefecto, infoLibroDeServidor);
+
+			if ( infoLibro.categoria ) 
 			{
-				infoLibroDeServidor.nombre = pathname.replace( '/' + infoLibroDeServidor.categoria + '/', '' );
+				infoLibro.nombre = pathname.replace( '/' + infoLibro.categoria + '/', '' );
 			}
 			else 
 			{
@@ -92,17 +98,17 @@
 				if ( split.length > 2 ) [ , categoria, nombre ] = split; 
 				else                    [ , nombre ]            = split;
 				
-				infoLibroDeServidor.nombre    = nombre;
-				infoLibroDeServidor.categoria = categoria;
+				infoLibro.nombre    = nombre;
+				infoLibro.categoria = categoria;
 			}
 
-			this.detalleLibro = infoLibroDeServidor;
+			this.detalleLibro = infoLibro;
 
-			return infoLibroDeServidor;
+			return infoLibro;
 		},
 
 		/**
-		 * Asigna los campos para que al libro se le pueda hacer seguimiento com oleyendo
+		 * Asigna los campos para que al libro se le pueda hacer seguimiento como leyendo
 		 * @author Nando
 		 * @param   {object}         infoPaginas Con tiene el total de paginas y la pagina en la que esta el usuario
 		 * @returns {object|promise} Si todo sale bien retorna el objeto con los campos del libro, sino, un rechazo
@@ -113,16 +119,13 @@
 
 			if ( !detalles ) return Promise.reject( 'No hay informacion del nombre del libro' );
 
-			detalles.actual  = infoPaginas.actual || 0;
+			detalles.actual  = infoPaginas.actual || 1;
 			detalles.leyendo = true;
 
 			// Asignamos valores por defecto si no los tiene
 			Object.assign( detalles,  
 			{
 				paginas     : infoPaginas.paginas || 0,
-				calificacion: 0,
-				notas       : '',
-				categoria   : '',
 			});
 
 			this.detalleLibro = detalles;

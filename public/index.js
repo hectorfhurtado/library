@@ -19,7 +19,7 @@ var Nando =
 				});
 		},
 
-		trae( modulo, path ) 
+		trae( modulo, path, generator ) 
 		{
 			return new Promise( function( res ) 
 			{
@@ -32,6 +32,7 @@ var Nando =
 				if ( Nando[ path ]) 
 				{
 					Nando[ modulo ] = Nando[ path ];
+
 					res( Nando[ modulo ]);
 					return;
 				}
@@ -59,7 +60,12 @@ var Nando =
 
 					res( Nando[ modulo ]);
 				}
-			}.bind( this ));
+			}.bind( this )).then(modulos =>
+			{
+				if (generator) generator.next( modulos );
+
+				return modulos;
+			});
 		}
 	}
 };
