@@ -55,12 +55,18 @@
 		// https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
 		// https://davidwalsh.name/fetch
 
-		const request = new Request(ruta, {
+		const opciones = {
 			headers,
 			method: 'POST',
-		});
+			// body: evento.target.result, 
+			body: libro, 
+		};
+
+		let libroCodificado = encodeURIComponent(nombre.replace( /[\- ]/g, '_' ));
 		
-		fetch( request )
+		fetch( `subelibro.fetch?${ libroCodificado }`, opciones )
+			.then(() => console.log('Termine de subir el archivo'))
+			.catch(error => console.log(error));
 	}
 
 	Nando.Red = 

@@ -511,9 +511,9 @@
 
 				for (let archivo of this.files)
 				{
-					Red.subirLibro( archivo.name, archivo );
+					Red.subeLibro( archivo.name, archivo );
 				}
-			})();
+			}.bind( this ))();
 
 			gen.next();
 		}
