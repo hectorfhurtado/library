@@ -460,11 +460,43 @@
 			}
 		},
 
+		/**
+		 * Abre el cuadro para poder seleccionar el o los pdfs a subir al servidor
+		 */
 		abreImporttadorEbooks()
 		{
 			this.damePorId( 'ImportEbookInput' )
 				.then( $importador => $importador.click());
-		}
+		},
+
+		/**
+		 * Muestra en el boton de subir ebooks el numero de ebooks que aun hace falta por subir
+		 * al servidor
+		 * @param	{promise}	promesaElemento
+		 * @param	{number}	numeroEbooks
+		 */
+		muestraNumeroEbooksSubiendo( promesaElemento, numeroEbooks, { quitar } = {})
+		{
+			console.assert( 'then' in promesaElemento, 'Debemos recibir una promesa para saber el elemento', promesaElemento);
+			console.assert( typeof numeroEbooks === 'number', 'Esperamos un numero', numeroEbooks);
+			
+			if (quitar)
+			{
+				promesaElemento.then( $elemento =>
+				{
+					$elemento.dataset.ebooks = null;
+					$elemento.classList.remove( 'subiendo' );
+				});
+			}
+			else
+			{
+				promesaElemento.then( $elemento =>
+				{
+					$elemento.dataset.ebooks = numeroEbooks;
+					$elemento.classList.add( 'subiendo' );
+				});
+			}
+		},
     };
 	
 	/**

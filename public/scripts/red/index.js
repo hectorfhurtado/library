@@ -43,30 +43,34 @@
 		});
 	}
 
-	function subeLibro( nombre, libro ) 
+	/**
+	 * Envia al servidor el libro que selecciona el usuario
+	 * @param	{string}	nombre
+	 * @param	{object}	libro
+	 * @param	{generator}	generator
+	 */
+	function subeLibro( nombre, libro, generator ) 
 	{
-		const ruta = 'subelibro' + TERMINACION;
 		const headers = new Headers(
 		{
 			'Content-type': 'text/plain; charset=x-user-defined-binary',
 		});
 
-		// TODO: Estoy usando estos links
-		// https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
-		// https://davidwalsh.name/fetch
-
-		const opciones = {
+		const opciones =
+		{
 			headers,
-			method: 'POST',
-			// body: evento.target.result, 
-			body: libro, 
+			method : 'POST',
+			body   : libro, 
 		};
 
-		let libroCodificado = encodeURIComponent(nombre.replace( /[\- ]/g, '_' ));
+		let libroCodificado = encodeURIComponent( nombre.replace( /[\- ]/g, '_' ));
 		
 		fetch( `subelibro.fetch?${ libroCodificado }`, opciones )
-			.then(() => console.log('Termine de subir el archivo'))
-			.catch(error => console.log(error));
+			.then(() =>
+			{
+				if (generator) generator.next();
+			})
+			.catch(error => console.error(error));
 	}
 
 	Nando.Red = 

@@ -501,18 +501,34 @@
 		gen.next();
 	}
 
+	/**
+	 * Se encarga de subir los archivos seleccionados por el usuario a la biblioteca.
+	 * Realiza un reload para que tome la informacion del o los nuevos libros
+	 */
 	function _subirArchivos()
 	{
 		if (this.files.length)
 		{
 			let gen = (function *()
 			{
-				const Red = yield Nando.Cargador.trae( 'Red', null, gen );
+				const Elementos   = yield Nando.Cargador.trae( 'Elementos', null, gen );
+				const ImportEbook = Elementos.damePorId( 'ImportEbook' );
+				const Red         = yield Nando.Cargador.trae( 'Red', null, gen );
+
+				let librosASubir = this.files.length;
+
+				Elementos.muestraNumeroEbooksSubiendo( ImportEbook, librosASubir );
 
 				for (let archivo of this.files)
 				{
-					Red.subeLibro( archivo.name, archivo );
+					yield Red.subeLibro( archivo.name, archivo, gen );
+					
+					librosASubir -= 1;
+					Elementos.muestraNumeroEbooksSubiendo( ImportEbook, librosASubir );
 				}
+
+				Elementos.muestraNumeroEbooksSubiendo( ImportEbook, librosASubir, { quitar: true });
+				location.reload();
 			}.bind( this ))();
 
 			gen.next();

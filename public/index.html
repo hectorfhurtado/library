@@ -7,12 +7,12 @@
     <style>
         @font-face {
             font-family: "Concert One";
-            src: url("/fuentes/Concert_One/ConcertOne-Regular.ttf");
+            src        : url("/fuentes/Concert_One/ConcertOne-Regular.ttf");
         }
 
         @font-face {
             font-family: "Work Sans";
-            src: url("/fuentes/Work_Sans/WorkSans-Regular.ttf");
+            src        : url("/fuentes/Work_Sans/WorkSans-Regular.ttf");
         }
 
         @font-face {
@@ -21,13 +21,13 @@
         }
 
         :root {
-            --color-de-fondo : rgb(63, 63, 63);
-            --fondo-semitransparente: hsla(186, 100%, 50%, 0.1);
-            --color-de-letras: hsl(186, 100%, 75%);
-            --link-visitado  : hsl(186, 100%, 40%);
-            --sombra-de-letras: hsla(186, 100%, 75%, 0.5);
-            --default-space  : 32px;
+            --color-de-fondo           : rgb(63, 63, 63);
+            --color-de-letras          : hsl(186, 100%, 75%);
+            --default-space            : 32px;
             --fondo-oscuro-transparente: hsla(0, 0%, 0%, 0.5);
+            --fondo-semitransparente   : hsla(186, 100%, 50%, 0.1);
+            --link-visitado            : hsl(186, 100%, 40%);
+            --sombra-de-letras         : hsla(186, 100%, 75%, 0.5);
         }
 
         @keyframes crece {
@@ -35,34 +35,34 @@
                 transform: scale(0, 0.);
             }
             from {
-                transform: scale(0.01, 0.01);
                 background-color: var(--color-de-letras);
+                transform       : scale(0.01, 0.01);
             }
             50% {
-                transform: scale(1, 0.01);
                 background-color: var(--color-de-letras);
+                transform       : scale(1, 0.01);
             }
             to {
-                transform: scale(1, 1);
                 background-color: var(--fondo-semitransparente);
+                transform       : scale(1, 1);
             }
         }
 
         @keyframes disminuye {
             from {
-                transform: scale(1, 1);
                 background-color: var(--fondo-semitransparente);
+                transform       : scale(1, 1);
             }
             50% {
-                transform: scale(1, 0.01);
                 background-color: var(--color-de-letras);
+                transform       : scale(1, 0.01);
             }
             99% {
                 transform: scale(0.01, 0.01);
             }
             to {
-                transform: scale(0, 0);
                 background-color: var(--color-de-letras);
+                transform       : scale(0, 0);
             }
         }
 
@@ -82,11 +82,11 @@
         }
 
         html, body, iframe {
-            height : 100%;
-            margin : 0;
-            padding: 0;
-            width  : 100%;
             font-size: 16px;
+            height   : 100%;
+            margin   : 0;
+            padding  : 0;
+            width    : 100%;
         }
 
         body {
@@ -95,22 +95,22 @@
         }
 
         .grid-guide {
-            background-image: radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
-            background-size: 2rem 2rem;
+            background-image   : radial-gradient(hsl(0, 0%, 100%) calc(1rem / 16), hsla(0, 0%, 0%, 0) 0);
             background-position: 1rem 1rem;
+            background-size    : 2rem 2rem;
         }
 
         ul {
-            list-style: none;
+            line-height : 2rem;
+            list-style  : none;
+            margin      : 2rem 0;
             padding-left: 2rem;
-            margin: 2rem 0;
-            line-height: 2rem;
         }
 
         li {
+            font-family : "Work Sans";
+            line-height : 2rem;
             padding-left: 2rem;
-            line-height: 2rem;
-            font-family: "Work Sans";
         }
 
         li:hover {
@@ -124,36 +124,36 @@
         }
 
         li > p {
+            height      : 1rem;
+            line-height : 1rem;
+            margin      : 0;
             padding-left: 2rem;
-            margin: 0;
-            height: 1rem;
-            line-height: 1rem;
         }
 
         strong { 
-            font-family:  "Concert One";
+            font-family: "Concert One";
+            font-size  : 1.25rem;
             font-weight: normal;
-            font-size:   1.25rem;
-            height:      1rem;
+            height     : 1rem;
         }
 
         section {
             background-color: var(--fondo-semitransparente);
             border          : solid thin var(--color-de-letras);
+            bottom          : 2rem;
             color           : var(--color-de-letras);
             left            : 0;
             margin-left     : 2rem;
             margin-top      : 2rem;
+            overflow-x      : hidden;
             overflow-y      : auto;
             top             : 0;
-            bottom          : 2rem;
-            width           : 60%;
-            overflow-x      : hidden;
             transform-origin: top center;
+            width           : 60%;
         }
 
         section > * {
-            opacity: 0;
+            opacity   : 0;
             transition: opacity 0.2s 0.6s cubic-bezier(0.55, 0.09, 0.68, 0.53);
         }
 
@@ -171,23 +171,23 @@
 
         input {
             background-color: transparent;
-            color: inherit;
-            border: none;
-            outline: none;
-            border-bottom: solid var(--color-de-letras);
+            border          : none;
+            border-bottom   : solid var(--color-de-letras);
+            color           : inherit;
+            outline         : none;
         }
 
         aside {
             background-color: var(--fondo-semitransparente);
-            border: solid thin var(--color-de-letras); 
-            display       : flex;
-            flex-direction: column;
-            top           : 2rem;
-            right         : 2rem;
-            min-width     : 4rem;
-            max-width     : 14rem;
+            border          : solid thin var(--color-de-letras); 
+            display         : flex;
+            flex-direction  : column;
+            max-width       : 14rem;
+            min-width       : 4rem;
+            right           : 2rem;
+            top             : 2rem;
             transform-origin: top center;
-            transition: width 0.3s ease-in;
+            transition      : width 0.3s ease-in;
         }
 
         #CloseEbook,
@@ -207,9 +207,9 @@
             height          : 4rem;
             margin          : 0px;
             padding         : 0px;
+            position        : relative;
             vertical-align  : middle;
             width           : 100%;
-            position        : relative;
         }
 
         #CloseEbook:hover,
@@ -232,10 +232,10 @@
         }
         
         #RankList > button:hover::after {
-            position: absolute;
-            top     : 0.5rem;
             content : '★';
             left    : 4.7rem;
+            position: absolute;
+            top     : 0.5rem;
         }
         
         #BuscarEbook,
@@ -257,18 +257,34 @@
         #CategoriaEbook {
             height: 4rem;
             margin: 0;
-            width: 100%;
+            width : 100%;
+        }
+
+        #ImportEbook.subiendo::after {
+            background-color: var(--color-de-letras);
+            border-radius   : 50%;
+            bottom          : 1rem;
+            color           : var(--fondo-oscuro-transparente);
+            content         : attr( data-ebooks );
+            display         : block;
+            font-size       : 1rem;
+            font-weight     : bold;
+            height          : 1rem;
+            line-height     : 1rem;
+            position        : absolute;
+            right           : 0;
+            width           : 1rem;
         }
 
         a {
-            color: var(--color-de-letras);
-            text-decoration: none;
-            text-overflow: ellipsis;
-            text-rendering: optimizeLegibility;
-            background: linear-gradient(currentColor, currentColor) no-repeat;
-            background-size: 100% 1px;
+            background         : linear-gradient(currentColor, currentColor) no-repeat;
             background-position: 0 1.15rem;
-            text-shadow: 0.05rem var(--fondo-oscuro-transparente), -0.05rem var(--fondo-oscuro-transparente);
+            background-size    : 100% 1px;
+            color              : var(--color-de-letras);
+            text-decoration    : none;
+            text-overflow      : ellipsis;
+            text-rendering     : optimizeLegibility;
+            text-shadow        : 0.05rem var(--fondo-oscuro-transparente), -0.05rem var(--fondo-oscuro-transparente);
         }
 
         a:visited {
@@ -288,18 +304,18 @@
         }
 
         #Notes {
+            cursor   : text;
             font-size: 1rem;
-            cursor: text;
-            padding: 1rem;
-            height: 10rem;
+            height   : 10rem;
+            padding  : 1rem;
         }
 
         svg {
-            stroke: var(--color-de-letras);
-            fill: none;
+            fill           : none;
+            stroke         : var(--color-de-letras);
             stroke-linejoin: round;
-            stroke-width: 4;
-            width: 3rem;
+            stroke-width   : 4;
+            width          : 3rem;
         }
 
         svg .lineas {
@@ -307,12 +323,12 @@
         }
 
         svg .lineas line {
-            opacity: 0;
+            opacity   : 0;
             transition: opacity 1s;
         }
 
         button:hover > svg#AddNoteSvg .lineas line {
-            opacity: 1;
+            opacity   : 1;
             transition: opacity 1s;
         }
 
@@ -325,8 +341,12 @@
         }
 
         svg .cuadro-relleno {
-            fill: var(--color-de-letras);
+            fill  : var(--color-de-letras);
             stroke: none;
+        }
+
+        svg .triangulo {
+            stroke-width: 2;
         }
     </style>
     <iframe id="iframe" src="" class="" ></iframe>
@@ -337,6 +357,8 @@
                 <svg data-id="ImportEbook" viewBox="0 0 100 100">
                     <g>
                         <path data-id="ImportEbook" d="M 70,20 L 30,20 30,80 80,80 80,30 70,20 70,30 80,30"></path>
+                    </g>
+                    <g class="triangulo">
                         <path data-id="ImportEbook" d="M 50,45 L 35,70 65,70 Z" transform="rotate(-15 50 50)"></path>
                     </g>
                     <g class="cuadro-relleno" fill="white">

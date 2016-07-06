@@ -204,22 +204,11 @@ module.exports =
             // Trae un libro nuevo a la  biblioteca
             if ( /^\/subelibro\.fetch/.test( req.url ) && req.method === 'POST' )
             {
-                let contenido = null;
-
                 console.log('Recibiendo nuevo ebook: ' + mitades[ 1 ]);
 
-                req.on( 'data', chunk =>
-                {
-                    contenido = contenido ? Buffer.concat([ contenido, chunk ]) : Buffer.from(chunk);
-                });
+                req.pipe( Libro.adicionaNuevoLibro( mitades[ 1 ]));
 
-                req.on( 'end', () =>
-                {
-                    Libro.adicionaNuevoLibro( mitades[ 1 ], contenido );
-
-                    res.writeHead( 200, 'OK', { 'Content-Type': 'text/html' });
-                    res.end();
-                });
+                this._enviaRecibido( req, res );
             }
         }
         else 
