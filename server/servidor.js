@@ -200,6 +200,16 @@ module.exports =
 
                 this._enviaRecibido( req, res );
             }
+
+            // Trae un libro nuevo a la  biblioteca
+            if ( /^\/subelibro\.fetch/.test( req.url ) && req.method === 'POST' )
+            {
+                console.log('Recibiendo nuevo ebook: ' + mitades[ 1 ]);
+
+                req.pipe( Libro.adicionaNuevoLibro( mitades[ 1 ]));
+
+                this._enviaRecibido( req, res );
+            }
         }
         else 
         {

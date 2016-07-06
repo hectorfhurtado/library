@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+    <g stroke="white" stroke-width="4" stroke-linejoin="round" fill="none">
+        <path d="M 70,20 L 30,20 30,80 80,80 80,30 70,20 70,30 80,30"></path>
+        <path d="M 50,45 L 35,70 65,70 Z" transform="rotate(-15 50 50)"></path>
+    </g>
+    <g fill="white">
+        <rect x=15 y=25 width=50 height=15></rect>
+        <text x=27 y=37 font-family="sans-serif" fill="black">PDF</text>
+    </g>
+    <g stroke="white" stroke-width="8" fill="none">
+        <line x1="8" y1="70" x2="38" y2="70"></line>
+        <line x1="23" y1="55" x2="23" y2="85"></line>
+    </g>
+</svg>

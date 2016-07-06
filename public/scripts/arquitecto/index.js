@@ -108,18 +108,22 @@
 			[
 				Elementos.dame( '.listas' ),
 				Elementos.dame( 'aside' ),
+				Elementos.dame( 'nav' ),
 				Elementos.damePorId( 'CategoriaEbook' ),
 				Elementos.damePorId( 'BuscarEbook' ),
 				Elementos.damePorId( 'RankList' ),
 				Elementos.damePorId( 'Notes' ),
-			]).then(([ $section, $aside, $inputCategoria, $inputBuscar, $rankList, $notes ]) =>
+				Elementos.damePorId( 'ImportEbookInput' ),
+			]).then(([ $section, $aside, $nav, $inputCategoria, $inputBuscar, $rankList, $notes, $importador ]) =>
 			{
 				$section.addEventListener( 'click', _clickEnSectionLibros, false );
 				$aside.addEventListener( 'click', _clickEnMenu, false );
+				$nav.addEventListener( 'click', _clickEnNav, false );
 				$inputCategoria.addEventListener( 'change', _changeInputCategoria, false );
 				$inputBuscar.addEventListener( 'change', _changeBuscarEbook, false );
 				$rankList.addEventListener( 'click', _clickEnRankList, false );
 				$notes.addEventListener( 'change', _changeEnNotas, false );
+				$importador.addEventListener( 'change', _subirArchivos, false );
 			});
 	}
 	
@@ -212,6 +216,23 @@
 				_muestraAreaParaNotas();
 				break;
 
+			default:
+				break;
+		}
+	}
+
+	function _clickEnNav( e )
+	{
+		if ( !e.target.id && !e.target.getAttribute('data-id') ) return;
+
+		let ID = e.target.id || e.target.getAttribute('data-id');
+
+		switch (ID) 
+		{
+			case 'ImportEbook':
+				_abreImporttadorEbooks();
+				break;
+			
 			default:
 				break;
 		}
@@ -467,6 +488,51 @@
 		})();
 
 		gen.next();
+	}
+
+	function _abreImporttadorEbooks()
+	{
+		let gen = (function *()
+		{
+			let Elementos = yield Nando.Cargador.trae( 'Elementos', null, gen );
+			Elementos.abreImporttadorEbooks();
+		})();
+
+		gen.next();
+	}
+
+	/**
+	 * Se encarga de subir los archivos seleccionados por el usuario a la biblioteca.
+	 * Realiza un reload para que tome la informacion del o los nuevos libros
+	 */
+	function _subirArchivos()
+	{
+		if (this.files.length)
+		{
+			let gen = (function *()
+			{
+				const Elementos   = yield Nando.Cargador.trae( 'Elementos', null, gen );
+				const ImportEbook = Elementos.damePorId( 'ImportEbook' );
+				const Red         = yield Nando.Cargador.trae( 'Red', null, gen );
+
+				let librosASubir = this.files.length;
+
+				Elementos.muestraNumeroEbooksSubiendo( ImportEbook, librosASubir );
+
+				for (let archivo of this.files)
+				{
+					yield Red.subeLibro( archivo.name, archivo, gen );
+					
+					librosASubir -= 1;
+					Elementos.muestraNumeroEbooksSubiendo( ImportEbook, librosASubir );
+				}
+
+				Elementos.muestraNumeroEbooksSubiendo( ImportEbook, librosASubir, { quitar: true });
+				location.reload();
+			}.bind( this ))();
+
+			gen.next();
+		}
 	}
 	
 	Nando.Arquitecto = 

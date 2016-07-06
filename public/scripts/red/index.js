@@ -43,9 +43,40 @@
 		});
 	}
 
+	/**
+	 * Envia al servidor el libro que selecciona el usuario
+	 * @param	{string}	nombre
+	 * @param	{object}	libro
+	 * @param	{generator}	generator
+	 */
+	function subeLibro( nombre, libro, generator ) 
+	{
+		const headers = new Headers(
+		{
+			'Content-type': 'text/plain; charset=x-user-defined-binary',
+		});
+
+		const opciones =
+		{
+			headers,
+			method : 'POST',
+			body   : libro, 
+		};
+
+		let libroCodificado = encodeURIComponent( nombre.replace( /[\- ]/g, '_' ));
+		
+		fetch( `subelibro.fetch?${ libroCodificado }`, opciones )
+			.then(() =>
+			{
+				if (generator) generator.next();
+			})
+			.catch(error => console.error(error));
+	}
+
 	Nando.Red = 
 	{
 		traeJson,
 		enviaJson,
+		subeLibro,
 	};
 })();
