@@ -23,9 +23,15 @@ module.exports =
             req.url = mitades[ 0 ];
         }
         
+        this._poweredBy( res );
+        this._csp( res );
         this.clasifica( req, res );
         this.envia( req, res, mitades );
     },
+
+    _poweredBy: res => res.setHeader('X-Powered-By', 'PHP/5.4.0'),
+    
+    _csp: res => res.setHeader( 'Content-Security-Policy', `default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:` ),
     
 	/**
 	 * Adicionamos la cabecera segun el tipo de contenido
