@@ -149,7 +149,7 @@
 			{
 				let ebook = Nando.Libro.traeLibroAlAzarDe( 'Sin leer' );
 				
-				return _changeBuscarEbook.bind({ value: ebook })();
+				return _changeBuscarEbook.bind({ value: ebook.nombre })();
 			}
 			
 			return null;
@@ -186,9 +186,9 @@
 	
 	function _clickEnMenu( e ) 
 	{
-		if ( !e.target.id && !e.target.getAttribute('data-id') ) return;
+		if (!e.target.getAttribute('data-id') && !e.target.id) return;
 
-		let ID = e.target.id || e.target.getAttribute('data-id');
+		let ID = e.target.getAttribute('data-id') || e.target.id;
 
 		switch (ID) 
 		{
@@ -384,14 +384,14 @@
 	 */
 	function _changeBuscarEbook() 
 	{
-		const ebook         = this.value.trim();
+		const ebook = this.value.trim();
 
 		let gen = (function *()
 		{
-			const Elementos     = yield Nando.Cargador.trae( 'Elementos', null, gen );
+			const Elementos = yield Nando.Cargador.trae( 'Elementos', null, gen );
 
 			Elementos.buscaConTextContent( ebook, 'a', Elementos.dame( '.listas' ))
-				.then($elemento => Elementos.scrollTo( $elemento ));
+				.then($elementos => Elementos.scrollTo( $elementos[ 0 ]));
 		})();
 
 		gen.next();
@@ -419,11 +419,31 @@
 	 */
 	function _clickEnRankList(e) 
 	{
+		let textContent = e.target.textContent.trim();
+
+		if (!textContent)
+		{
+			let parentNode = e.target.parentNode;
+			let $span = parentNode.querySelector('span');
+
+			if ($span)
+			{
+				textContent = $span.textContent;
+			}
+			else
+			{
+				parentNode  = parentNode.parentNode;
+				$span       = parentNode.querySelector('span');
+				textContent = $span.textContent;
+			}
+		}
+
 		let gen = (function *()
 		{
 			const numerosRegexp  = /\d/;
 			const Elementos      = yield Nando.Cargador.trae( 'Elementos', null, gen );
-			let [ calificacion ] = numerosRegexp.exec( e.target.textContent );
+
+			let [ calificacion ] = numerosRegexp.exec( textContent );
 
 			if ( !calificacion ) return;
 

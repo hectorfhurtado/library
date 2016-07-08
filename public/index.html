@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1">
 <title>Library</title>
 
 <body class="grid-guide">
@@ -40,13 +41,43 @@
         <button id="EndEbook"   title="Terminar">-</button>
         <button id="CategorizeEbook"   title="Categorizar">&hArr;</button>
         <input type="text" id="CategoriaEbook" class="invisible" placeholder="Escribe categoria" list="CategoriaEbookList" />
-        <button id="RankEbook"  title="Calificar">&#9733;<span>0</span></button>
+        <button id="RankEbook"  title="Calificar">
+            <svg id="Estrella" data-id="RankEbook" viewBox="0 0 51 48">
+                <title>Five Pointed Star</title>
+                <path id="PathEstrella" data-id="RankEbook" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"/>
+            </svg>
+            <span>0</span>
+        </button>
         <div id="RankList" class="invisible">
-            <button>&#9734;<span>1</span></button>
-            <button>&#9734;<span>2</span></button>
-            <button>&#9734;<span>3</span></button>
-            <button>&#9734;<span>4</span></button>
-            <button>&#9734;<span>5</span></button>
+            <button>
+                <svg viewBox="0 0 51 48">
+                    <use xlink:href="#PathEstrella" />
+                </svg>
+                <span>1</span></button>
+            <button>
+                <svg viewBox="0 0 51 48">
+                    <use xlink:href="#PathEstrella" />
+                </svg>
+                <span>2</span>
+            </button>
+            <button>
+                <svg viewBox="0 0 51 48">
+                    <use xlink:href="#PathEstrella" />
+                </svg>
+                <span>3</span>
+            </button>
+            <button>
+                <svg viewBox="0 0 51 48">
+                    <use xlink:href="#PathEstrella" />
+                </svg>
+                <span>4</span>
+            </button>
+            <button>
+                <svg viewBox="0 0 51 48">
+                    <use xlink:href="#PathEstrella" />
+                </svg>
+                <span>5</span>
+            </button>
         </div>
         <datalist id="CategoriaEbookList"></datalist>
         <button id="AddNote" title="Comentarios">
