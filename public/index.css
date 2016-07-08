@@ -97,13 +97,25 @@ ul {
     line-height : 2rem;
     list-style  : none;
     margin      : 2rem 0;
-    padding-left: 2rem;
+    padding-left: 0.5rem;
+}
+
+@media(min-width: 450px) {
+    ul {
+        padding-left: 2rem;
+    }
 }
 
 li {
     font-family : "Work Sans";
     line-height : 2rem;
-    padding-left: 2rem;
+    padding-left: 0.5rem;
+}
+
+@media(min-width: 450px) {
+    li {
+        padding-left: 2rem;
+    }
 }
 
 li:hover {
@@ -136,13 +148,20 @@ section {
     bottom          : 2rem;
     color           : var(--color-de-letras);
     left            : 0;
-    margin-left     : 2rem;
+    margin-left: 0;
     margin-top      : 2rem;
     overflow-x      : hidden;
     overflow-y      : auto;
     top             : 0;
     transform-origin: top center;
-    width           : 60%;
+    width: 100%;
+}
+
+@media(min-width: 700px) {
+    section {
+        width: 70%;
+        margin-left: 2rem;
+    }
 }
 
 section > * {
@@ -205,6 +224,10 @@ aside {
     width           : 100%;
 }
 
+#RankList > button {
+    display: block;
+}
+
 #CloseEbook:hover,
 #EndEbook:hover,
 #CategorizeEbook:hover,
@@ -224,23 +247,31 @@ button > span {
     margin-top : -0.4rem;
 }
 
-#RankList > button:hover::after {
-    content : '★';
-    left    : 4.7rem;
-    position: absolute;
-    top     : 0.5rem;
-}
-
 #BuscarEbook,
 #CategoriaEbook,
 nav {
     font-size   : inherit;
     height      : 2rem;
     line-height : 2rem;
-    margin-left : 2rem;
     margin-top  : 2rem;
+    margin-left : 2rem;
     padding-left: 2rem;
     width       : 80%;
+}
+
+#BuscarEbook,
+nav {
+    margin-left : 0.5rem;
+    padding-left: 0.5rem;
+    width: calc(100% - 1rem);
+}
+
+@media(min-width: 450px) {
+    #BuscarEbook {
+        margin-left : 2rem;
+        padding-left: 2rem;
+        width       : 80%;
+    }
 }
 
 nav > button#ImportEbook {
@@ -340,4 +371,19 @@ svg .cuadro-relleno {
 
 svg .triangulo {
     stroke-width: 2;
+}
+
+#RankEbook > svg,
+#RankList > button > svg {
+    stroke-width: 2;
+    width  : 2rem;
+    stroke-linejoin: miter;
+    transition: fill 0.3s ease-in;
+    fill: transparent;
+}
+
+#RankEbook:hover > svg,
+#RankList > button:hover > svg {
+    fill: var(--color-de-letras);
+    transition: fill 0.3s ease-out;
 }
