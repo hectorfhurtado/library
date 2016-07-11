@@ -72,6 +72,10 @@
 		 */
 		extraeDetallesDe( infoLibroDeServidor, pathname ) 
 		{
+			Nando.assertTypesOf( 'object', infoLibroDeServidor );
+			Nando.assertTypesOf( 'string', pathname );
+			console.assert( /^\//.test( pathname ), pathname );
+
 			let valoresPorDefecto =
 			{
 				paginas     : 0,
@@ -115,6 +119,8 @@
 		 */
 		adiciona( infoPaginas )
 		{
+			Nando.assertTypesOf( 'object', infoPaginas );
+
 			let detalles = this.detalleLibro;
 
 			if ( !detalles ) return Promise.reject( 'No hay informacion del nombre del libro' );
@@ -142,6 +148,8 @@
 		{
 			let detalles = this.detalleLibro;
 
+			Nando.assertTypesOf( 'object', detalles );
+
 			detalles.actual  = 1;
 			detalles.leyendo = false;
 
@@ -159,7 +167,9 @@
 		{
 			if ( !categoria ) return Promise.resolve( null );
 			
-			let detalles       = this.detalleLibro;
+			let detalles = this.detalleLibro;
+			Nando.assertTypesOf( 'object', detalles );
+
 			detalles.categoria = categoria;
 			this.detalleLibro  = detalles;
 			
@@ -184,6 +194,8 @@
 		 */
 		traeLibroAlAzarDe( categoria ) 
 		{
+			Nando.assertTypesOf( 'string', categoria );
+
 			let ebooks       = _lista[ categoria ];
 			/* eslint no-bitwise: "off", no-extra-parens: "off" */
 			let numeroAlAzar = (Math.random() * ebooks.length) | 0;
@@ -198,10 +210,10 @@
 		 */
 		calificaCon( calificacion ) 
 		{
-			console.assert( Boolean(calificacion), 'Debe existir la calificacion a realizar', calificacion );
+			console.assert( Boolean(calificacion) && /\d+/.test( calificacion ), calificacion );
 
 			let detalleLibro = this.detalleLibro;
-			console.assert( Boolean(detalleLibro), 'No hay informacion de detalleLibro', detalleLibro );
+			Nando.assertTypesOf( 'object', detalleLibro );
 
 			detalleLibro.calificacion = Number(calificacion);
 			this.detalleLibro         = detalleLibro;
@@ -215,9 +227,11 @@
 		 */
 		agregaComentario( comentario )
 		{
-			console.assert( typeof comentario == 'string', 'El comentario debe ser un String', comentario);
+			Nando.assertTypesOf( 'string', comentario );
 
 			let detalles      = this.detalleLibro;
+			Nando.assertTypesOf( 'object', detalles );
+
 			detalles.notas    = comentario;
 			this.detalleLibro = detalles;
 		}
@@ -233,7 +247,10 @@
 	 */
 	function _armaPropiedades( categoria, objeto ) 
 	{
-		// Para 'Sin leer
+		Nando.assertTypesOf( 'string', categoria );
+		Nando.assertTypesOf( 'object', objeto );
+
+		// Para 'Sin leer'
 		let propiedades = 
 		{
 			libro: objeto.nombre,

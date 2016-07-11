@@ -17,13 +17,14 @@
          */
         dame( selector ) 
 		{
+			Nando.assertTypesOf( 'string', selector );
+
             return new Promise( function( res ) 
 			{
                 if ( !elementos[ selector ]) 
-				{
                     elementos[ selector ] = document.querySelector( selector );
-                }
-                res( elementos[ selector ]);
+     
+	            res( elementos[ selector ]);
             });
         },
 
@@ -34,13 +35,14 @@
          */
         damePorId( id ) 
 		{
+			Nando.assertTypesOf( 'string', id );
+
             return new Promise( function( res ) 
 			{
                 if ( !elementos[ id ]) 
-				{
                     elementos[ id ] = document.getElementById( id );
-                }
-                res( elementos[ id ]);
+     
+	            res( elementos[ id ]);
             });
         },
 
@@ -48,11 +50,14 @@
 		 * Crea las opciones para un elemento del DOM del tipo DataList
 		 * @author Nando
 		 * @param   {promise<DOMElement>} promesaElemento El elemento al que le vamos a crear las opciones
-		 * @param   {Array}               valoresLista    Contiene todos los nombres de las categorias
+		 * @param   {Set}               valoresLista    Contiene todos los nombres de las categorias
 		 * @returns {undefined}           No retornamos nada
 		 */
-		creaOptionsPara( promesaElemento, valoresLista  ) 
+		creaOptionsPara( promesaElemento, valoresLista ) 
 		{
+			Nando.assertPromesa( promesaElemento );
+			Nando.assertTypesOf( 'object', valoresLista );
+
 			promesaElemento.then( function( $elemento ) 
 			{
 				valoresLista.forEach( function( categoria ) 
@@ -76,7 +81,7 @@
 		creaListaLibros( lista, promesaElemento ) 
 		{
 			console.assert( Array.isArray( lista ), 'Lista es un arreglo', lista);
-			console.assert( promesaElemento && 'then' in promesaElemento, 'Debe ser una promesa', promesaElemento);
+			Nando.assertPromesa( promesaElemento );
 
 			return Promise.all(
 			[
@@ -86,6 +91,8 @@
 			{
                 lista.forEach( function( categoria ) 
 				{
+					Nando.assertTypesOf( 'object', categoria );
+
 					const [ nombreCategoria ] = Object.keys( categoria );
                     const $ul                 = document.createElement( 'ul' );
                     const $strong             = document.createElement( 'strong' );
@@ -107,11 +114,11 @@
 
                     $ul.appendChild( $strong );
 
-                    categoria[ nombreCategoria ].forEach( function( libro ) 
+                    categoria[ nombreCategoria ].forEach( libro => 
 					{
                         let $li = document.createElement( 'li' );
 
-                        let $a = document.createElement( 'a' );
+                        let $a          = document.createElement( 'a' );
                         $a.textContent  = libro.libro;
 						$a.href         = libro.link;
 
@@ -134,8 +141,8 @@
 						}
 
                         $ul.appendChild( $li );
-
                     });
+
 					DOM.adiciona( $elemento, 'appendChild', $ul );
                 });
 			});
@@ -150,6 +157,9 @@
 		 */
 		muestraLibro( detallesLibro, promesaElemento ) 
 		{
+			Nando.assertTypesOf( 'object', detallesLibro );
+			Nando.assertPromesa( promesaElemento );
+
 			return promesaElemento.then( function( $iframe ) 
 			{
 				let pagina    = '';
@@ -174,9 +184,13 @@
 		 */
 		limpiaPdfjs( promesaIframe, generator ) 
 		{
+			Nando.assertPromesa( promesaIframe );
+			Nando.assertGenerator( generator );
+
 			return promesaIframe.then( function( $iframe ) 
 			{
 				let paginaActual = $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value;
+				Nando.assertTypesOf( 'string', paginaActual );
 
 				$iframe.src  = '';
 
@@ -198,9 +212,14 @@
 		 */
 		infoPaginasPdf( promesaIframe, generator ) 
 		{
+			Nando.assertPromesa( promesaIframe );
+			Nando.assertGenerator( generator );
+
 			return promesaIframe.then( function( $iframe ) 
 			{
 				let totalPaginas = $iframe.contentWindow.window.document.getElementById( 'numPages' ).textContent;
+				Nando.assertTypesOf( 'string', totalPaginas );
+
 				let returnObject =
 				{
 					actual : $iframe.contentWindow.window.document.getElementById( 'pageNumber' ).value,
@@ -226,6 +245,10 @@
 		 */
 		adicionaALa( categoria, detalleLibro, promesaContenedor ) 
 		{
+			Nando.assertTypesOf( 'string', categoria );
+			Nando.assertTypesOf( 'object', detalleLibro );
+			Nando.assertPromesa( promesaContenedor );
+
 			return promesaContenedor.then( $contenedor => 
 			{
 				let [ $ul ] = _buscaYFiltra( $contenedor, 'ul', categoria );
@@ -284,6 +307,10 @@
 		 */
 		eliminaDeLa( categoria, detalleLibro, promesaContenedor ) 
 		{
+			Nando.assertTypesOf( 'string', categoria );
+			Nando.assertTypesOf( 'object', detalleLibro );
+			Nando.assertPromesa( promesaContenedor );
+
 			return promesaContenedor.then( $contenedor => 
 			{
 				let [ $ulCategoria ] = _buscaYFiltra( $contenedor, 'ul', categoria );
@@ -312,6 +339,10 @@
 		 */
 		cambiaCategoria( antiguaCategoria, detalleLibro, promesaContenedor ) 
 		{
+			antiguaCategoria && Nando.assertTypesOf( 'string', antiguaCategoria );
+			Nando.assertTypesOf( 'object', detalleLibro );
+			Nando.assertPromesa( promesaContenedor );
+
 			return this.adicionaALa( detalleLibro.categoria, detalleLibro, promesaContenedor )
 				.then(() => 
 				{
@@ -329,6 +360,10 @@
 		 */
 		buscaConTextContent( texto, tag, promesaContenedor ) 
 		{
+			Nando.assertTypesOf( 'string', texto );
+			Nando.assertTypesOf( 'string', tag );
+			Nando.assertPromesa( promesaContenedor );
+
 			return promesaContenedor.then( $contenedor => 
 				_buscaYFiltra( $contenedor, tag, texto )
 			);
@@ -369,6 +404,7 @@
 		{
 			console.assert( calificacion === CALIFICACION_DEFAULT || Boolean(calificacion), 'Debe haber una calificacion para el libro' );
 			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento );
+			Nando.assertTypesOf( 'string', nombreLibro );
 
 			let $span = $elemento.querySelector( 'span' );
 			console.assert( Boolean($span), 'Debe existir el span a cambiar', $span );
@@ -382,9 +418,8 @@
 				let $p = item.parentNode.querySelector( 'p' );
 
 				if ($p && $p.textContent.startsWith( '★' ) )
-				{
 					$p.textContent = '★'.repeat( calificacion );
-				}
+
 				else if (!$p && calificacion)
 				{
 					$p             = document.createElement( 'p' );
@@ -421,7 +456,9 @@
 							let $p = Array.from( item.parentNode.querySelectorAll( 'p' ));
 							let p  = $p.find(pa => pa.textContent.startsWith( '★' ) === false);
 
-							if (p) p.textContent = nota;
+							if (p)
+								p.textContent = nota;
+
 							else if (nota)
 							{
 								$p = document.createElement( 'p' );
@@ -445,6 +482,8 @@
 		posicionAlCien( direcciones, $elemento ) 
 		{
 			console.assert( Array.isArray( direcciones ), 'Direcciones debe ser un arreglo', direcciones );
+			console.assert( $elemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $elemento );
+
 			let tamano = $elemento.getBoundingClientRect();
 
 			for (let direccion of direcciones)
@@ -477,7 +516,7 @@
 		 */
 		muestraNumeroEbooksSubiendo( promesaElemento, numeroEbooks, { quitar } = {})
 		{
-			console.assert( 'then' in promesaElemento, 'Debemos recibir una promesa para saber el elemento', promesaElemento);
+			Nando.assertPromesa( promesaElemento );
 			console.assert( typeof numeroEbooks === 'number', 'Esperamos un numero', numeroEbooks);
 			
 			if (quitar)
@@ -510,6 +549,10 @@
 	 */
 	function _buscaYFiltra( $contenedor, tag, filtro ) 
 	{
+		console.assert( $contenedor instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $contenedor );
+		Nando.assertTypesOf( 'string', tag );
+		Nando.assertTypesOf( 'string', filtro );
+
 		let encontrados      = $contenedor.querySelectorAll( tag );
 		let encontradosArray = Array.from( encontrados );
 		let filtrado         = encontradosArray.filter( $elemento => $elemento.firstChild.textContent === filtro );

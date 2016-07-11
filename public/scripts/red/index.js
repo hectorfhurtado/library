@@ -13,6 +13,10 @@
 	 */
 	function traeJson( path, datos, generator ) 
 	{
+		Nando.assertTypesOf( 'string', path );
+		datos     && Nando.assertTypesOf( 'string', datos );
+		generator && Nando.assertGenerator( generator );
+
 		const ruta = path + TERMINACION + ( datos ? `?${ datos }` : '' );
 
 		return fetch( ruta )
@@ -34,6 +38,8 @@
 	 */
 	function enviaJson( path, carga ) 
 	{
+		Nando.assertTypesOf( 'string', path );
+
 		const ruta = path + TERMINACION;
 		const body = JSON.stringify( carga );
 
@@ -51,6 +57,11 @@
 	 */
 	function subeLibro( nombre, libro, generator ) 
 	{
+		Nando.assertTypesOf( 'string', nombre );
+		console.assert( /\.pdf$/.test( nombre ), nombre );
+		Nando.assertTypesOf( 'object', libro );
+		generator && Nando.assertGenerator( generator );
+
 		const headers = new Headers(
 		{
 			'Content-type': 'text/plain; charset=x-user-defined-binary',
