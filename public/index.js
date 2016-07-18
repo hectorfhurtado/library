@@ -108,3 +108,6 @@ window.addEventListener( 'DOMContentLoaded', function()
 		/* eslint no-console: "off" */
 		.catch( error => console.log( error ));
 });
+
+if ('paintWorklet' in window)
+	window.paintWorklet.import('paintworklet.js');

@@ -142,6 +142,8 @@
 		e.preventDefault();
 
 		let dataset = e.target.dataset;
+
+		_pintaWorklet( e.target, e.clientX, e.clientY );
 		
 		if ( 'id' in dataset ) 
 		{
@@ -555,6 +557,33 @@
 		}
 	}
 	
+	function _pintaWorklet( $elemento, clientX, clientY )
+	{
+		let start = performance.now();
+		let x, y;
+
+		$elemento.classList.add( 'animando-ripple' );
+
+		[ x, y ] = [ clientX, clientY ];
+		start  = performance.now();
+
+		requestAnimationFrame( function raf( now )
+		{
+			const count = Math.floor( now - start );
+
+			$elemento.style.cssText = `--ripple-x: ${ x }; --ripple-y: ${ y }; --animation-tick: ${ count };`;
+
+			if (count > 1000)
+			{
+				$elemento.classList.remove( 'animando-ripple' );
+
+				$elemento.style.cssText = `--animation-tick: 0`;
+				return;
+			}
+			else requestAnimationFrame( raf );
+		});
+	}
+
 	Nando.Arquitecto = 
 	{
 		inicia,
