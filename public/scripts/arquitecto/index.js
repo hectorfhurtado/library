@@ -172,7 +172,7 @@
 			else Estados.cambiaA( Estados.LIBRO );		
 
 			Nando.Elementos.damePorId( 'RankEbook' )
-				.then( $rankEbook => Nando.Elementos.califica( detalle.calificacion || CALIFICACION_DEFAULT, $rankEbook ));
+				.then( $rankEbook => Nando.Elementos.califica( detalle.calificacion || CALIFICACION_DEFAULT, $rankEbook, detalle.nombre ));
 
 			Nando.Elementos.dame( '.listas' )
 				.then( $listas => Nando.Elementos.comenta( detalle.notas, $listas, detalle.nombre ));
