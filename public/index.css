@@ -387,3 +387,14 @@ svg .triangulo {
     fill: var(--color-de-letras);
     transition: fill 0.3s ease-out;
 }
+
+li > a {
+    --ripple-x: 0;
+    --ripple-y: 0;
+    --ripple-color: var(--color-de-letras);
+    --animation-tick: 0;
+}
+
+.animando-ripple {
+  background-image: paint(ripple);
+}
