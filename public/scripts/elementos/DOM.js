@@ -24,10 +24,12 @@
 		 */
 		adiciona( $aEsteElemento, conUnaFuncion, $esteElemento ) 
 		{
+			console.assert( $aEsteElemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $aEsteElemento );
+			Nando.assertTypesOf( 'string', conUnaFuncion );
+			console.assert( $esteElemento instanceof HTMLElement, 'El elemento debe ser un objeto del DOM', $esteElemento );
+
 			if ( this.quedanFunciones === false ) 
-			{
 				requestAnimationFrame( _correFuncion );
-			}
 
 			_pilaFunciones.push([ $aEsteElemento, conUnaFuncion, $esteElemento ]);
 		},
@@ -45,8 +47,6 @@
 		$elementoA[ funcion ]( $elementoB );
 
 		if ( Nando.DOM.quedanFunciones ) 
-		{
 			requestAnimationFrame( _correFuncion );
-		}
 	}
 })();

@@ -70,6 +70,8 @@
 		 */
 		cambiaA( estado ) 
 		{
+			Nando.assertTypesOf( 'symbol', estado );
+
 			switch ( estado ) 
 			{
 				case INICIO:

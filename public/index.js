@@ -13,14 +13,19 @@ var Nando =
 				.then( paths => paths.json() )
 				.then( paths => 
 				{
+					Nando.assertTypesOf( 'object', paths );
+
 					this.paths = paths;
-					
 					return this;
 				});
 		},
 
 		trae( modulo, path, generator ) 
 		{
+			Nando.assertTypesOf( 'string', modulo );
+			path      && Nando.assertTypesOf( 'string', path );
+			generator && Nando.assertGenerator( generator );
+
 			return new Promise( function( res ) 
 			{
 				if ( Nando[ modulo ]) 
@@ -60,14 +65,38 @@ var Nando =
 
 					res( Nando[ modulo ]);
 				}
-			}.bind( this )).then(modulos =>
+			}.bind( this )).then(_modulo =>
 			{
-				if (generator) generator.next( modulos );
+				Nando.assertTypesOf([ 'object', 'function' ], _modulo );
 
-				return modulos;
+				if (generator) generator.next( _modulo );
+				return _modulo;
 			});
 		}
-	}
+	},
+
+	assertGenerator( generator )
+	{
+		console.assert( !!generator );
+		console.assert( 'next' in generator && 'throw' in generator, generator );
+	},
+
+	assertPromesa( promesa )
+	{
+		console.assert( !!promesa );
+		console.assert( 'then' in promesa, promesa );
+	},
+
+	assertTypesOf( types, objeto )
+	{
+		console.assert(( Array.isArray( types ) && types.length > 0 ) || typeof types == 'string', types );
+		console.assert( !!objeto );
+
+		if (Array.isArray( types ))
+			console.assert( types.some( type => typeof objeto == type ), objeto );
+		else
+			console.assert( typeof objeto == types, objeto );
+	},
 };
 
 window.addEventListener( 'DOMContentLoaded', function() 
